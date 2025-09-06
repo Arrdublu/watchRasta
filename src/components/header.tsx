@@ -26,6 +26,7 @@ const allNavLinks = [
   { href: '/brands', label: 'Behind the Music' },
   { href: '/my-collection', label: 'My Favorites' },
   { href: '/style-guide', label: 'AI Analyzer' },
+  { href: '/hileaves', label: 'HiLeaves' },
   { href: '/contact', label: 'Contact' },
   { href: '/admin', label: 'Admin' },
 ];
