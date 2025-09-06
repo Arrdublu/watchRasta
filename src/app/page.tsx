@@ -26,7 +26,7 @@ export default function Home() {
             </h2>
             <p className="mt-2 text-lg text-muted-foreground">Discover articles across all our categories.</p>
              <ScrollArea className="w-full whitespace-nowrap rounded-lg mt-6">
-                <div className="flex w-max space-x-4 p-4 justify-center mx-auto">
+                <div className="flex w-full space-x-4 p-4">
                     {articleCategories.map(category => (
                         <Button asChild variant="outline" key={category}>
                             <Link href={`/${category.toLowerCase().replace(' & ', '-').replace(/\s+/g, '-')}`}>
