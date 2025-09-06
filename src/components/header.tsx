@@ -27,6 +27,7 @@ const navLinks = [
   { href: '/my-collection', label: 'My Collection' },
   { href: '/style-guide', label: 'Style Guide' },
   { href: '/contact', label: 'Contact' },
+  { href: '/admin', label: 'Admin' },
 ];
 
 export function Header() {
