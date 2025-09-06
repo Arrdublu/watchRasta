@@ -15,8 +15,10 @@ export async function submitContactForm(data: z.infer<typeof formSchema>) {
         return { success: false, message: 'Invalid data provided.' };
     }
 
+    // In a real app, you would integrate a service like Resend or Nodemailer here
+    // to send the email to hi@watchrasta.com.
     console.log('New contact form submission:', parsedData.data);
-    // In a real app, you would send an email here using a service like Resend or Nodemailer.
     
+    // Simulate sending an email
     return { success: true, message: 'Your message has been sent successfully!' };
 }
