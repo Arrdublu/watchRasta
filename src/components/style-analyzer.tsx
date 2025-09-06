@@ -6,20 +6,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { analyzeStyleCompatibility, type AnalyzeStyleCompatibilityOutput } from '@/ai/flows/ai-style-guide-adaptation';
-import { UploadCloud, CheckCircle2, XCircle, Wand2 } from 'lucide-react';
+import { UploadCloud, CheckCircle2, XCircle, Wand2, Music } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 
 export function StyleAnalyzer() {
-  const [image1, setImage1] = useState<{ file: File | null; preview: string | null }>({ file: null, preview: null });
-  const [image2, setImage2] = useState<{ file: File | null; preview: string | null }>({ file: null, preview: null });
+  const [track1, setTrack1] = useState<{ file: File | null; name: string | null }>({ file: null, name: null });
+  const [track2, setTrack2] = useState<{ file: File | null; name: string | null }>({ file: null, name: null });
   const [result, setResult] = useState<AnalyzeStyleCompatibilityOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setImageState: React.Dispatch<React.SetStateAction<{ file: File | null; preview: string | null }>>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setTrackState: React.Dispatch<React.SetStateAction<{ file: File | null; name: string | null }>>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageState({ file, preview: URL.createObjectURL(file) });
+      setTrackState({ file, name: file.name });
       setResult(null);
       setError(null);
     }
@@ -34,8 +34,8 @@ export function StyleAnalyzer() {
     });
 
   const handleAnalyze = async () => {
-    if (!image1.file || !image2.file) {
-      setError('Please upload two images to compare.');
+    if (!track1.file || !track2.file) {
+      setError('Please upload two audio tracks to compare.');
       return;
     }
 
@@ -45,8 +45,8 @@ export function StyleAnalyzer() {
 
     try {
       const [image1DataUri, image2DataUri] = await Promise.all([
-        toBase64(image1.file),
-        toBase64(image2.file),
+        toBase64(track1.file),
+        toBase64(track2.file),
       ]);
       
       const analysisResult = await analyzeStyleCompatibility({ image1DataUri, image2DataUri });
@@ -59,17 +59,20 @@ export function StyleAnalyzer() {
     }
   };
 
-  const ImageUploadBox = ({ image, onChange }: { image: { preview: string | null }, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
+  const AudioUploadBox = ({ track, onChange }: { track: { name: string | null }, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
     <div className="relative w-full aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-background/50 hover:border-primary transition-colors">
-      {image.preview ? (
-        <Image src={image.preview} alt="Watch preview" fill className="object-contain rounded-lg p-2" />
+      {track.name ? (
+        <div className="text-center p-4">
+            <Music className="mx-auto h-12 w-12 text-primary" />
+            <p className="mt-2 font-medium break-all">{track.name}</p>
+        </div>
       ) : (
         <div className="text-center text-muted-foreground">
           <UploadCloud className="mx-auto h-12 w-12" />
           <p>Click or drag to upload</p>
         </div>
       )}
-      <Input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={onChange} />
+      <Input type="file" accept="audio/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={onChange} />
     </div>
   );
 
@@ -77,17 +80,17 @@ export function StyleAnalyzer() {
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-4">
-            <h3 className="font-headline text-2xl">Watch Style 1</h3>
-            <ImageUploadBox image={image1} onChange={(e) => handleFileChange(e, setImage1)} />
+            <h3 className="font-headline text-2xl">Track 1</h3>
+            <AudioUploadBox track={track1} onChange={(e) => handleFileChange(e, setTrack1)} />
         </div>
         <div className="space-y-4">
-            <h3 className="font-headline text-2xl">Watch Style 2</h3>
-            <ImageUploadBox image={image2} onChange={(e) => handleFileChange(e, setImage2)} />
+            <h3 className="font-headline text-2xl">Track 2</h3>
+            <AudioUploadBox track={track2} onChange={(e) => handleFileChange(e, setTrack2)} />
         </div>
       </div>
 
       <div className="text-center">
-        <Button size="lg" onClick={handleAnalyze} disabled={isLoading || !image1.file || !image2.file}>
+        <Button size="lg" onClick={handleAnalyze} disabled={isLoading || !track1.file || !track2.file}>
           {isLoading ? (
             <>
               <Wand2 className="mr-2 h-5 w-5 animate-spin" />
@@ -123,7 +126,7 @@ export function StyleAnalyzer() {
               {result.isCompatible ? <CheckCircle2 className="mr-2 h-6 w-6 text-primary" /> : <XCircle className="mr-2 h-6 w-6 text-destructive" />}
               Style Analysis Result
             </CardTitle>
-            <CardDescription>{result.isCompatible ? "These styles are compatible!" : "These styles might clash."}</CardDescription>
+            <CardDescription>{result.isCompatible ? "These tracks are compatible!" : "These tracks might clash."}</CardDescription>
           </CardHeader>
           <CardContent>
             <h4 className="font-bold text-lg mb-2 text-foreground">Reasoning:</h4>

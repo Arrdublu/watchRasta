@@ -21,11 +21,11 @@ import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 
 const allNavLinks = [
-  { href: '/collections', label: 'Collections' },
-  { href: '/lifestyle', label: 'Lifestyle' },
-  { href: '/brands', label: 'Brand Spotlights' },
-  { href: '/my-collection', label: 'My Collection' },
-  { href: '/style-guide', label: 'Style Guide' },
+  { href: '/collections', label: 'News' },
+  { href: '/lifestyle', label: 'Tour Life' },
+  { href: '/brands', label: 'Behind the Music' },
+  { href: '/my-collection', label: 'My Favorites' },
+  { href: '/style-guide', label: 'AI Analyzer' },
   { href: '/contact', label: 'Contact' },
   { href: '/admin', label: 'Admin' },
 ];

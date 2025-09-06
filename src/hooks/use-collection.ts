@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Article } from '@/lib/articles';
 
-const COLLECTION_KEY = 'watchRastaCollection';
+const COLLECTION_KEY = 'watchRastaFavorites';
 
 export function useCollection() {
   const [collection, setCollection] = useState<Article[]>([]);

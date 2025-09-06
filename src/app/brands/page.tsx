@@ -1,15 +1,15 @@
 import { ArticleCard } from '@/components/article-card';
 import { articles } from '@/lib/articles';
 
-export default function BrandsPage() {
-  const brandArticles = articles.filter(a => a.category === 'Brand Spotlights');
+export default function BehindTheMusicPage() {
+  const brandArticles = articles.filter(a => a.category === 'Behind the Music');
 
   return (
     <div className="container py-16 md:py-24">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold">Brand Spotlights</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold">Behind the Music</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Deep dives into the history, innovation, and iconic models of legendary watchmakers.
+          Deep dives into the stories, inspiration, and creative process behind the songs.
         </p>
       </div>
       
@@ -21,8 +21,8 @@ export default function BrandsPage() {
         </div>
       ) : (
         <div className="text-center py-20 border-2 border-dashed border-border/60 rounded-lg">
-          <h2 className="text-2xl font-headline">No articles yet.</h2>
-          <p className="mt-2 text-muted-foreground">Check back soon for spotlights on iconic brands.</p>
+          <h2 className="text-2xl font-headline">No stories yet.</h2>
+          <p className="mt-2 text-muted-foreground">Check back soon for a look behind the curtain.</p>
         </div>
       )}
     </div>

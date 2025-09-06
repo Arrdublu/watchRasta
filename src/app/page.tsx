@@ -14,7 +14,7 @@ export default function Home() {
       <HeroBanner />
       <section className="container py-16 md:py-24">
         <h2 className="text-3xl md:text-4xl font-headline font-bold mb-8 text-center">
-          Featured Stories
+          Latest News
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
@@ -29,9 +29,9 @@ export default function Home() {
         </div>
 
         <div className="text-center mt-12">
-            <Link href="/collections">
+            <Link href="/news">
                 <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                    View All Articles
+                    View All News
                 </Button>
             </Link>
         </div>

@@ -1,15 +1,15 @@
 import { ArticleCard } from '@/components/article-card';
 import { articles } from '@/lib/articles';
 
-export default function LifestylePage() {
-  const lifestyleArticles = articles.filter(a => a.category === 'Lifestyle');
+export default function TourLifePage() {
+  const lifestyleArticles = articles.filter(a => a.category === 'Tour Life');
 
   return (
     <div className="container py-16 md:py-24">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold">Watch Lifestyle</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold">Tour Life</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Explore how timepieces intersect with fashion, adventure, and the art of living well.
+          Stories from the road, city spotlights, and life beyond the stage.
         </p>
       </div>
       
@@ -21,8 +21,8 @@ export default function LifestylePage() {
         </div>
       ) : (
         <div className="text-center py-20 border-2 border-dashed border-border/60 rounded-lg">
-          <h2 className="text-2xl font-headline">No articles yet.</h2>
-          <p className="mt-2 text-muted-foreground">Check back soon for articles on watch lifestyle.</p>
+          <h2 className="text-2xl font-headline">No stories yet.</h2>
+          <p className="mt-2 text-muted-foreground">Check back soon for tales from the road.</p>
         </div>
       )}
     </div>

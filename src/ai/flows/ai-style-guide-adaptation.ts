@@ -2,7 +2,7 @@
 /**
  * @fileOverview AI style guide adaptation flow.
  *
- * - analyzeStyleCompatibility - A function that analyzes the style compatibility of two watch images.
+ * - analyzeStyleCompatibility - A function that analyzes the style compatibility of two music tracks.
  * - AnalyzeStyleCompatibilityInput - The input type for the analyzeStyleCompatibility function.
  * - AnalyzeStyleCompatibilityOutput - The return type for the analyzeStyleCompatibility function.
  */
@@ -14,18 +14,18 @@ const AnalyzeStyleCompatibilityInputSchema = z.object({
   image1DataUri: z
     .string()
     .describe(
-      "The first watch image, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "The first track's audio data, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
   image2DataUri: z
     .string()
     .describe(
-      "The second watch image, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "The second track's audio data, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
 });
 export type AnalyzeStyleCompatibilityInput = z.infer<typeof AnalyzeStyleCompatibilityInputSchema>;
 
 const AnalyzeStyleCompatibilityOutputSchema = z.object({
-  isCompatible: z.boolean().describe('Whether the two watch styles are compatible.'),
+  isCompatible: z.boolean().describe('Whether the two track styles are compatible for a playlist or collaboration.'),
   reason: z.string().describe('The reasoning behind the compatibility assessment.'),
 });
 export type AnalyzeStyleCompatibilityOutput = z.infer<typeof AnalyzeStyleCompatibilityOutputSchema>;
@@ -40,17 +40,17 @@ const prompt = ai.definePrompt({
   name: 'analyzeStyleCompatibilityPrompt',
   input: {schema: AnalyzeStyleCompatibilityInputSchema},
   output: {schema: AnalyzeStyleCompatibilityOutputSchema},
-  prompt: `You are a style guide expert, skilled at determining visual consistencies.
+  prompt: `You are a music A&R and style expert, skilled at determining sonic and stylistic consistencies.
 
-You will receive two images of watches. Your task is to analyze them and determine if their styles are compatible.
-Consider the watch band material, the watch face design, the color scheme, and the overall aesthetic.
+You will receive two audio files of music tracks. Your task is to analyze them and determine if their styles are compatible.
+Consider the genre, tempo, instrumentation, mood, and overall aesthetic.
 
-Based on your analysis, you will set the isCompatible field to true if the styles complement each other and false if they clash.
+Based on your analysis, you will set the isCompatible field to true if the styles complement each other for a playlist or collaboration, and false if they clash.
 
 Provide a detailed reason for your assessment in the reason field.
 
-Image 1: {{media url=image1DataUri}}
-Image 2: {{media url=image2DataUri}}`,
+Track 1: {{media url=image1DataUri}}
+Track 2: {{media url=image2DataUri}}`,
 });
 
 const analyzeStyleCompatibilityFlow = ai.defineFlow(

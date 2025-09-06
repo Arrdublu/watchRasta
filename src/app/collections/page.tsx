@@ -1,15 +1,15 @@
 import { ArticleCard } from '@/components/article-card';
 import { articles } from '@/lib/articles';
 
-export default function CollectionsPage() {
-  const collectionArticles = articles.filter(a => a.category === 'Collections');
+export default function NewsPage() {
+  const collectionArticles = articles.filter(a => a.category === 'News');
 
   return (
     <div className="container py-16 md:py-24">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold">Watch Collections</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold">News & Updates</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Explore curated articles focusing on specific watch styles, complications, and design themes.
+          The latest announcements, releases, and stories from the world of watchRasta.
         </p>
       </div>
       
@@ -21,8 +21,8 @@ export default function CollectionsPage() {
         </div>
       ) : (
         <div className="text-center py-20 border-2 border-dashed border-border/60 rounded-lg">
-          <h2 className="text-2xl font-headline">No articles yet.</h2>
-          <p className="mt-2 text-muted-foreground">Check back soon for articles on watch collections.</p>
+          <h2 className="text-2xl font-headline">No news yet.</h2>
+          <p className="mt-2 text-muted-foreground">Check back soon for the latest updates.</p>
         </div>
       )}
     </div>

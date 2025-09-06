@@ -57,7 +57,7 @@ export default function ContactPage() {
                 <Mail className="mx-auto h-12 w-12 text-primary mb-4" />
                 <h1 className="text-4xl md:text-5xl font-headline font-bold">Get In Touch</h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                Have a question or a story to share? We'd love to hear from you.
+                Booking inquiries, press, or just want to say hi? Drop a line.
                 </p>
             </div>
 

@@ -7,8 +7,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/auth-context';
 
 export const metadata: Metadata = {
-  title: 'watchRasta',
-  description: 'Curated watch articles and collections',
+  title: 'watchRasta | Official Website',
+  description: 'The official website for the artist watchRasta. Get the latest music, tour dates, and news.',
 };
 
 export default function RootLayout({

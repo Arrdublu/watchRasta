@@ -67,7 +67,7 @@ export default function SignupPage() {
             <UserPlus className="mr-2 h-7 w-7" />
             Create Account
           </CardTitle>
-          <CardDescription>Sign up to start your watch journey.</CardDescription>
+          <CardDescription>Join the community and get exclusive updates.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>

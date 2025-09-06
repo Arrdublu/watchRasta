@@ -6,15 +6,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export default function MyCollectionPage() {
+export default function MyFavoritesPage() {
   const { collection, isLoaded } = useCollection();
 
   return (
     <div className="container py-16 md:py-24 min-h-[60vh]">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold">My Collection</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold">My Favorites</h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Your curated list of articles and inspirations.
+          Your saved articles, news, and stories.
         </p>
       </div>
       
@@ -32,11 +32,11 @@ export default function MyCollectionPage() {
         </div>
       ) : (
         <div className="text-center py-20 border-2 border-dashed border-border/60 rounded-lg">
-          <h2 className="text-2xl font-headline">Your collection is empty.</h2>
-          <p className="mt-2 text-muted-foreground">Start exploring and save your favorite articles.</p>
+          <h2 className="text-2xl font-headline">Your favorites list is empty.</h2>
+          <p className="mt-2 text-muted-foreground">Start exploring and save what you love.</p>
           <Button asChild variant="link" className="mt-6 text-primary text-lg">
             <Link href="/">
-                Browse Articles
+                Browse News
             </Link>
           </Button>
         </div>

@@ -25,10 +25,10 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
     e.preventDefault();
     if (isSaved) {
       removeFromCollection(article.id);
-      toast({ title: 'Removed from Collection', description: `"${article.title}" removed.` });
+      toast({ title: 'Removed from Favorites', description: `"${article.title}" removed.` });
     } else {
       addToCollection(article);
-      toast({ title: 'Added to Collection', description: `"${article.title}" saved.` });
+      toast({ title: 'Added to Favorites', description: `"${article.title}" saved.` });
     }
   };
 

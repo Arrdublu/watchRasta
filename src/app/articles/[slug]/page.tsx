@@ -80,7 +80,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         <section className="mt-12 py-20 bg-secondary/30">
             <div className="container">
                 <h2 className="text-3xl font-headline font-bold mb-8 text-center">
-                    You Might Also Like
+                    More Stories
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {relatedArticles.map(related => (
