@@ -6,7 +6,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyBzB3twSVNttGgGQ9yhMQb0HPo5ywMMpI8",
     authDomain: "watchrasta.firebaseapp.com",
     projectId: "watchrasta",
-    storageBucket: "watchrasta.appspot.com",
+    storageBucket: "watchrasta.firebasestorage.app",
     messagingSenderId: "839347362900",
     appId: "1:839347362900:web:ec8b6be6e0b58bae17e1c1",
 };
