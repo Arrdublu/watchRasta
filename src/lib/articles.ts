@@ -34,7 +34,7 @@ export const articles: Article[] = [
     image: 'https://picsum.photos/600/400',
     dataAiHint: 'album cover',
     excerpt: 'The long-awaited new album from watchRasta, "Celestial Echoes," is available on all streaming platforms.',
-    content: '<p>The moment is finally here. "Celestial Echoes" has arrived. This album is a journey through sound, a project years in themaking. Thank you to everyone who supported this vision. Go listen, share, and let the music speak.</p><p>Crafted in studios from Kingston to London, the album blends genres and pushes boundaries. It\'s a reflection of my personal journey and the sounds that inspire me. I hope it connects with you.</p>',
+    content: '<p>The moment is finally here. "Celestial Echoes" has arrived. This album is a journey through sound, a project years in the making. Thank you to everyone who supported this vision. Go listen, share, and let the music speak.</p><p>Crafted in studios from Kingston to London, the album blends genres and pushes boundaries. It\'s a reflection of my personal journey and the sounds that inspire me. I hope it connects with you.</p><h3>Check out the lead single:</h3><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/27jAav0wogMYRHzeyGLoKs?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
     author: 'watchRasta',
     date: '2024-05-15',
     status: 'Published',

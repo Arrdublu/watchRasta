@@ -4,6 +4,9 @@ import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { ArticleCard } from '@/components/article-card';
 import { Clock, User } from 'lucide-react';
+import parse, { domToReact, Element } from 'html-react-parser';
+import { Embed } from '@/components/embed';
+
 
 export function generateStaticParams() {
   return articles.map((article) => ({
@@ -34,6 +37,16 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
   }
   
   const relatedArticles = articles.filter(a => a.category === article.category && a.id !== article.id).slice(0, 3);
+  const options = {
+    replace: (domNode: any) => {
+        if (domNode instanceof Element && domNode.name === 'iframe') {
+            return <Embed iframe={domNode.toString()} />;
+        }
+        if(domNode instanceof Element) {
+            return domToReact(domNode.children, options)
+        }
+    },
+  };
 
   return (
     <>
@@ -71,8 +84,9 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         <div className="max-w-3xl mx-auto">
             <div 
             className="space-y-6 text-lg text-foreground/90 [&_p]:leading-relaxed [&_h2]:font-headline [&_h2]:text-3xl [&_h2]:mt-12 [&_h2]:mb-4 [&_a]:text-primary hover:[&_a]:underline"
-            dangerouslySetInnerHTML={{ __html: article.content }} 
-            />
+            >
+                {parse(article.content, options)}
+            </div>
         </div>
       </article>
       

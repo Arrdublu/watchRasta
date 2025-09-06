@@ -72,10 +72,10 @@ export default function CreateArticlePage() {
         addArticle({
             title: values.title,
             category: values.category,
-            content: `<p>${values.content.replace(/\n/g, '</p><p>')}</p>`, // simple conversion
+            content: values.content, // Now passing raw HTML content
             image: imageUrl,
             dataAiHint: 'user submitted',
-            excerpt: values.content.substring(0, 100) + '...',
+            excerpt: values.content.substring(0, 100).replace(/<[^>]*>?/gm, '') + '...',
             author: user.email || 'Anonymous',
             status: 'Pending Review',
         });
@@ -175,7 +175,7 @@ export default function CreateArticlePage() {
                         <FormItem>
                             <FormLabel>Content</FormLabel>
                             <FormControl>
-                            <Textarea placeholder="Write your article here..." className="min-h-[300px]" {...field} />
+                            <Textarea placeholder="Write your article here. To embed content (e.g., YouTube, Spotify), paste the <iframe> embed code directly." className="min-h-[300px]" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
