@@ -10,20 +10,29 @@ import {
 const faqs = [
     {
         question: "What is watchRasta?",
-        answer: "watchRasta is a platform for watch enthusiasts to discover new collections, read about the lifestyle of watch collectors, and get insights into the world of horology."
+        answer: "watchRasta is a platform for music lovers and culture enthusiasts to discover new music, read artist stories, and get insights into the creative world."
     },
     {
-        question: "How can I contribute?",
-        answer: "We are always looking for passionate writers to contribute to our platform. Please reach out to us at hi@watchrasta.com with your ideas."
+        question: "What is HiLeaves?",
+        answer: "HiLeaves is a curated collection of natural products and services, each with a unique origin story. You can shop for food, merch, and wellness services."
     },
     {
-        question: "How do I curate my own collection?",
-        answer: "You can create an account and start saving your favorite articles and watches to your personal collection."
+        question: "How can I save my favorite articles?",
+        answer: "You can create an account and click the bookmark icon on any article to save it to your personal 'My Favorites' collection."
     },
     {
-        question: "What is the AI Style Guide Adaptation?",
-        answer: "Our AI-powered tool helps you determine if different watch styles complement each other. Simply upload images of your watches and our AI will provide feedback."
-    }\n]
+        question: "What is the AI Track Analyzer?",
+        answer: "Our AI-powered tool helps you determine if two music tracks are stylistically compatible. Simply upload two audio files and our AI will provide a detailed analysis."
+    },
+    {
+        question: "How can I get in touch for bookings or press inquiries?",
+        answer: "Please use the contact form on our 'Contact' page to send us a message. We'll get back to you as soon as possible."
+    },
+    {
+        question: "Do you ship merchandise internationally?",
+        answer: "Yes, we ship our artisanal merch worldwide. Shipping costs and times vary depending on the destination. Please refer to our Terms & Conditions for more details."
+    }
+]
 
 export function Faq() {
     return (
@@ -34,7 +43,7 @@ export function Faq() {
                     <AccordionItem value={`item-${i}`} key={i}>
                         <AccordionTrigger>{faq.question}</AccordionTrigger>
                         <AccordionContent>
-                            {faq.answer}
+                            <p className="text-base text-muted-foreground">{faq.answer}</p>
                         </AccordionContent>
                     </AccordionItem>
                 ))}
