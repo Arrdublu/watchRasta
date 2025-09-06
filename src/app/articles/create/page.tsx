@@ -13,12 +13,12 @@ import { PlusCircle, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
-import { addArticle } from '@/lib/articles';
+import { addArticle, articleCategories } from '@/lib/articles';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
-  category: z.enum(['News', 'Lifestyle', 'Brands']),
+  category: z.enum(articleCategories),
   content: z.string().min(50, { message: 'Content must be at least 50 characters.' }),
   image: z.any().optional(),
 });
@@ -84,7 +84,7 @@ export default function CreateArticlePage() {
             title: 'Article Submitted!',
             description: 'Your article has been submitted for review. Thank you!',
         });
-        router.push('/my-collection'); // Or a "my submissions" page
+        router.push('/my-favorites'); // Or a "my submissions" page
     } catch (error) {
         toast({
             title: 'Error',
@@ -139,9 +139,9 @@ export default function CreateArticlePage() {
                                 </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    <SelectItem value="News">News</SelectItem>
-                                    <SelectItem value="Lifestyle">Lifestyle</SelectItem>
-                                    <SelectItem value="Brands">Brands</SelectItem>
+                                    {articleCategories.map(category => (
+                                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                             <FormMessage />

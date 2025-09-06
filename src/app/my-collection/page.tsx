@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection } from '@/hooks/use-collection';
@@ -35,7 +36,7 @@ export default function MyFavoritesPage() {
           <h2 className="text-2xl font-headline">Your favorites list is empty.</h2>
           <p className="mt-2 text-muted-foreground">Start exploring and save what you love.</p>
           <Button asChild variant="link" className="mt-6 text-primary text-lg">
-            <Link href="/">
+            <Link href="/news">
                 Browse News
             </Link>
           </Button>

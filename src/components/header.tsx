@@ -25,7 +25,7 @@ const allNavLinks = [
   { href: '/news', label: 'News' },
   { href: '/lifestyle', label: 'Lifestyle' },
   { href: '/brands', label: 'Brands' },
-  { href: '/my-collection', label: 'My Collection' },
+  { href: '/my-favorites', label: 'My Favorites' },
   { href: '/style-guide', label: 'AI Analyzer' },
   { href: '/hileaves', label: 'HiLeaves' },
   { href: '/contact', label: 'Contact' },
@@ -52,6 +52,10 @@ export function Header() {
   const navLinks = allNavLinks.filter(link => {
       if (link.href === '/admin') {
           return user?.email === ADMIN_EMAIL;
+      }
+      // Hide My Favorites if not logged in
+      if (link.href === '/my-favorites') {
+          return !!user;
       }
       return true;
   });

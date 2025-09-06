@@ -1,8 +1,21 @@
+
+export type ArticleCategory = 'News' | 'Lifestyle' | 'Brands' | 'Album Reviews' | 'Interviews' | 'Tour Diaries' | 'Gear';
+
+export const articleCategories: [ArticleCategory, ...ArticleCategory[]] = [
+  'News',
+  'Lifestyle',
+  'Brands',
+  'Album Reviews',
+  'Interviews',
+  'Tour Diaries',
+  'Gear',
+];
+
 export type Article = {
   id: number;
   slug: string;
   title: string;
-  category: 'News' | 'Lifestyle' | 'Brands';
+  category: ArticleCategory;
   image: string;
   dataAiHint: string;
   excerpt: string;
@@ -30,7 +43,7 @@ export const articles: Article[] = [
     id: 2,
     slug: 'on-the-road-tokyo-diaries',
     title: 'On the Road: Tokyo Diaries',
-    category: 'Lifestyle',
+    category: 'Tour Diaries',
     image: 'https://picsum.photos/600/401',
     dataAiHint: 'tokyo neon',
     excerpt: 'First stop, Tokyo. The energy, the people, the inspiration. A look inside the first leg of the world tour.',
@@ -69,7 +82,7 @@ export const articles: Article[] = [
     id: 5,
     slug: 'berlin-nights-and-studio-sessions',
     title: 'Berlin Nights and Studio Sessions',
-    category: 'Lifestyle',
+    category: 'Tour Diaries',
     image: 'https://picsum.photos/600/404',
     dataAiHint: 'berlin graffiti',
     excerpt: 'The European leg of the tour continues. A recap of an unforgettable week in Berlin.',
