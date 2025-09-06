@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/contexts/auth-context';
 
 export const metadata: Metadata = {
   title: 'watchRasta',
@@ -27,10 +28,12 @@ export default function RootLayout({
           'min-h-screen bg-background font-body text-foreground antialiased'
         )}
       >
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <Toaster />
+        <AuthProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

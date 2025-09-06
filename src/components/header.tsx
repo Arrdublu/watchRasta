@@ -1,11 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, X, Watch } from 'lucide-react';
+import { Menu, X, Watch, User, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/auth-context';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 const navLinks = [
   { href: '/collections', label: 'Collections' },
@@ -19,6 +31,17 @@ const navLinks = [
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    try {
+        await signOut(auth);
+        toast({ title: "Signed out successfully." });
+    } catch (error) {
+        toast({ title: "Error signing out", description: (error as Error).message, variant: "destructive" });
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -39,6 +62,43 @@ export function Header() {
               </Link>
             ))}
           </nav>
+
+          <div className="hidden md:flex items-center ml-4">
+            {user ? (
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                           <User />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                        <DropdownMenuLabel className="font-normal">
+                            <div className="flex flex-col space-y-1">
+                                <p className="text-sm font-medium leading-none">My Account</p>
+                                <p className="text-xs leading-none text-muted-foreground">
+                                    {user.email}
+                                </p>
+                            </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href="/profile">Profile</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleSignOut}>
+                            Log out
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            ) : (
+                <Button asChild variant="ghost" size="sm">
+                    <Link href="/login">
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Login
+                    </Link>
+                </Button>
+            )}
+          </div>
+
           <Button
             variant="ghost"
             size="icon"
@@ -68,6 +128,16 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
+               <div className="border-t mt-4 pt-4">
+                 {user ? (
+                    <>
+                        <Link href="/profile" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>Profile</Link>
+                        <button onClick={() => { handleSignOut(); setIsOpen(false); }} className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline text-left">Log Out</button>
+                    </>
+                 ) : (
+                    <Link href="/login" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>Login</Link>
+                 )}
+                </div>
             </nav>
           </div>
         </div>
