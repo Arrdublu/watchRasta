@@ -9,8 +9,6 @@ const formSchema = z.object({
   message: z.string().min(10),
 });
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function submitContactForm(data: z.infer<typeof formSchema>) {
     const parsedData = formSchema.safeParse(data);
 
@@ -25,6 +23,7 @@ export async function submitContactForm(data: z.infer<typeof formSchema>) {
     }
 
     try {
+        const resend = new Resend(process.env.RESEND_API_KEY);
         await resend.emails.send({
             from: 'onboarding@resend.dev', // This must be a verified domain on Resend
             to: 'hi@watchrasta.com',
