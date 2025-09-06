@@ -21,7 +21,7 @@ export const articles: Article[] = [
     image: 'https://picsum.photos/600/400',
     dataAiHint: 'album cover',
     excerpt: 'The long-awaited new album from watchRasta, "Celestial Echoes," is available on all streaming platforms.',
-    content: '<p>The moment is finally here. "Celestial Echoes" has arrived. This album is a journey through sound, a project years in the making. Thank you to everyone who supported this vision. Go listen, share, and let the music speak.</p><p>Crafted in studios from Kingston to London, the album blends genres and pushes boundaries. It\'s a reflection of my personal journey and the sounds that inspire me. I hope it connects with you.</p>',
+    content: '<p>The moment is finally here. "Celestial Echoes" has arrived. This album is a journey through sound, a project years in themaking. Thank you to everyone who supported this vision. Go listen, share, and let the music speak.</p><p>Crafted in studios from Kingston to London, the album blends genres and pushes boundaries. It\'s a reflection of my personal journey and the sounds that inspire me. I hope it connects with you.</p>',
     author: 'watchRasta',
     date: '2024-05-15',
     status: 'Published',
@@ -92,6 +92,18 @@ export const articles: Article[] = [
     status: 'Published',
   },
 ];
+
+// This is a mock function. In a real app, you'd be saving to a database.
+export function addArticle(article: Omit<Article, 'id' | 'slug' | 'date'>) {
+  const newArticle: Article = {
+    ...article,
+    id: articles.length + 1,
+    slug: article.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, ''),
+    date: new Date().toISOString().split('T')[0],
+  };
+  articles.unshift(newArticle); // Add to the beginning of the array
+  return newArticle;
+}
 
 export function getArticleBySlug(slug: string) {
   return articles.find((article) => article.slug === slug);

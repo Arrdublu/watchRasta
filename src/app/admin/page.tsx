@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreVertical } from 'lucide-react';
+import { MoreVertical, Check, X, Eye } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,6 +52,19 @@ export default function AdminDashboardPage() {
     toast({ title: "Edit Action", description: `Triggered edit for article ID: ${id}.` });
     // In a real app, this would navigate to an edit page e.g. router.push(`/admin/edit/${id}`)
   }
+
+  const getStatusVariant = (status: Article['status']) => {
+    switch (status) {
+      case 'Published':
+        return 'default';
+      case 'Draft':
+        return 'secondary';
+      case 'Pending Review':
+        return 'outline';
+      default:
+        return 'default';
+    }
+  };
   
   if (loading || user?.email !== ADMIN_EMAIL) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Checking authorization...</div>;
@@ -79,16 +92,29 @@ export default function AdminDashboardPage() {
             </TableHeader>
             <TableBody>
               {articles.map((article) => (
-                <TableRow key={article.id}>
+                <TableRow key={article.id} className={article.status === 'Pending Review' ? 'bg-amber-100/10' : ''}>
                   <TableCell className="font-medium">{article.title}</TableCell>
                   <TableCell>{article.category}</TableCell>
                   <TableCell>{article.author}</TableCell>
                   <TableCell>
-                    <Badge variant={article.status === 'Published' ? 'default' : 'secondary'}>
+                    <Badge variant={getStatusVariant(article.status)}>
                       {article.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
+                    {article.status === 'Pending Review' ? (
+                        <div className="flex gap-2">
+                           <Button variant="outline" size="sm" onClick={() => handleStatusChange(article.id, 'Published')}>
+                               <Check className="h-4 w-4 mr-1" /> Approve
+                           </Button>
+                           <Button variant="destructive" size="sm" onClick={() => handleDelete(article.id)}>
+                               <X className="h-4 w-4 mr-1" /> Reject
+                           </Button>
+                           <Button variant="ghost" size="icon" asChild>
+                               <Link href={`/articles/${article.slug}`} target="_blank"><Eye className="h-4 w-4" /></Link>
+                           </Button>
+                        </div>
+                    ) : (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
@@ -104,13 +130,13 @@ export default function AdminDashboardPage() {
                           onClick={() => handleStatusChange(article.id, 'Published')}
                           disabled={article.status === 'Published'}
                         >
-                          Approve
+                          Publish
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={() => handleStatusChange(article.id, 'Draft')}
                           disabled={article.status === 'Draft'}
                         >
-                          Unpublish
+                          Move to Draft
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem 
@@ -121,6 +147,7 @@ export default function AdminDashboardPage() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
