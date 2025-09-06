@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Instagram, Youtube, Twitter, Music } from 'lucide-react';
+import { Instagram, Youtube, Twitter, Music, Mail } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -13,6 +13,9 @@ export function Footer() {
           </div>
 
           <div className="flex justify-center md:justify-start md:order-last gap-4">
+            <Link href="mailto:hi@watchrasta.com" className="text-muted-foreground hover:text-primary">
+              <Mail className="h-6 w-6" />
+            </Link>
             <Link href="https://www.instagram.com/watchrasta/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
               <Instagram className="h-6 w-6" />
             </Link>
