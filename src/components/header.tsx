@@ -20,7 +20,7 @@ import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 
-const navLinks = [
+const allNavLinks = [
   { href: '/collections', label: 'Collections' },
   { href: '/lifestyle', label: 'Lifestyle' },
   { href: '/brands', label: 'Brand Spotlights' },
@@ -29,6 +29,8 @@ const navLinks = [
   { href: '/contact', label: 'Contact' },
   { href: '/admin', label: 'Admin' },
 ];
+
+const ADMIN_EMAIL = 'watchrasta@gmail.com';
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,6 +46,13 @@ export function Header() {
         toast({ title: "Error signing out", description: (error as Error).message, variant: "destructive" });
     }
   }
+  
+  const navLinks = allNavLinks.filter(link => {
+      if (link.href === '/admin') {
+          return user?.email === ADMIN_EMAIL;
+      }
+      return true;
+  });
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
