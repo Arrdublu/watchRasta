@@ -9,6 +9,7 @@ export type Article = {
   content: string;
   author: string;
   date: string;
+  status: 'Published' | 'Draft' | 'Pending Review';
 };
 
 export const articles: Article[] = [
@@ -23,6 +24,7 @@ export const articles: Article[] = [
     content: '<p>Delve deep into the world of vintage chronographs. From their military origins to their status as luxury icons, we cover the key models and what makes them tick. We will explore brands like Patek Philippe, Rolex, and Omega...</p><p>The craftsmanship of these timepieces is unparalleled. Each piece tells a story of a bygone era, of precision engineering without the aid of modern technology. The patina on the dial, the wear on the case, all contribute to the unique character of each watch.</p>',
     author: 'John Doe',
     date: '2024-05-15',
+    status: 'Published',
   },
   {
     id: 2,
@@ -35,6 +37,7 @@ export const articles: Article[] = [
     content: '<p>A watch is more than a time-telling device; it\'s a statement piece. This guide will help you understand the nuances of watch styles - from divers to dress watches - and how to pair them effectively. We\'ll discuss strap materials, case sizes, and dial colors to ensure you always look your best.</p><p>For business attire, a classic leather strap watch is a safe bet. For a weekend getaway, a rugged field watch or a diver might be more appropriate. And for black-tie events, nothing beats the elegance of a simple, thin dress watch.</p>',
     author: 'Jane Smith',
     date: '2024-05-20',
+    status: 'Published',
   },
   {
     id: 3,
@@ -47,6 +50,7 @@ export const articles: Article[] = [
     content: '<p>From the iconic Royal Oak to their grand complications, Audemars Piguet has consistently pushed the boundaries of horology. This article explores the brand\'s rich history, its most important models, and its commitment to "breaking the rules".</p><p>We will take a close look at the revolutionary design of the Royal Oak, conceived by Gérald Genta, and how it changed the landscape of luxury sports watches forever. We also examine their modern masterpieces and what the future holds for this legendary manufacture.</p>',
     author: 'Alex Johnson',
     date: '2024-05-25',
+    status: 'Pending Review',
   },
   {
     id: 4,
@@ -59,6 +63,7 @@ export const articles: Article[] = [
     content: '<p>The dial is where artistry meets functionality. This piece celebrates the incredible craftsmanship that goes into creating a watch dial. We explore techniques like hand-turned guilloché, the delicate art of grand feu enamel, and the use of exotic materials like meteorite and mother-of-pearl.</p><p>Understanding these techniques gives a new appreciation for the timepiece on your wrist. It is a miniature canvas that showcases the pinnacle of human skill and creativity.</p>',
     author: 'Chris Lee',
     date: '2024-06-01',
+    status: 'Draft',
   },
   {
     id: 5,
@@ -71,6 +76,7 @@ export const articles: Article[] = [
     content: '<p>Field watches are born from military history, designed for legibility and durability. This guide reviews the best options on the market, from affordable classics to high-end luxury models. We test them for readability, toughness, and of course, style.</p><p>A good field watch should be simple, robust, and easy to read at a glance. We look at offerings from Hamilton, Tudor, and IWC to see which ones stand up to the test of the great outdoors.</p>',
     author: 'Samantha Bee',
     date: '2024-06-05',
+    status: 'Published',
   },
   {
     id: 6,
@@ -83,6 +89,7 @@ export const articles: Article[] = [
     content: '<p>Launched in 1953, the Rolex Submariner set the standard for diver\'s watches. This article traces its evolution from a professional tool to a global status symbol. We cover key reference numbers, design changes, and what makes it so desirable.</p><p>Whether on the wrist of James Bond or a deep-sea explorer, the Submariner has proven its mettle time and time again. Its timeless design and robust construction make it a true icon of the watch world.</p>',
     author: 'Mark O\'Connell',
     date: '2024-06-10',
+    status: 'Published',
   },
 ];
 
