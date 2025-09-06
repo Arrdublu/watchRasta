@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Watch } from 'lucide-react';
+import Image from 'next/image';
 
 export function Footer() {
   return (
@@ -7,7 +7,7 @@ export function Footer() {
       <div className="container py-12">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center space-x-2">
-            <Watch className="h-6 w-6 text-primary" />
+            <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/branding%2Fapple-touch-icon.png?alt=media&token=c66e806e-c06e-4aaa-be19-6df162b79d64" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
             <span className="font-bold font-headline text-lg text-foreground">watchRasta</span>
           </div>
           <p className="text-sm text-muted-foreground">

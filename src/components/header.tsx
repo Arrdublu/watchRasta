@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, X, Watch, User, LogIn } from 'lucide-react';
+import { Menu, X, User, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ import {
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 
 const navLinks = [
   { href: '/collections', label: 'Collections' },
@@ -47,7 +48,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Watch className="h-6 w-6 text-primary" />
+          <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/branding%2Fapple-touch-icon.png?alt=media&token=c66e806e-c06e-4aaa-be19-6df162b79d64" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
           <span className="font-bold font-headline text-lg">watchRasta</span>
         </Link>
         <div className="flex flex-1 items-center justify-end">
