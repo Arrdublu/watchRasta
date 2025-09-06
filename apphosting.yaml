@@ -1,7 +1,20 @@
 # Settings to manage and configure a Firebase App Hosting backend.
 # https://firebase.google.com/docs/app-hosting/configure
 
+# The command that starts the web server.
+# The server must listen on the port specified by the "PORT" environment
+# variable.
 runConfig:
-  # Increase this value if you'd like to automatically spin up
-  # more instances in response to increased traffic.
-  maxInstances: 1
+  cpu: 1
+  memoryMiB: 512
+
+# The command that builds the app.
+# If not specified, App Hosting will attempt to build the app automatically.
+build:
+  # Specifies the command to run to build your app.
+  command: npm run build
+
+# Defines the services and infrastructure that your app needs.
+requiredServices:
+  # The AI service is required for Genkit functionality.
+  ai: {}
