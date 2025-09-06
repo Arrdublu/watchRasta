@@ -109,3 +109,7 @@ export const products: Product[] = [
 export function getProductsByCollectionId(collectionId: number) {
   return products.filter((product) => product.collectionId === collectionId);
 }
+
+export function getProductById(id: number) {
+    return products.find((product) => product.id === id);
+}
