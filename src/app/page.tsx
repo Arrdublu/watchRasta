@@ -4,6 +4,7 @@ import { ArticleCard } from '@/components/article-card';
 import { articles, articleCategories } from '@/lib/articles';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export default function Home() {
   const mainArticle = articles[0];
@@ -24,15 +25,18 @@ export default function Home() {
               Explore Our Stories
             </h2>
             <p className="mt-2 text-lg text-muted-foreground">Discover articles across all our categories.</p>
-            <div className="flex justify-center gap-2 md:gap-4 mt-6 flex-wrap">
-                {articleCategories.map(category => (
-                    <Button asChild variant="outline" key={category}>
-                        <Link href={`/${category.toLowerCase().replace(' & ', '-').replace(' ', '-')}`}>
-                            {category}
-                        </Link>
-                    </Button>
-                ))}
-            </div>
+             <ScrollArea className="w-full whitespace-nowrap rounded-lg mt-6">
+                <div className="flex w-max space-x-4 p-4 justify-center mx-auto">
+                    {articleCategories.map(category => (
+                        <Button asChild variant="outline" key={category}>
+                            <Link href={`/${category.toLowerCase().replace(' & ', '-').replace(/\s+/g, '-')}`}>
+                                {category}
+                            </Link>
+                        </Button>
+                    ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
         </div>
 
         <h2 className="text-3xl md:text-4xl font-headline font-bold mb-8 text-center">

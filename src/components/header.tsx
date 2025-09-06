@@ -73,7 +73,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={cn("transition-colors hover:text-primary", pathname === link.href ? "text-primary" : "text-muted-foreground")}
+                className={cn("transition-colors hover:text-primary", pathname.startsWith(link.href) ? "text-primary" : "text-muted-foreground")}
               >
                 {link.label}
               </Link>
@@ -146,7 +146,7 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={cn("flex w-full items-center rounded-md p-2 text-base font-medium hover:underline", pathname === link.href ? "text-primary" : "")}
+                  className={cn("flex w-full items-center rounded-md p-2 text-base font-medium hover:underline", pathname.startsWith(link.href) ? "text-primary" : "")}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}
