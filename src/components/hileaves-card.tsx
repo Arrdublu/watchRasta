@@ -1,9 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Collection } from '@/lib/collections';
-import { Button } from './ui/button';
-import { ArrowRight } from 'lucide-react';
+import { Card, CardTitle } from '@/components/ui/card';
 
 interface HileavesCardProps {
   collection: Collection
@@ -11,29 +9,23 @@ interface HileavesCardProps {
 
 export function HileavesCard({ collection }: HileavesCardProps) {
   return (
-    <Link href={collection.href} className="block group relative break-inside-avoid">
-        <Card className="overflow-hidden transition-all duration-300 ease-in-out group-hover:shadow-2xl">
-            <CardHeader className="p-0">
-            <Image
-                src={collection.imageUrl}
-                alt={collection.title}
-                data-ai-hint={collection.dataAiHint}
-                width={800}
-                height={600}
-                className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            </CardHeader>
-            <CardContent className="p-6">
-                <CardTitle className="font-headline text-2xl mb-2 text-accent">{collection.title}</CardTitle>
-                <p className="text-muted-foreground line-clamp-3">{collection.description}</p>
-            </CardContent>
-        </Card>
-        <div className="absolute bottom-6 right-6 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <Button>
-                View Collection
-                <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+    <Link href={collection.href} className="block group break-inside-avoid overflow-hidden">
+      <Card className="border-none shadow-none bg-transparent rounded-lg">
+        <div className="relative w-full overflow-hidden rounded-lg aspect-[4/5]">
+          <Image
+              src={collection.imageUrl}
+              alt={collection.title}
+              data-ai-hint={collection.dataAiHint}
+              fill
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
+          <div className="absolute bottom-0 left-0 p-6">
+              <CardTitle className="font-headline text-2xl mb-2 text-white/90 drop-shadow-md">{collection.title}</CardTitle>
+              <p className="text-white/80 line-clamp-3 text-sm">{collection.description}</p>
+          </div>
         </div>
+      </Card>
     </Link>
   );
 }

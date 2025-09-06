@@ -11,7 +11,7 @@ export default function HileavesPage() {
         </p>
       </div>
       
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+      <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
         {collections.map((collection) => (
           <HileavesCard key={collection.id} collection={collection} />
         ))}
