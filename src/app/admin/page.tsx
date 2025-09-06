@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { articles as initialArticles, type Article } from '@/lib/articles';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -17,10 +17,23 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/auth-context';
+import { useRouter } from 'next/navigation';
+
+const ADMIN_EMAIL = 'watchrasta@gmail.com';
 
 export default function AdminDashboardPage() {
   const [articles, setArticles] = useState<Article[]>(initialArticles);
   const { toast } = useToast();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user?.email !== ADMIN_EMAIL) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
+
 
   const handleStatusChange = (id: number, status: Article['status']) => {
     setArticles(articles.map(article => 
@@ -37,6 +50,10 @@ export default function AdminDashboardPage() {
   const handleEdit = (id: number) => {
     toast({ title: "Edit Action", description: `Triggered edit for article ID: ${id}.` });
     // In a real app, this would navigate to an edit page e.g. router.push(`/admin/edit/${id}`)
+  }
+  
+  if (loading || user?.email !== ADMIN_EMAIL) {
+    return <div className="container flex items-center justify-center min-h-[60vh]">Checking authorization...</div>;
   }
 
   return (

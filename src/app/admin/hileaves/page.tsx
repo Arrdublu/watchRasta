@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { collections as initialCollections, type Collection } from '@/lib/collections';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,10 +18,23 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/auth-context';
+import { useRouter } from 'next/navigation';
+
+const ADMIN_EMAIL = 'watchrasta@gmail.com';
 
 export default function AdminHileavesPage() {
   const [collections, setCollections] = useState<Collection[]>(initialCollections);
   const { toast } = useToast();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user?.email !== ADMIN_EMAIL) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
+
 
   const handleStatusChange = (id: number, status: Collection['status']) => {
     setCollections(collections.map(item => 
@@ -50,6 +63,10 @@ export default function AdminHileavesPage() {
       default:
         return 'default';
     }
+  }
+
+  if (loading || user?.email !== ADMIN_EMAIL) {
+    return <div className="container flex items-center justify-center min-h-[60vh]">Checking authorization...</div>;
   }
 
 
