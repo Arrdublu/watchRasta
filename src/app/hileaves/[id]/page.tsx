@@ -1,9 +1,8 @@
 
 import { getCollectionById, collections } from '@/lib/collections';
-import Image from 'next/image';
+import { getProductsByCollectionId } from '@/lib/products';
 import { notFound } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
+import { ProductCard } from '@/components/product-card';
 
 export function generateStaticParams() {
   return collections.map((collection) => ({
@@ -28,40 +27,36 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
 export default function CollectionPage({ params }: { params: { id: string } }) {
   const collection = getCollectionById(Number(params.id));
-
+  
   if (!collection) {
     notFound();
   }
 
+  const productsInCollection = getProductsByCollectionId(collection.id);
+
   return (
     <div className="container py-16 md:py-24">
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div className="relative w-full aspect-square rounded-lg overflow-hidden shadow-2xl">
-          <Image
-            src={collection.imageUrl}
-            alt={collection.title}
-            data-ai-hint={collection.dataAiHint}
-            fill
-            className="object-cover"
-            priority
-          />
+      <header className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-accent">
+          {collection.title}
+        </h1>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+          {collection.description}
+        </p>
+      </header>
+
+      {productsInCollection.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {productsInCollection.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
-        <div className="space-y-6">
-          <h1 className="text-4xl md:text-5xl font-headline font-bold text-accent">
-            {collection.title}
-          </h1>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            {collection.description}
-          </p>
-          <div className="text-3xl font-bold text-primary">
-            $49.99
-          </div>
-          <Button size="lg" className="w-full md:w-auto">
-            <ShoppingCart className="mr-2" />
-            Add to Cart
-          </Button>
+      ) : (
+        <div className="text-center py-20 border-2 border-dashed border-border/60 rounded-lg">
+          <h2 className="text-2xl font-headline">No products in this collection yet.</h2>
+          <p className="mt-2 text-muted-foreground">Check back soon for new arrivals.</p>
         </div>
-      </div>
+      )}
     </div>
   );
 }
