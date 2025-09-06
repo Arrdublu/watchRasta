@@ -25,7 +25,7 @@ export type Article = {
   status: 'Published' | 'Draft' | 'Pending Review';
 };
 
-export const articles: Article[] = [
+export let articles: Article[] = [
   {
     id: 1,
     slug: 'new-album-celestial-echoes-out-now',
