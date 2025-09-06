@@ -17,8 +17,9 @@ export async function submitContactForm(data: z.infer<typeof formSchema>) {
     }
 
     if (!process.env.GMAIL_EMAIL || !process.env.GMAIL_PASSWORD) {
-      console.log('Google Workspace credentials are not configured. Simulating email sending.');
-      console.log('New contact form submission:', parsedData.data);
+      console.error('Google Workspace credentials are not configured in .env file.');
+      // Fallback for local development without credentials
+      console.log('Simulating email sending for contact form submission:', parsedData.data);
       return { success: true, message: 'Your message has been sent successfully! (Simulated)' };
     }
 
@@ -32,9 +33,9 @@ export async function submitContactForm(data: z.infer<typeof formSchema>) {
         });
 
         await transporter.sendMail({
-            from: process.env.GMAIL_EMAIL,
+            from: `"${parsedData.data.name}" <${process.env.GMAIL_EMAIL}>`,
             to: 'hi@watchrasta.com',
-            subject: `New message from ${parsedData.data.name}`,
+            subject: `New Contact Form Message from ${parsedData.data.name}`,
             text: `Name: ${parsedData.data.name}\nEmail: ${parsedData.data.email}\n\nMessage:\n${parsedData.data.message}`,
             replyTo: parsedData.data.email,
         });
