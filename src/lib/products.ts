@@ -1,4 +1,5 @@
 
+
 export type Product = {
   id: number;
   collectionId: number;
@@ -7,6 +8,7 @@ export type Product = {
   price: string;
   imageUrl: string;
   dataAiHint: string;
+  status: 'Published' | 'Draft' | 'Pending Review';
 };
 
 export const products: Product[] = [
@@ -19,6 +21,7 @@ export const products: Product[] = [
     price: '12.99',
     imageUrl: 'https://picsum.photos/400/400',
     dataAiHint: 'organic honey',
+    status: 'Published',
   },
   {
     id: 2,
@@ -28,6 +31,7 @@ export const products: Product[] = [
     price: '8.50',
     imageUrl: 'https://picsum.photos/400/401',
     dataAiHint: 'dried tomatoes',
+    status: 'Published',
   },
   {
     id: 3,
@@ -37,6 +41,7 @@ export const products: Product[] = [
     price: '15.00',
     imageUrl: 'https://picsum.photos/400/402',
     dataAiHint: 'quinoa grain',
+    status: 'Published',
   },
   // Artisanal Merch
   {
@@ -47,6 +52,7 @@ export const products: Product[] = [
     price: '25.00',
     imageUrl: 'https://picsum.photos/400/403',
     dataAiHint: 'black t-shirt',
+    status: 'Published',
   },
   {
     id: 5,
@@ -56,6 +62,7 @@ export const products: Product[] = [
     price: '35.00',
     imageUrl: 'https://picsum.photos/400/404',
     dataAiHint: 'vinyl record',
+    status: 'Published',
   },
    {
     id: 6,
@@ -65,6 +72,7 @@ export const products: Product[] = [
     price: '20.00',
     imageUrl: 'https://picsum.photos/400/405',
     dataAiHint: 'beanie hat',
+    status: 'Published',
   },
   // Wellness Services
   {
@@ -75,6 +83,7 @@ export const products: Product[] = [
     price: '50.00',
     imageUrl: 'https://picsum.photos/400/406',
     dataAiHint: 'meditation session',
+    status: 'Published',
   },
   {
     id: 8,
@@ -84,6 +93,7 @@ export const products: Product[] = [
     price: '20.00',
     imageUrl: 'https://picsum.photos/400/407',
     dataAiHint: 'yoga class',
+    status: 'Published',
   },
    // Herbal Teas
   {
@@ -94,6 +104,7 @@ export const products: Product[] = [
     price: '10.00',
     imageUrl: 'https://picsum.photos/400/408',
     dataAiHint: 'chamomile tea',
+    status: 'Published',
   },
    {
     id: 10,
@@ -103,12 +114,23 @@ export const products: Product[] = [
     price: '10.00',
     imageUrl: 'https://picsum.photos/400/409',
     dataAiHint: 'ginger tea',
+    status: 'Published',
   },
 ];
 
+export function addProduct(product: Omit<Product, 'id'>) {
+  const newProduct: Product = {
+    ...product,
+    id: products.length + 1,
+  };
+  products.unshift(newProduct);
+  return newProduct;
+}
+
+
 export async function getProductsByCollectionId(collectionId: number) {
   // In a real app, this would be a database call.
-  return products.filter((product) => product.collectionId === collectionId);
+  return products.filter((product) => product.collectionId === collectionId && product.status === 'Published');
 }
 
 export async function getProductById(id: number) {
