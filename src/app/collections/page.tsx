@@ -2,7 +2,7 @@ import { ArticleCard } from '@/components/article-card';
 import { articles } from '@/lib/articles';
 
 export default function NewsPage() {
-  const collectionArticles = articles.filter(a => a.category === 'News');
+  const newsArticles = articles.filter(a => a.category === 'News');
 
   return (
     <div className="container py-16 md:py-24">
@@ -13,9 +13,9 @@ export default function NewsPage() {
         </p>
       </div>
       
-      {collectionArticles.length > 0 ? (
+      {newsArticles.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {collectionArticles.map((article) => (
+          {newsArticles.map((article) => (
             <ArticleCard key={article.id} article={article} />
           ))}
         </div>

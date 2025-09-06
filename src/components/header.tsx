@@ -21,10 +21,10 @@ import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 
 const allNavLinks = [
-  { href: '/collections', label: 'News' },
-  { href: '/lifestyle', label: 'Tour Life' },
-  { href: '/brands', label: 'Behind the Music' },
-  { href: '/my-collection', label: 'My Favorites' },
+  { href: '/news', label: 'News' },
+  { href: '/lifestyle', label: 'Lifestyle' },
+  { href: '/brands', label: 'Brands' },
+  { href: '/my-collection', label: 'My Collection' },
   { href: '/style-guide', label: 'AI Analyzer' },
   { href: '/hileaves', label: 'HiLeaves' },
   { href: '/contact', label: 'Contact' },

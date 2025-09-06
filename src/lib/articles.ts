@@ -2,7 +2,7 @@ export type Article = {
   id: number;
   slug: string;
   title: string;
-  category: 'News' | 'Tour Life' | 'Behind the Music';
+  category: 'News' | 'Lifestyle' | 'Brands';
   image: string;
   dataAiHint: string;
   excerpt: string;
@@ -30,7 +30,7 @@ export const articles: Article[] = [
     id: 2,
     slug: 'on-the-road-tokyo-diaries',
     title: 'On the Road: Tokyo Diaries',
-    category: 'Tour Life',
+    category: 'Lifestyle',
     image: 'https://picsum.photos/600/401',
     dataAiHint: 'tokyo neon',
     excerpt: 'First stop, Tokyo. The energy, the people, the inspiration. A look inside the first leg of the world tour.',
@@ -43,7 +43,7 @@ export const articles: Article[] = [
     id: 3,
     slug: 'the-making-of-rebel-sound',
     title: 'The Making of "Rebel Sound"',
-    category: 'Behind the Music',
+    category: 'Brands',
     image: 'https://picsum.photos/600/402',
     dataAiHint: 'music studio',
     excerpt: 'A look back at the creative process behind the breakout single, "Rebel Sound".',
@@ -69,7 +69,7 @@ export const articles: Article[] = [
     id: 5,
     slug: 'berlin-nights-and-studio-sessions',
     title: 'Berlin Nights and Studio Sessions',
-    category: 'Tour Life',
+    category: 'Lifestyle',
     image: 'https://picsum.photos/600/404',
     dataAiHint: 'berlin graffiti',
     excerpt: 'The European leg of the tour continues. A recap of an unforgettable week in Berlin.',
@@ -82,7 +82,7 @@ export const articles: Article[] = [
     id: 6,
     slug: 'lyrical-breakdown-starlight',
     title: 'Lyrical Breakdown: "Starlight"',
-    category: 'Behind the Music',
+    category: 'Brands',
     image: 'https://picsum.photos/600/405',
     dataAiHint: 'starlight sky',
     excerpt: 'Diving deep into the lyrics and meaning of the fan-favorite track, "Starlight".',

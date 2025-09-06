@@ -21,7 +21,7 @@ export function HeroBanner() {
         <p className="text-lg md:text-xl text-accent/90 max-w-2xl mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
           Explore the music, stories, and latest updates from watchRasta.
         </p>
-        <Link href="/collections">
+        <Link href="/news">
           <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
             Explore The Music
             <ArrowRight className="ml-2 h-5 w-5" />

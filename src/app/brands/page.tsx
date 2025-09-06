@@ -1,8 +1,8 @@
 import { ArticleCard } from '@/components/article-card';
 import { articles } from '@/lib/articles';
 
-export default function BehindTheMusicPage() {
-  const brandArticles = articles.filter(a => a.category === 'Behind the Music');
+export default function BrandsPage() {
+  const brandArticles = articles.filter(a => a.category === 'Brands');
 
   return (
     <div className="container py-16 md:py-24">
