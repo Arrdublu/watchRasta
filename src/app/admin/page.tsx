@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function AdminDashboardPage() {
   const [articles, setArticles] = useState<Article[]>(initialArticles);
@@ -42,8 +42,11 @@ export default function AdminDashboardPage() {
   return (
     <div className="container py-16 md:py-24">
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Article Management</CardTitle>
+          <Button asChild variant="outline">
+            <Link href="/admin/hileaves">Manage HiLeaves</Link>
+          </Button>
         </CardHeader>
         <CardContent>
           <Table>

@@ -1,16 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from './ui/button';
+import type { Collection } from '@/lib/collections';
 
 interface HileavesCardProps {
-  collection: {
-    title: string;
-    description: string;
-    imageUrl: string;
-    dataAiHint: string;
-    href: string;
-  };
+  collection: Collection
 }
 
 export function HileavesCard({ collection }: HileavesCardProps) {
