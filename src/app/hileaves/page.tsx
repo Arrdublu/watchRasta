@@ -2,6 +2,7 @@ import { HileavesCard } from '@/components/hileaves-card';
 import { collections } from '@/lib/collections';
 
 export default function HileavesPage() {
+  const publishedCollections = collections.filter(c => c.status === 'Published');
   return (
     <div className="container py-16 md:py-24">
       <div className="text-center mb-16">
@@ -12,7 +13,7 @@ export default function HileavesPage() {
       </div>
       
       <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
-        {collections.map((collection) => (
+        {publishedCollections.map((collection) => (
           <HileavesCard key={collection.id} collection={collection} />
         ))}
       </div>

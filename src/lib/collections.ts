@@ -66,6 +66,7 @@ export const collections: Collection[] = [
   },
 ];
 
-export function getCollectionById(id: number) {
+export async function getCollectionById(id: number) {
+  // In a real app, this would be a database call.
   return collections.find((collection) => collection.id === id);
 }

@@ -6,14 +6,14 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   return products.map((product) => ({
     id: String(product.id),
   }));
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-  const product = getProductById(Number(params.id));
+  const product = await getProductById(Number(params.id));
 
   if (!product) {
     return {
@@ -27,8 +27,8 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = getProductById(Number(params.id));
+export default async function ProductDetailPage({ params }: { params: { id: string } }) {
+  const product = await getProductById(Number(params.id));
 
   if (!product) {
     notFound();

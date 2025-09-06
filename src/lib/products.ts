@@ -106,10 +106,12 @@ export const products: Product[] = [
   },
 ];
 
-export function getProductsByCollectionId(collectionId: number) {
+export async function getProductsByCollectionId(collectionId: number) {
+  // In a real app, this would be a database call.
   return products.filter((product) => product.collectionId === collectionId);
 }
 
-export function getProductById(id: number) {
+export async function getProductById(id: number) {
+    // In a real app, this would be a database call.
     return products.find((product) => product.id === id);
 }

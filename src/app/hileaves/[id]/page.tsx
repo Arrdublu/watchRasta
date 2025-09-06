@@ -4,14 +4,15 @@ import { getProductsByCollectionId } from '@/lib/products';
 import { notFound } from 'next/navigation';
 import { ProductCard } from '@/components/product-card';
 
-export function generateStaticParams() {
-  return collections.map((collection) => ({
+export async function generateStaticParams() {
+  const publishedCollections = collections.filter(c => c.status === 'Published');
+  return publishedCollections.map((collection) => ({
     id: String(collection.id),
   }));
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-  const collection = getCollectionById(Number(params.id));
+  const collection = await getCollectionById(Number(params.id));
 
   if (!collection) {
     return {
@@ -25,14 +26,14 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default function CollectionPage({ params }: { params: { id: string } }) {
-  const collection = getCollectionById(Number(params.id));
+export default async function CollectionPage({ params }: { params: { id: string } }) {
+  const collection = await getCollectionById(Number(params.id));
   
   if (!collection) {
     notFound();
   }
 
-  const productsInCollection = getProductsByCollectionId(collection.id);
+  const productsInCollection = await getProductsByCollectionId(collection.id);
 
   return (
     <div className="container py-16 md:py-24">
