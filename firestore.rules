@@ -1,30 +1,48 @@
 
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Helper function to check if the user is the owner of the document
+    function isOwner(resource) {
+      return request.auth.uid == resource.data.authorId;
+    }
+
+    // Admins can do anything
+    function isAdmin() {
+      return request.auth.token.email == "watchrasta@gmail.com";
+    }
+
+    // Logged-in users can create
+    function canCreate() {
+      return request.auth != null;
+    }
+
+    // Admins can read everything
+    match /{document=**} {
+      allow read: if isAdmin();
+    }
     
-    // Allow public read access to articles, products, and collections
     match /articles/{articleId} {
-      allow read: if true;
-      allow create: if request.auth != null; // Allow create for any signed-in user
-      allow update, delete: if request.auth.uid == resource.data.authorId; // Allow update/delete only for the author
+      // Anyone can read a published article
+      allow read: if resource.data.status == 'Published' || (request.auth != null && isOwner(resource));
+      // Only logged in users can create articles
+      allow create: if canCreate();
+      // Only owners or admins can update or delete their articles
+      allow update, delete: if isAdmin() || (request.auth != null && isOwner(resource));
     }
 
     match /products/{productId} {
-      allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth.uid == resource.data.authorId;
+      // Anyone can read a published product
+      allow read: if resource.data.status == 'Published';
+      // Only logged in users can create products
+      allow create: if canCreate();
+      // Only owners or admins can update or delete their products
+      allow update, delete: if isAdmin() || (request.auth != null && isOwner(resource));
     }
-
+    
     match /collections/{collectionId} {
-      allow read: if true;
-      allow write: if false; // Collections are managed by the admin, not directly by users
-    }
-
-    // A more secure rule for a specific admin user
-    match /{document=**} {
-      allow write: if request.auth != null && request.auth.token.email == 'watchrasta@gmail.com';
+        allow read: if true;
     }
   }
 }

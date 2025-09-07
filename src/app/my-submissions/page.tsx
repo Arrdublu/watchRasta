@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 export default function MySubmissionsPage() {
   const { user, loading } = useAuth();
@@ -80,8 +82,7 @@ export default function MySubmissionsPage() {
   }
 
   const handleEdit = (type: 'article' | 'product', id: string) => {
-    toast({ title: "Edit Action", description: `Editing ${type} with ID: ${id}.` });
-    // router.push(`/${type}s/edit/${id}`);
+    router.push(`/${type}s/edit/${id}`);
   };
 
   const handleDelete = async (type: 'article' | 'product', id: string) => {
@@ -187,7 +188,7 @@ export default function MySubmissionsPage() {
                                         <Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4" /></Button>
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent>
-                                        <DropdownMenuItem onClick={() => handleEdit('product', product.id)}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => toast({ title: 'Coming Soon!', description: 'Product editing will be available soon.' })}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => handleDelete('product', product.id)} className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
