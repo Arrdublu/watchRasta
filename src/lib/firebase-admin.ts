@@ -1,18 +1,16 @@
-
 'use server';
 
 import admin from 'firebase-admin';
 
 const initializeFirebaseAdmin = () => {
-    if (process.env.BUILDING) {
+    if (admin.apps.length > 0) {
         return;
     }
 
-    if (!admin.apps.length) {
-        try {
-            if (!process.env.SERVICE_ACCOUNT) {
-                throw new Error('SERVICE_ACCOUNT environment variable is not set.');
-            }
+    // Only attempt to initialize if the service account is available.
+    // This will be true at runtime, but false during the build process.
+    if (process.env.SERVICE_ACCOUNT) {
+         try {
             const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT as string);
             admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount),
@@ -26,32 +24,22 @@ const initializeFirebaseAdmin = () => {
 initializeFirebaseAdmin();
 
 export async function getDb() {
-    if (process.env.BUILDING) {
-        // Return a mock/dummy object during build to avoid errors
-        return null;
-    }
     if (!admin.apps.length) {
-        initializeFirebaseAdmin();
+        return null;
     }
     return admin.firestore();
 }
 
 export async function getStorage() {
-    if (process.env.BUILDING) {
+    if (!admin.apps.length) {
         return null;
-    }
-     if (!admin.apps.length) {
-        initializeFirebaseAdmin();
     }
     return admin.storage();
 }
 
 export async function getAuth() {
-     if (process.env.BUILDING) {
+    if (!admin.apps.length) {
         return null;
-    }
-     if (!admin.apps.length) {
-        initializeFirebaseAdmin();
     }
     return admin.auth();
 }

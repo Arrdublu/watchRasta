@@ -15,6 +15,10 @@ export type Collection = {
 };
 
 const getCollectionsCollection = async () => {
+    // During build, env vars are not available, so we can't connect to DB.
+    if (!process.env.SERVICE_ACCOUNT) {
+        return null;
+    }
     const db = await getDb();
     if (!db) return null;
     return collection(db, 'collections');
