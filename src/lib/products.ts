@@ -1,7 +1,9 @@
 
+import { collection, getDocs, query, where, addDoc, doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase'; // Assuming you have a firebase initialization file
 
 export type Product = {
-  id: number;
+  id: string; // Changed to string to accommodate Firestore document IDs
   collectionId: number;
   title: string;
   description: string;
@@ -12,139 +14,26 @@ export type Product = {
   authorEmail: string;
 };
 
-export let products: Product[] = [
-  // Natural Foods
-  {
-    id: 1,
-    collectionId: 1,
-    title: 'Organic Honey',
-    description: 'Pure, raw honey from wildflower fields.',
-    price: '12.99',
-    imageUrl: 'https://picsum.photos/400/400',
-    dataAiHint: 'organic honey',
-    status: 'Published',
-    authorEmail: 'admin@watchrasta.com'
-  },
-  {
-    id: 2,
-    collectionId: 1,
-    title: 'Sun-Dried Tomatoes',
-    description: 'Rich and flavorful tomatoes dried under the Mediterranean sun.',
-    price: '8.50',
-    imageUrl: 'https://picsum.photos/400/401',
-    dataAiHint: 'dried tomatoes',
-    status: 'Published',
-    authorEmail: 'admin@watchrasta.com'
-  },
-  {
-    id: 3,
-    collectionId: 1,
-    title: 'Quinoa Grain',
-    description: 'A versatile and nutritious ancient grain.',
-    price: '15.00',
-    imageUrl: 'https://picsum.photos/400/402',
-    dataAiHint: 'quinoa grain',
-    status: 'Published',
-    authorEmail: 'admin@watchrasta.com'
-  },
-  // Artisanal Merch
-  {
-    id: 4,
-    collectionId: 2,
-    title: 'Logo Tee (Black)',
-    description: 'Comfortable and stylish, made from 100% organic cotton.',
-    price: '25.00',
-    imageUrl: 'https://picsum.photos/400/403',
-    dataAiHint: 'black t-shirt',
-    status: 'Published',
-    authorEmail: 'admin@watchrasta.com'
-  },
-  {
-    id: 5,
-    collectionId: 2,
-    title: '"Celestial Echoes" Vinyl',
-    description: 'The new album on a limited edition 180g vinyl.',
-    price: '35.00',
-    imageUrl: 'https://picsum.photos/400/404',
-    dataAiHint: 'vinyl record',
-    status: 'Published',
-    authorEmail: 'admin@watchrasta.com'
-  },
-   {
-    id: 6,
-    collectionId: 2,
-    title: 'Embroidered Beanie',
-    description: 'Keep warm with this stylish embroidered beanie.',
-    price: '20.00',
-    imageUrl: 'https://picsum.photos/400/405',
-    dataAiHint: 'beanie hat',
-    status: 'Published',
-    authorEmail: 'admin@watchrasta.com'
-  },
-  // Wellness Services
-  {
-    id: 7,
-    collectionId: 3,
-    title: 'Guided Meditation Session',
-    description: 'A 60-minute virtual session to find your inner peace.',
-    price: '50.00',
-    imageUrl: 'https://picsum.photos/400/406',
-    dataAiHint: 'meditation session',
-    status: 'Published',
-    authorEmail: 'admin@watchrasta.com'
-  },
-  {
-    id: 8,
-    collectionId: 3,
-    title: 'Yoga Class Pass',
-    description: 'Access to any of our live-streamed yoga classes.',
-    price: '20.00',
-    imageUrl: 'https://picsum.photos/400/407',
-    dataAiHint: 'yoga class',
-    status: 'Published',
-    authorEmail: 'admin@watchrasta.com'
-  },
-   // Herbal Teas
-  {
-    id: 9,
-    collectionId: 4,
-    title: 'Chamomile Blend',
-    description: 'A calming and soothing tea for relaxation.',
-    price: '10.00',
-    imageUrl: 'https://picsum.photos/400/408',
-    dataAiHint: 'chamomile tea',
-    status: 'Published',
-    authorEmail: 'admin@watchrasta.com'
-  },
-   {
-    id: 10,
-    collectionId: 4,
-    title: 'Ginger Turmeric Zest',
-    description: 'An energizing and anti-inflammatory tea blend.',
-    price: '10.00',
-    imageUrl: 'https://picsum.photos/400/409',
-    dataAiHint: 'ginger tea',
-    status: 'Published',
-    authorEmail: 'admin@watchrasta.com'
-  },
-];
+// The in-memory array is removed. Data will now be fetched from Firestore.
 
-export function addProduct(product: Omit<Product, 'id'>) {
-  const newProduct: Product = {
-    ...product,
-    id: products.length + 1,
-  };
-  products.unshift(newProduct);
-  return newProduct;
+export async function addProduct(product: Omit<Product, 'id'>) {
+  const docRef = await addDoc(collection(db, 'products'), product);
+  return { ...product, id: docRef.id };
 }
 
-
-export async function getProductsByCollectionId(collectionId: number) {
-  // In a real app, this would be a database call.
-  return products.filter((product) => product.collectionId === collectionId && product.status === 'Published');
+export async function getProductsByCollectionId(collectionId: number): Promise<Product[]> {
+  const q = query(collection(db, 'products'), where('collectionId', '==', collectionId), where('status', '==', 'Published'));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
 }
 
-export async function getProductById(id: number) {
-    // In a real app, this would be a database call.
-    return products.find((product) => product.id === id);
+export async function getProductById(id: string): Promise<Product | undefined> {
+    const docRef = doc(db, 'products', id);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() } as Product;
+    } else {
+        return undefined;
+    }
 }
