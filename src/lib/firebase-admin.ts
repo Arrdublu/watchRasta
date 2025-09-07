@@ -21,7 +21,7 @@ if (!admin.apps.length) {
     console.error("Firebase Admin SDK initialization error:", e.stack);
     // If it's already initialized, which can happen in dev environments,
     // just get the existing app.
-    if (e.message.includes('already exists')) {
+    if (e.code === 'auth/invalid-credential' || e.message?.includes('already exists')) {
         app = admin.app();
     } else {
         throw e;
