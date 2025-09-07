@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Edit, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { getArticleById, updateArticle, articleCategories, Article } from '@/lib/articles';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -28,8 +28,9 @@ const formSchema = z.object({
   image: z.any().optional(),
 });
 
-export default function EditArticlePage({ params }: { params: { id: string }}) {
-  const { id } = params;
+export default function EditArticlePage() {
+  const params = useParams();
+  const id = params.id as string;
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetching, setIsFetching] = useState(true);

@@ -39,7 +39,7 @@ const nextConfig = {
     return [
       {
         source: '/api/gcs/:path*',
-        destination: 'https://firebasestorage.googleapis.com/:path*',
+        destination: 'https://firebasestorage.googleapis.com/v0/b/watchrasta.appspot.com/o/:path*',
       },
     ]
   },
