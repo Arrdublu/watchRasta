@@ -94,5 +94,3 @@ export async function deleteProduct(id: string) {
     const docRef = doc(db, 'products', id);
     await deleteDoc(docRef);
 }
-
-    

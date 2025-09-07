@@ -134,5 +134,3 @@ export async function deleteArticle(id: string) {
     const docRef = doc(db, 'articles', id);
     await deleteDoc(docRef);
 }
-
-    

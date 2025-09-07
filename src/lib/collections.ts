@@ -35,8 +35,8 @@ export async function getCollectionByNumericId(numericId: number): Promise<Colle
   if (snapshot.empty) {
     return null;
   }
-  const doc = snapshot.docs[0];
-  return { ...doc.data() as Omit<Collection, 'id'>, id: doc.id };
+  const docRef = snapshot.docs[0];
+  return { ...docRef.data() as Omit<Collection, 'id'>, id: docRef.id };
 }
 
 // Get a single collection by its Firestore ID

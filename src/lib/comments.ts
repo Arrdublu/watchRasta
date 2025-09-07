@@ -11,7 +11,6 @@ import {
   orderBy,
   serverTimestamp,
 } from 'firebase/firestore';
-import { auth } from '@/lib/firebase';
 
 
 export type Comment = {
