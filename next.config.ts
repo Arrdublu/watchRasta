@@ -35,6 +35,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/gcs/:path*',
+        destination: 'https://firebasestorage.googleapis.com/:path*',
+      },
+    ]
+  },
 };
 
 export default nextConfig;

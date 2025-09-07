@@ -71,7 +71,8 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
         let content = article.content;
         if (content.startsWith('http')) {
             try {
-                const response = await fetch(content, { cache: 'no-store' });
+                const proxyUrl = content.replace('https://firebasestorage.googleapis.com', '/api/gcs');
+                const response = await fetch(proxyUrl, { cache: 'no-store' });
                 if (response.ok) {
                     content = await response.text();
                 } else {
@@ -303,7 +304,3 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
     </div>
   );
 }
-
-    
-
-    

@@ -19,7 +19,8 @@ async function getArticleData(slug: string) {
     let content = article.content;
     if (article.content.startsWith('http')) {
         try {
-            const response = await fetch(article.content, { cache: 'no-store' });
+            const proxyUrl = article.content.replace('https://firebasestorage.googleapis.com', '/api/gcs');
+            const response = await fetch(proxyUrl, { cache: 'no-store' });
             if (response.ok) {
                 content = await response.text();
             } else {
