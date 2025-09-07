@@ -8,7 +8,7 @@ export default async function LifestylePage() {
   return (
     <div className="container py-16 md:py-24">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold">Tour Life</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold">Being</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
           Stories from the road, city spotlights, and life beyond the stage.
         </p>
