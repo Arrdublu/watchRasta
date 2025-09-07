@@ -9,9 +9,10 @@ export type Product = {
   imageUrl: string;
   dataAiHint: string;
   status: 'Published' | 'Draft' | 'Pending Review';
+  authorEmail: string;
 };
 
-export const products: Product[] = [
+export let products: Product[] = [
   // Natural Foods
   {
     id: 1,
@@ -22,6 +23,7 @@ export const products: Product[] = [
     imageUrl: 'https://picsum.photos/400/400',
     dataAiHint: 'organic honey',
     status: 'Published',
+    authorEmail: 'admin@watchrasta.com'
   },
   {
     id: 2,
@@ -32,6 +34,7 @@ export const products: Product[] = [
     imageUrl: 'https://picsum.photos/400/401',
     dataAiHint: 'dried tomatoes',
     status: 'Published',
+    authorEmail: 'admin@watchrasta.com'
   },
   {
     id: 3,
@@ -42,6 +45,7 @@ export const products: Product[] = [
     imageUrl: 'https://picsum.photos/400/402',
     dataAiHint: 'quinoa grain',
     status: 'Published',
+    authorEmail: 'admin@watchrasta.com'
   },
   // Artisanal Merch
   {
@@ -53,6 +57,7 @@ export const products: Product[] = [
     imageUrl: 'https://picsum.photos/400/403',
     dataAiHint: 'black t-shirt',
     status: 'Published',
+    authorEmail: 'admin@watchrasta.com'
   },
   {
     id: 5,
@@ -63,6 +68,7 @@ export const products: Product[] = [
     imageUrl: 'https://picsum.photos/400/404',
     dataAiHint: 'vinyl record',
     status: 'Published',
+    authorEmail: 'admin@watchrasta.com'
   },
    {
     id: 6,
@@ -73,6 +79,7 @@ export const products: Product[] = [
     imageUrl: 'https://picsum.photos/400/405',
     dataAiHint: 'beanie hat',
     status: 'Published',
+    authorEmail: 'admin@watchrasta.com'
   },
   // Wellness Services
   {
@@ -84,6 +91,7 @@ export const products: Product[] = [
     imageUrl: 'https://picsum.photos/400/406',
     dataAiHint: 'meditation session',
     status: 'Published',
+    authorEmail: 'admin@watchrasta.com'
   },
   {
     id: 8,
@@ -94,6 +102,7 @@ export const products: Product[] = [
     imageUrl: 'https://picsum.photos/400/407',
     dataAiHint: 'yoga class',
     status: 'Published',
+    authorEmail: 'admin@watchrasta.com'
   },
    // Herbal Teas
   {
@@ -105,6 +114,7 @@ export const products: Product[] = [
     imageUrl: 'https://picsum.photos/400/408',
     dataAiHint: 'chamomile tea',
     status: 'Published',
+    authorEmail: 'admin@watchrasta.com'
   },
    {
     id: 10,
@@ -115,6 +125,7 @@ export const products: Product[] = [
     imageUrl: 'https://picsum.photos/400/409',
     dataAiHint: 'ginger tea',
     status: 'Published',
+    authorEmail: 'admin@watchrasta.com'
   },
 ];
 

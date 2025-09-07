@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, X, User, LogIn, PlusCircle, ShoppingBag } from 'lucide-react';
+import { Menu, X, User, LogIn, PlusCircle, ShoppingBag, List } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -101,6 +101,9 @@ export function Header() {
                         <DropdownMenuItem asChild>
                             <Link href="/profile">Profile</Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/my-submissions"><List className="mr-2 h-4 w-4" />My Submissions</Link>
+                        </DropdownMenuItem>
                          <DropdownMenuItem asChild>
                             <Link href="/articles/create"><PlusCircle className="mr-2 h-4 w-4" />Create Article</Link>
                         </DropdownMenuItem>
@@ -156,6 +159,7 @@ export function Header() {
                  {user ? (
                     <>
                         <Link href="/profile" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>Profile</Link>
+                        <Link href="/my-submissions" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>My Submissions</Link>
                         <Link href="/articles/create" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>Create Article</Link>
                         <Link href="/products/create" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>Create Product</Link>
                         <button onClick={() => { handleSignOut(); setIsOpen(false); }} className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline text-left">Log Out</button>

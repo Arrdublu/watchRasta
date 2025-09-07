@@ -59,7 +59,7 @@ export default function CreateProductPage() {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user) {
+    if (!user || !user.email) {
         toast({ title: "Authentication Error", description: "You must be logged in to create a product.", variant: "destructive" });
         return;
     }
@@ -77,13 +77,14 @@ export default function CreateProductPage() {
             imageUrl: imageUrl,
             dataAiHint: 'user submitted product',
             status: 'Pending Review',
+            authorEmail: user.email,
         });
       
         toast({
             title: 'Product Submitted!',
             description: 'Your product has been submitted for review. Thank you!',
         });
-        router.push('/hileaves');
+        router.push('/my-submissions');
     } catch (error) {
         toast({
             title: 'Error',
