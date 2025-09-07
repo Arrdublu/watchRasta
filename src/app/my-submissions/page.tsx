@@ -81,22 +81,27 @@ export default function MySubmissionsPage() {
     return collections.find(c => c.numericId === collectionId)?.title || 'Unknown';
   }
 
-  const handleEdit = (type: 'article' | 'product', id: string) => {
-    router.push(`/${type}s/edit/${id}`);
+  const handleEditArticle = (id: string) => {
+    router.push(`/articles/edit/${id}`);
   };
 
-  const handleDelete = async (type: 'article' | 'product', id: string) => {
+  const handleDeleteArticle = async (id: string) => {
     try {
-        if (type === 'article') {
-            await deleteArticle(id);
-            setMyArticles(myArticles.filter(a => a.id !== id));
-        } else {
-            await deleteProduct(id);
-            setMyProducts(myProducts.filter(p => p.id !== id));
-        }
-        toast({ title: `${type.charAt(0).toUpperCase() + type.slice(1)} Deleted`, description: "The item has been removed.", variant: 'destructive' });
+        await deleteArticle(id);
+        setMyArticles(myArticles.filter(a => a.id !== id));
+        toast({ title: "Article Deleted", description: "The article has been removed.", variant: 'destructive' });
     } catch (error) {
-         toast({ title: `Error deleting ${type}`, description: "There was a problem removing the item.", variant: 'destructive' });
+         toast({ title: "Error deleting article", description: "There was a problem removing the article.", variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    try {
+        await deleteProduct(id);
+        setMyProducts(myProducts.filter(p => p.id !== id));
+        toast({ title: "Product Deleted", description: "The product has been removed.", variant: 'destructive' });
+    } catch (error) {
+         toast({ title: "Error deleting product", description: "There was a problem removing the product.", variant: 'destructive' });
     }
   };
 
@@ -144,8 +149,8 @@ export default function MySubmissionsPage() {
                                         <Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4" /></Button>
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent>
-                                        <DropdownMenuItem onClick={() => handleEdit('article', article.id)}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleDelete('article', article.id)} className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleEditArticle(article.id)}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleDeleteArticle(article.id)} className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
@@ -189,7 +194,7 @@ export default function MySubmissionsPage() {
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent>
                                         <DropdownMenuItem onClick={() => toast({ title: 'Coming Soon!', description: 'Product editing will be available soon.' })}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleDelete('product', product.id)} className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleDeleteProduct(product.id)} className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
