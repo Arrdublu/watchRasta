@@ -4,11 +4,10 @@
 import { z } from 'zod';
 import { addArticle } from '@/lib/articles';
 import { articleCategories } from '@/lib/article-categories';
-import { storage, auth as clientAuth } from '@/lib/firebase'; // We need this for the client user, not the server one
+import { storage } from '@/lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
-import { getAuth } from 'firebase-admin/auth';
-import { getApp } from 'firebase-admin/app';
+import { getAuth } from '@/lib/firebase-admin';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
@@ -23,7 +22,11 @@ export async function submitArticle(formData: FormData) {
     // This is a workaround to get the current user on the server.
     // In a real app, you would have a more robust session management system.
     let user;
-    const adminAuth = getAuth(getApp());
+    const adminAuth = await getAuth();
+    if (!adminAuth) {
+      return { success: false, message: 'Authentication service not available.' };
+    }
+
     const sessionCookie = (formData.get('session') as string) || '';
      if (sessionCookie) {
         try {
