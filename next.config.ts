@@ -27,6 +27,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.watchrasta.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   experimental: {
