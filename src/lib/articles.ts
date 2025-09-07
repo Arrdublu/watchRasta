@@ -31,7 +31,12 @@ export type Article = {
   status: 'Published' | 'Draft' | 'Pending Review' | 'Rejected';
 };
 
-const getArticlesCollection = async () => collection(await getDb(), 'articles');
+const getArticlesCollection = async () => {
+    const db = await getDb();
+    if (!db) return null;
+    return collection(db, 'articles');
+};
+
 
 // CREATE
 export async function addArticle(article: Omit<Article, 'id' | 'slug' | 'date' | 'opengraphImage' | 'createdAt'> & {image: string}) {
@@ -43,13 +48,16 @@ export async function addArticle(article: Omit<Article, 'id' | 'slug' | 'date' |
     createdAt: serverTimestamp(),
   };
   const articlesCollection = await getArticlesCollection();
+  if (!articlesCollection) throw new Error("Database not available");
   const docRef = await addDoc(articlesCollection, newArticle);
   return { ...newArticle, id: docRef.id };
 }
 
 // READ (all)
 export async function getArticles(options: { category?: ArticleCategory, limit?: number, authorId?: string } = {}) {
-    let articlesCollection = await getArticlesCollection();
+    const articlesCollection = await getArticlesCollection();
+    if (!articlesCollection) return [];
+
     let q = query(articlesCollection, orderBy('createdAt', 'desc'));
 
     if (options.category) {
@@ -81,6 +89,8 @@ export async function getArticles(options: { category?: ArticleCategory, limit?:
 // READ (by slug)
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
   const articlesCollection = await getArticlesCollection();
+  if (!articlesCollection) return null;
+
   const q = query(articlesCollection, where('slug', '==', slug));
   const snapshot = await getDocs(q);
   if (snapshot.empty) {
@@ -100,6 +110,8 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 // READ (by ID) - useful for admin/user updates
 export async function getArticleById(id: string): Promise<Article | null> {
     const db = await getDb();
+    if (!db) return null;
+
     const docRef = doc(db, 'articles', id);
     const docSnap = await getDoc(docRef);
 
@@ -121,6 +133,8 @@ export async function getArticleById(id: string): Promise<Article | null> {
 // UPDATE
 export async function updateArticle(id: string, updates: Partial<Omit<Article, 'id' | 'createdAt' | 'slug' | 'date' | 'author' | 'authorId'>>) {
     const db = await getDb();
+    if (!db) throw new Error("Database not available");
+
     const docRef = doc(db, 'articles', id);
     await updateDoc(docRef, {
         ...updates,
@@ -131,6 +145,7 @@ export async function updateArticle(id: string, updates: Partial<Omit<Article, '
 // UPDATE STATUS
 export async function updateArticleStatus(id: string, status: Article['status']) {
     const db = await getDb();
+    if (!db) throw new Error("Database not available");
     const docRef = doc(db, 'articles', id);
     await updateDoc(docRef, { status });
 }
@@ -138,6 +153,7 @@ export async function updateArticleStatus(id: string, status: Article['status'])
 // DELETE
 export async function deleteArticle(id: string) {
     const db = await getDb();
+    if (!db) throw new Error("Database not available");
     const docRef = doc(db, 'articles', id);
     await deleteDoc(docRef);
 }

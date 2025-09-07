@@ -4,6 +4,10 @@
 import admin from 'firebase-admin';
 
 const initializeFirebaseAdmin = () => {
+    if (process.env.BUILDING) {
+        return;
+    }
+
     if (!admin.apps.length) {
         try {
             if (!process.env.SERVICE_ACCOUNT) {
@@ -21,15 +25,25 @@ const initializeFirebaseAdmin = () => {
 
 export async function getDb() {
     initializeFirebaseAdmin();
+    if (process.env.BUILDING) {
+        // Return a mock/dummy object during build to avoid errors
+        return null as unknown as admin.firestore.Firestore;
+    }
     return admin.firestore();
 }
 
 export async function getStorage() {
     initializeFirebaseAdmin();
+    if (process.env.BUILDING) {
+        return null as unknown as admin.storage.Storage;
+    }
     return admin.storage();
 }
 
 export async function getAuth() {
     initializeFirebaseAdmin();
+     if (process.env.BUILDING) {
+        return null as unknown as admin.auth.Auth;
+    }
     return admin.auth();
 }
