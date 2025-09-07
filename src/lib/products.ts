@@ -39,6 +39,18 @@ export async function getProductsByCollectionId(collectionId: number): Promise<P
   return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
 }
 
+// READ (by author ID)
+export async function getProductsByAuthorId(authorId: string): Promise<Product[]> {
+    const q = query(
+        productsCollection,
+        where('authorId', '==', authorId),
+        orderBy('createdAt', 'desc')
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
+}
+
+
 // READ (by ID)
 export async function getProductById(id: string): Promise<Product | undefined> {
     const docRef = doc(db, 'products', id);

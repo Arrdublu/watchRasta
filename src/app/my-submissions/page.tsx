@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { getArticles, deleteArticle, type Article } from '@/lib/articles';
-import { getAllProducts, deleteProduct, type Product } from '@/lib/products';
+import { getProductsByAuthorId, deleteProduct, type Product } from '@/lib/products';
 import { getCollections, type Collection } from '@/lib/collections';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -40,7 +40,7 @@ export default function MySubmissionsPage() {
         setIsFetching(true);
         const [userArticles, userProducts, allCollections] = await Promise.all([
             getArticles({ authorId: user.uid }),
-            getAllProducts({ authorId: user.uid }),
+            getProductsByAuthorId(user.uid),
             getCollections(),
         ]);
         setMyArticles(userArticles);
