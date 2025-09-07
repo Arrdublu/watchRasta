@@ -1,19 +1,18 @@
 
-
-import { getCollectionById, collections } from '@/lib/collections';
+import { getCollectionByNumericId, getCollections } from '@/lib/collections';
 import { getProductsByCollectionId } from '@/lib/products';
 import { notFound } from 'next/navigation';
 import { ProductCard } from '@/components/product-card';
 
 export async function generateStaticParams() {
-  const publishedCollections = collections.filter(c => c.status === 'Published');
-  return publishedCollections.map((collection) => ({
-    id: String(collection.id),
+  const collections = await getCollections({ status: 'Published' });
+  return collections.map((collection) => ({
+    id: String(collection.numericId),
   }));
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-  const collection = await getCollectionById(Number(params.id));
+  const collection = await getCollectionByNumericId(Number(params.id));
 
   if (!collection) {
     return {
@@ -28,13 +27,13 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 }
 
 export default async function CollectionPage({ params }: { params: { id: string } }) {
-  const collection = await getCollectionById(Number(params.id));
+  const collection = await getCollectionByNumericId(Number(params.id));
   
   if (!collection) {
     notFound();
   }
 
-  const productsInCollection = await getProductsByCollectionId(collection.id);
+  const productsInCollection = await getProductsByCollectionId(collection.numericId);
 
   return (
     <div className="container py-16 md:py-24">

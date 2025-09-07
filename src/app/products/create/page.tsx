@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { addProduct } from '@/lib/products';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { collections } from '@/lib/collections';
+import { getCollections, type Collection } from '@/lib/collections';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
@@ -31,21 +31,33 @@ export default function CreateProductPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [collections, setCollections] = useState<Collection[]>([]);
 
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
     }
+    
+    async function fetchCollections() {
+        const publishedCollections = await getCollections({ status: 'Published' });
+        setCollections(publishedCollections);
+    }
+    fetchCollections();
   }, [user, loading, router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
-      collectionId: collections.find(c => c.status === 'Published')?.id,
       description: '',
     },
   });
+  
+  useEffect(() => {
+    if (collections.length > 0 && !form.getValues('collectionId')) {
+        form.setValue('collectionId', collections[0].numericId);
+    }
+  }, [collections, form]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -69,7 +81,7 @@ export default function CreateProductPage() {
     const imageUrl = imagePreview || 'https://picsum.photos/400/400';
 
     try {
-        addProduct({
+        await addProduct({
             title: values.title,
             collectionId: values.collectionId,
             description: values.description,
@@ -133,15 +145,15 @@ export default function CreateProductPage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>Collection</FormLabel>
-                             <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
+                             <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value)}>
                                 <FormControl>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select a collection" />
                                 </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    {collections.filter(c => c.status === 'Published').map(collection => (
-                                        <SelectItem key={collection.id} value={String(collection.id)}>{collection.title}</SelectItem>
+                                    {collections.map(collection => (
+                                        <SelectItem key={collection.numericId} value={String(collection.numericId)}>{collection.title}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>

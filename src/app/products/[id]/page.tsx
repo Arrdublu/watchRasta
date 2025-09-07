@@ -1,5 +1,6 @@
 
 import { getProductById, getAllProducts } from '@/lib/products';
+import { getCollectionByNumericId } from '@/lib/collections';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -30,20 +31,24 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
 export default async function ProductDetailPage({ params }: { params: { id: string } }) {
   const product = await getProductById(params.id);
-
+  
   if (!product) {
     notFound();
   }
 
+  const collection = await getCollectionByNumericId(product.collectionId);
+
   return (
     <div className="container py-16 md:py-24">
       <div className="mb-8">
-        <Button asChild variant="outline">
-          <Link href={`/collections/${product.collectionId}`}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Collection
-          </Link>
-        </Button>
+        {collection && (
+          <Button asChild variant="outline">
+            <Link href={collection.href}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to {collection.title}
+            </Link>
+          </Button>
+        )}
       </div>
       <div className="grid md:grid-cols-2 gap-12 items-start">
         <div className="relative aspect-square w-full rounded-lg overflow-hidden shadow-lg">

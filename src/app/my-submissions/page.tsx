@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { getArticles, deleteArticle, type Article } from '@/lib/articles';
 import { getAllProducts, deleteProduct, type Product } from '@/lib/products';
+import { getCollections, type Collection } from '@/lib/collections';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
-import { collections } from '@/lib/collections';
 
 export default function MySubmissionsPage() {
   const { user, loading } = useAuth();
@@ -27,6 +27,7 @@ export default function MySubmissionsPage() {
 
   const [myArticles, setMyArticles] = useState<Article[]>([]);
   const [myProducts, setMyProducts] = useState<Product[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
   const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
@@ -37,12 +38,14 @@ export default function MySubmissionsPage() {
     if (user?.uid) {
       const fetchSubmissions = async () => {
         setIsFetching(true);
-        const [userArticles, userProducts] = await Promise.all([
+        const [userArticles, userProducts, allCollections] = await Promise.all([
             getArticles({ authorId: user.uid }),
             getAllProducts({ authorId: user.uid }),
+            getCollections(),
         ]);
         setMyArticles(userArticles);
         setMyProducts(userProducts);
+        setCollections(allCollections);
         setIsFetching(false);
       }
       fetchSubmissions();
@@ -63,7 +66,7 @@ export default function MySubmissionsPage() {
   };
 
   const getCollectionName = (collectionId: number) => {
-    return collections.find(c => c.id === collectionId)?.title || 'Unknown';
+    return collections.find(c => c.numericId === collectionId)?.title || 'Unknown';
   }
 
   const handleEdit = (type: 'article' | 'product', id: string) => {

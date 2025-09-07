@@ -1,8 +1,10 @@
-import { HileavesCard } from '@/components/hileaves-card';
-import { collections } from '@/lib/collections';
 
-export default function HileavesPage() {
-  const publishedCollections = collections.filter(c => c.status === 'Published');
+import { HileavesCard } from '@/components/hileaves-card';
+import { getCollections } from '@/lib/collections';
+
+export default async function HileavesPage() {
+  const publishedCollections = await getCollections({ status: 'Published' });
+  
   return (
     <div className="container py-16 md:py-24">
       <div className="text-center mb-16">

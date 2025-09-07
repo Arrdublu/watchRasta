@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "migrate:products": "tsx -r dotenv/config scripts/migrate-products.ts"
+    "migrate:data": "tsx -r dotenv/config scripts/migrate-products.ts"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",

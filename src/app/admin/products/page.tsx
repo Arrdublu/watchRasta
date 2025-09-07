@@ -3,7 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { getAllProducts, type Product } from '@/lib/products';
+import { getAllProducts, updateProductStatus, deleteProduct, type Product } from '@/lib/products';
+import { getCollections, type Collection } from '@/lib/collections';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -21,12 +22,13 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
-import { collections } from '@/lib/collections';
 
 const ADMIN_EMAIL = 'watchrasta@gmail.com';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [isFetching, setIsFetching] = useState(true);
   const { toast } = useToast();
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -34,28 +36,42 @@ export default function AdminProductsPage() {
   useEffect(() => {
     if (!loading && user?.email !== ADMIN_EMAIL) {
       router.push('/');
+    } else if (user?.email === ADMIN_EMAIL) {
+      const fetchAllData = async () => {
+        setIsFetching(true);
+        const [allProducts, allCollections] = await Promise.all([
+          getAllProducts(),
+          getCollections(),
+        ]);
+        setProducts(allProducts);
+        setCollections(allCollections);
+        setIsFetching(false);
+      };
+      fetchAllData();
     }
   }, [user, loading, router]);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const allProducts = await getAllProducts();
-      setProducts(allProducts);
-    };
-    fetchProducts();
-  }, []);
 
-
-  const handleStatusChange = (id: string, status: Product['status']) => {
-    setProducts(products.map(product => 
-      product.id === id ? { ...product, status } : product
-    ));
-    toast({ title: "Product Updated", description: `Product status changed to ${status}.` });
+  const handleStatusChange = async (id: string, status: Product['status']) => {
+    try {
+      await updateProductStatus(id, status);
+      setProducts(products.map(product => 
+        product.id === id ? { ...product, status } : product
+      ));
+      toast({ title: "Product Updated", description: `Product status changed to ${status}.` });
+    } catch (error) {
+       toast({ title: "Error", description: "Failed to update product status.", variant: 'destructive'});
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setProducts(products.filter(product => product.id !== id));
-    toast({ title: "Product Deleted", description: "The product has been successfully deleted.", variant: 'destructive' });
+  const handleDelete = async (id: string) => {
+     try {
+      await deleteProduct(id);
+      setProducts(products.filter(product => product.id !== id));
+      toast({ title: "Product Deleted", description: "The product has been successfully deleted.", variant: 'destructive' });
+    } catch (error) {
+       toast({ title: "Error", description: "Failed to delete product.", variant: 'destructive'});
+    }
   };
 
   const handleEdit = (id: string) => {
@@ -76,11 +92,15 @@ export default function AdminProductsPage() {
   };
   
   const getCollectionName = (collectionId: number) => {
-    return collections.find(c => c.id === collectionId)?.title || 'Unknown';
+    return collections.find(c => c.numericId === collectionId)?.title || 'Unknown';
   }
 
   if (loading || user?.email !== ADMIN_EMAIL) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Checking authorization...</div>;
+  }
+  
+  if (isFetching) {
+      return <div className="container flex items-center justify-center min-h-[60vh]">Loading products...</div>;
   }
 
   return (

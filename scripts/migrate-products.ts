@@ -1,22 +1,67 @@
 
-// scripts/migrate-products.ts
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase'; // Ensure this path is correct
+// scripts/migrate-data.ts
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
-type Product = {
-  collectionId: number;
-  title: string;
-  description: string;
-  price: string;
-  imageUrl: string;
-  dataAiHint: string;
-  status: 'Published' | 'Draft' | 'Pending Review';
-  author: string;
-  authorId: string;
-};
+const collectionsData = [
+  {
+    numericId: 1,
+    title: 'Natural Foods',
+    description: 'Sourced from the earth, our food collection brings you organic and wholesome products with a rich history.',
+    imageUrl: 'https://picsum.photos/800/600',
+    dataAiHint: 'natural food',
+    href: '/hileaves/1',
+    status: 'Published',
+  },
+  {
+    numericId: 2,
+    title: 'Artisanal Merch',
+    description: 'Handcrafted merchandise that tells a story. Each piece is unique, reflecting a blend of culture and artistry.',
+    imageUrl: 'https://picsum.photos/800/601',
+    dataAiHint: 'artisanal merch',
+    href: '/hileaves/2',
+    status: 'Published',
+  },
+  {
+    numericId: 3,
+    title: 'Wellness Services',
+    description: 'Holistic services designed to rejuvenate your mind, body, and soul, rooted in ancient traditions.',
+    imageUrl: 'https://picsum.photos/800/602',
+    dataAiHint: 'wellness spa',
+    href: '/hileaves/3',
+    status: 'Published',
+  },
+  {
+    numericId: 4,
+    title: 'Herbal Teas',
+    description: 'A curated selection of herbal teas, each with a unique origin story and natural healing properties.',
+    imageUrl: 'https://picsum.photos/800/603',
+    dataAiHint: 'herbal tea',
+    href: '/hileaves/4',
+    status: 'Published',
+  },
+  {
+    numericId: 5,
+    title: 'Handmade Crafts',
+    description: 'Discover unique crafts handmade by artisans from around the world, preserving traditional techniques.',
+    imageUrl: 'https://picsum.photos/800/604',
+    dataAiHint: 'handmade craft',
+    href: '/hileaves/5',
+    status: 'Draft',
+  },
+  {
+    numericId: 6,
+    title: 'Cultural Workshops',
+    description: 'Immerse yourself in new experiences with our collection of cultural and artistic workshops.',
+    imageUrl: 'https://picsum.photos/800/605',
+    dataAiHint: 'art workshop',
+    href: '/hileaves/6',
+    status: 'Archived',
+  },
+];
 
-const products: Product[] = [
-  // Natural Foods
+
+const productsData = [
   {
     collectionId: 1,
     title: 'Organic Honey',
@@ -26,7 +71,7 @@ const products: Product[] = [
     dataAiHint: 'organic honey',
     status: 'Published',
     author: 'admin@watchrasta.com',
-    authorId: 'admin-uid', // Placeholder UID for seeded data
+    authorId: 'admin-uid',
   },
   {
     collectionId: 1,
@@ -50,7 +95,6 @@ const products: Product[] = [
     author: 'admin@watchrasta.com',
     authorId: 'admin-uid',
   },
-  // Artisanal Merch
   {
     collectionId: 2,
     title: 'Logo Tee (Black)',
@@ -84,7 +128,6 @@ const products: Product[] = [
     author: 'admin@watchrasta.com',
     authorId: 'admin-uid',
   },
-  // Wellness Services
   {
     collectionId: 3,
     title: 'Guided Meditation Session',
@@ -107,7 +150,6 @@ const products: Product[] = [
     author: 'admin@watchrasta.com',
     authorId: 'admin-uid',
   },
-   // Herbal Teas
   {
     collectionId: 4,
     title: 'Chamomile Blend',
@@ -132,21 +174,40 @@ const products: Product[] = [
   },
 ];
 
-async function migrateProducts() {
-  const productsCollection = collection(db, 'products');
-  console.log('Starting migration...');
-
-  for (const product of products) {
+async function migrateData() {
+  // Migrate Collections
+  const collectionsCollection = collection(db, 'collections');
+  console.log('Starting collection migration...');
+  for (const collectionData of collectionsData) {
     try {
-      await addDoc(productsCollection, product);
+      await addDoc(collectionsCollection, {
+          ...collectionData,
+          createdAt: serverTimestamp()
+      });
+      console.log(`Added collection: ${collectionData.title}`);
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (error) {
+      console.error(`Error adding collection ${collectionData.title}:`, error);
+    }
+  }
+  console.log('Collection migration completed.');
+
+  // Migrate Products
+  const productsCollection = collection(db, 'products');
+  console.log('Starting product migration...');
+  for (const product of productsData) {
+    try {
+      await addDoc(productsCollection, {
+          ...product,
+          createdAt: serverTimestamp(),
+      });
       console.log(`Added product: ${product.title}`);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
     } catch (error) {
       console.error(`Error adding product ${product.title}:`, error);
     }
   }
-
-  console.log('Migration completed.');
+  console.log('Product migration completed.');
 }
 
-migrateProducts();
+migrateData();

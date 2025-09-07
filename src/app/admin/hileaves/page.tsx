@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { collections as initialCollections, type Collection } from '@/lib/collections';
+import { getCollections, type Collection } from '@/lib/collections';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,8 @@ import { useRouter } from 'next/navigation';
 const ADMIN_EMAIL = 'watchrasta@gmail.com';
 
 export default function AdminHileavesPage() {
-  const [collections, setCollections] = useState<Collection[]>(initialCollections);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [isFetching, setIsFetching] = useState(true);
   const { toast } = useToast();
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -33,23 +34,33 @@ export default function AdminHileavesPage() {
   useEffect(() => {
     if (!loading && user?.email !== ADMIN_EMAIL) {
       router.push('/');
+    } else if (user?.email === ADMIN_EMAIL) {
+        const fetchCollections = async () => {
+            setIsFetching(true);
+            const collectionsFromDb = await getCollections({});
+            setCollections(collectionsFromDb);
+            setIsFetching(false);
+        }
+        fetchCollections();
     }
   }, [user, loading, router]);
 
 
-  const handleStatusChange = (id: number, status: Collection['status']) => {
+  const handleStatusChange = (id: string, status: Collection['status']) => {
+    // In a real app, you would update this in the database.
     setCollections(collections.map(item => 
       item.id === id ? { ...item, status } : item
     ));
     toast({ title: "Collection Updated", description: `Collection status changed to ${status}.` });
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
+     // In a real app, you would delete this from the database.
     setCollections(collections.filter(item => item.id !== id));
     toast({ title: "Collection Deleted", description: "The collection has been successfully deleted.", variant: 'destructive' });
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     toast({ title: "Edit Action", description: `Triggered edit for collection ID: ${id}.` });
   }
 
@@ -69,7 +80,10 @@ export default function AdminHileavesPage() {
   if (loading || user?.email !== ADMIN_EMAIL) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Checking authorization...</div>;
   }
-
+  
+  if (isFetching) {
+    return <div className="container flex items-center justify-center min-h-[60vh]">Loading collections...</div>;
+  }
 
   return (
     <div className="container py-16 md:py-24">

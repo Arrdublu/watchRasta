@@ -1,9 +1,9 @@
 
-import { collection, getDocs, query, where, addDoc, doc, getDoc, deleteDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase'; // Assuming you have a firebase initialization file
+import { collection, getDocs, query, where, addDoc, doc, getDoc, deleteDoc, updateDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export type Product = {
-  id: string; // Changed to string to accommodate Firestore document IDs
+  id: string;
   collectionId: number;
   title: string;
   description: string;
@@ -13,43 +13,61 @@ export type Product = {
   status: 'Published' | 'Draft' | 'Pending Review';
   author: string;
   authorId: string;
+  createdAt: any; 
 };
 
-// The in-memory array is removed. Data will now be fetched from Firestore.
+const productsCollection = collection(db, 'products');
 
-export async function addProduct(product: Omit<Product, 'id'>) {
-  const docRef = await addDoc(collection(db, 'products'), product);
-  return { ...product, id: docRef.id };
+// CREATE
+export async function addProduct(product: Omit<Product, 'id' | 'createdAt'>) {
+  const newProduct = {
+    ...product,
+    createdAt: serverTimestamp(),
+  };
+  const docRef = await addDoc(productsCollection, newProduct);
+  return { ...newProduct, id: docRef.id };
 }
 
+// READ (by collection ID)
 export async function getProductsByCollectionId(collectionId: number): Promise<Product[]> {
-  const q = query(collection(db, 'products'), where('collectionId', '==', collectionId), where('status', '==', 'Published'));
+  const q = query(
+    productsCollection, 
+    where('collectionId', '==', collectionId), 
+    where('status', '==', 'Published')
+  );
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+  return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
 }
 
+// READ (by ID)
 export async function getProductById(id: string): Promise<Product | undefined> {
     const docRef = doc(db, 'products', id);
     const docSnap = await getDoc(docRef);
-
     if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() } as Product;
-    } else {
-        return undefined;
+        return { ...docSnap.data(), id: docSnap.id } as Product;
     }
+    return undefined;
 }
 
+// READ (all)
 export async function getAllProducts(options: { authorId?: string } = {}): Promise<Product[]> {
-  let q = query(collection(db, 'products'));
+  let q = query(productsCollection, orderBy('createdAt', 'desc'));
 
   if (options.authorId) {
       q = query(q, where('authorId', '==', options.authorId));
   }
 
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+  return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
 }
 
+// UPDATE STATUS
+export async function updateProductStatus(id: string, status: Product['status']) {
+    const docRef = doc(db, 'products', id);
+    await updateDoc(docRef, { status });
+}
+
+// DELETE
 export async function deleteProduct(id: string) {
     const docRef = doc(db, 'products', id);
     await deleteDoc(docRef);
