@@ -41,7 +41,7 @@ export default function MySubmissionsPage() {
         const [userArticles, userProducts, allCollections] = await Promise.all([
             getArticles({ authorId: user.uid }),
             getProductsByAuthorId(user.uid),
-            getCollections(),
+            getCollections()
         ]);
         setMyArticles(userArticles);
         setMyProducts(userProducts);
