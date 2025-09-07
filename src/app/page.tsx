@@ -1,7 +1,7 @@
 
 import { HeroBanner } from '@/components/hero-banner';
 import { ArticleCard } from '@/components/article-card';
-import { articles as staticArticles, articleCategories, getArticles } from '@/lib/articles';
+import { articleCategories, getArticles } from '@/lib/articles';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
