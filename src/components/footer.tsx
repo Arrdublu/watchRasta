@@ -36,7 +36,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-1 flex items-start flex-col">
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/branding%2Fapple-touch-icon.png?alt=media&token=c66e806e-c06e-4aaa-be19-6df162b79d64" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
+              <Image src="https://www.watchrasta.com/apple-touch-icon.png" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
               <span className="font-bold font-headline text-lg text-foreground">watchRasta</span>
             </Link>
             <p className="text-sm text-muted-foreground">
