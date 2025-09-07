@@ -1,4 +1,6 @@
 
+'use client';
+
 import { getArticleBySlug, getArticles } from '@/lib/articles';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -7,74 +9,46 @@ import { ArticleCard } from '@/components/article-card';
 import { Clock, User } from 'lucide-react';
 import parse, { domToReact, Element } from 'html-react-parser';
 import { Embed } from '@/components/embed';
-import { Metadata } from 'next';
+import { useEffect, useState } from 'react';
 
+export default function ArticlePage({ params }: { params: { slug: string } }) {
+  const [article, setArticle] = useState<any>(null);
+  const [content, setContent] = useState('');
+  const [relatedArticles, setRelatedArticles] = useState<any[]>([]);
 
-export async function generateStaticParams() {
-  const articles = await getArticles();
-  return articles.map((article) => ({
-    slug: article.slug,
-  }));
-}
+  useEffect(() => {
+    async function fetchData() {
+      const articleData = await getArticleBySlug(params.slug);
+      if (!articleData) {
+        notFound();
+        return;
+      }
+      setArticle(articleData);
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article = await getArticleBySlug(params.slug);
+      if (articleData.content.startsWith('http')) {
+        const response = await fetch(articleData.content);
+        const text = await response.text();
+        setContent(text);
+      } else {
+        setContent(articleData.content);
+      }
 
-  if (!article) {
-    return {
-      title: 'Article Not Found',
-    };
-  }
-
-  const url = `/articles/${article.slug}`;
-
-  return {
-    title: `${article.title} | watchRasta`,
-    description: article.excerpt,
-    openGraph: {
-      title: article.title,
-      description: article.excerpt,
-      url,
-      siteName: 'watchRasta',
-      images: [
-        {
-          url: article.opengraphImage,
-          width: 1200,
-          height: 630,
-          alt: article.title,
-        },
-      ],
-      locale: 'en_US',
-      type: 'article',
-      authors: [article.author],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: article.title,
-      description: article.excerpt,
-      images: [article.opengraphImage],
-    },
-  };
-}
-
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = await getArticleBySlug(params.slug);
+      const related = (await getArticles({ category: articleData.category, limit: 4 }))
+        .filter(a => a.id !== articleData.id)
+        .slice(0, 3);
+      setRelatedArticles(related);
+    }
+    fetchData();
+  }, [params.slug]);
 
   if (!article) {
-    notFound();
+    return <div className="container flex items-center justify-center min-h-[60vh]">Loading...</div>;
   }
   
-  const relatedArticles = (await getArticles({ category: article.category, limit: 4 }))
-    .filter(a => a.id !== article.id)
-    .slice(0, 3);
-
   const options = {
     replace: (domNode: any) => {
         if (domNode instanceof Element && domNode.name === 'iframe') {
             return <Embed iframe={domNode.toString()} />;
-        }
-        if(domNode instanceof Element) {
-            return domToReact(domNode.children, options)
         }
     },
   };
@@ -116,7 +90,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             <div 
             className="space-y-6 text-lg text-foreground/90 [&_p]:leading-relaxed [&_h2]:font-headline [&_h2]:text-3xl [&_h2]:mt-12 [&_h2]:mb-4 [&_a]:text-primary hover:[&_a]:underline"
             >
-                {parse(article.content, options)}
+                {parse(content, options)}
             </div>
         </div>
       </article>

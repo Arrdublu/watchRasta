@@ -15,13 +15,16 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { addArticle, articleCategories } from '@/lib/articles';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { storage } from '@/lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
   category: z.enum(articleCategories),
   excerpt: z.string().min(10, { message: 'Excerpt must be at least 10 characters.' }).max(200, { message: 'Excerpt must be less than 200 characters.'}),
   content: z.string().min(50, { message: 'Content must be at least 50 characters.' }),
-  image: z.any().optional(),
+  image: z.any().refine((files) => files?.length > 0, 'Image is required.'),
 });
 
 export default function CreateArticlePage() {
@@ -30,6 +33,7 @@ export default function CreateArticlePage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -50,11 +54,12 @@ export default function CreateArticlePage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   }
 
@@ -66,27 +71,38 @@ export default function CreateArticlePage() {
     
     setIsSubmitting(true);
     
-    const imageUrl = imagePreview || 'https://picsum.photos/600/400';
-
     try {
-        await addArticle({
-            title: values.title,
-            category: values.category,
-            content: values.content, 
-            image: imageUrl,
-            dataAiHint: 'user submitted',
-            excerpt: values.excerpt,
-            author: user.email || 'Anonymous',
-            authorId: user.uid,
-            status: 'Pending Review',
-        });
+      let imageUrl = 'https://picsum.photos/600/400';
+      if (imageFile) {
+        const imageRef = ref(storage, `articles/${uuidv4()}`);
+        await uploadBytes(imageRef, imageFile);
+        imageUrl = await getDownloadURL(imageRef);
+      }
+
+      const contentBlob = new Blob([values.content], { type: 'text/plain' });
+      const contentRef = ref(storage, `articles/${uuidv4()}.txt`);
+      await uploadBytes(contentRef, contentBlob);
+      const contentUrl = await getDownloadURL(contentRef);
+
+      await addArticle({
+        title: values.title,
+        category: values.category,
+        content: contentUrl, 
+        image: imageUrl,
+        dataAiHint: 'user submitted',
+        excerpt: values.excerpt,
+        author: user.email || 'Anonymous',
+        authorId: user.uid,
+        status: 'Pending Review',
+      });
       
-        toast({
-            title: 'Article Submitted!',
-            description: 'Your article has been submitted for review. Thank you!',
-        });
-        router.push('/my-submissions');
+      toast({
+        title: 'Article Submitted!',
+        description: 'Your article has been submitted for review. Thank you!',
+      });
+      router.push('/my-submissions');
     } catch (error) {
+      console.error(error);
         toast({
             title: 'Error',
             description: (error as Error).message || 'Something went wrong. Please try again.',
@@ -150,23 +166,29 @@ export default function CreateArticlePage() {
                         )}
                     />
 
-                    <FormItem>
-                        <FormLabel>Featured Image</FormLabel>
-                        <FormControl>
-                            <div className="relative w-full aspect-video border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-background/50 hover:border-primary transition-colors">
-                                {imagePreview ? (
-                                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-md"/>
-                                ) : (
-                                    <div className="text-center text-muted-foreground">
-                                    <Upload className="mx-auto h-12 w-12" />
-                                    <p>Click or drag to upload an image</p>
-                                    </div>
-                                )}
-                                <Input id="image" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleImageChange} />
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
+                    <FormField
+                        control={form.control}
+                        name="image"
+                        render={({ field }) => (
+                          <FormItem>
+                              <FormLabel>Featured Image</FormLabel>
+                              <FormControl>
+                                  <div className="relative w-full aspect-video border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-background/50 hover:border-primary transition-colors">
+                                      {imagePreview ? (
+                                          <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-md"/>
+                                      ) : (
+                                          <div className="text-center text-muted-foreground">
+                                          <Upload className="mx-auto h-12 w-12" />
+                                          <p>Click or drag to upload an image</p>
+                                          </div>
+                                      )}
+                                      <Input id="image" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={(e) => {field.onChange(e.target.files); handleImageChange(e)}} />
+                                  </div>
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                        )}
+                    />
 
                      <FormField
                         control={form.control}
