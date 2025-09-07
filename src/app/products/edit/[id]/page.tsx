@@ -121,7 +121,7 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
         imageUrl = await getDownloadURL(imageRef);
       }
 
-      await updateProduct(params.id, {
+      await updateProduct(currentProduct.id, {
         ...currentProduct,
         title: values.title,
         collectionId: values.collectionId,

@@ -134,7 +134,7 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
       await uploadBytes(contentRef, contentBlob);
       const contentUrl = await getDownloadURL(contentRef);
 
-      await updateArticle(params.id, {
+      await updateArticle(currentArticle.id, {
         title: values.title,
         category: values.category,
         content: contentUrl,
