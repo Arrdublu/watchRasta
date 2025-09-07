@@ -19,6 +19,9 @@ requiredServices:
   database:
     databaseId: "(default)"
 
+availableSecrets:
+  - secret: firebase-service-account-watchrasta
+
 # Environment variables to make available to your app.
 # IMPORTANT: Replace the placeholder values below with your actual
 # Firebase project configuration. You can find these values in the

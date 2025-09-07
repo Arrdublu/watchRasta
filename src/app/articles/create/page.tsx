@@ -61,7 +61,7 @@ export default function CreateArticlePage() {
     }
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>>) {
     if (!user || !imageFile) {
         toast({ title: "Authentication Error", description: "You must be logged in and provide an image to create an article.", variant: "destructive" });
         return;
@@ -70,7 +70,9 @@ export default function CreateArticlePage() {
     setIsSubmitting(true);
     
     try {
+      const idToken = await user.getIdToken();
       const formData = new FormData();
+      formData.append('idToken', idToken);
       formData.append('title', values.title);
       formData.append('category', values.category);
       formData.append('excerpt', values.excerpt);

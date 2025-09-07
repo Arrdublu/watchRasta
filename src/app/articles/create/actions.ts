@@ -18,40 +18,28 @@ const formSchema = z.object({
 });
 
 export async function submitArticle(formData: FormData) {
+    const idToken = formData.get('idToken') as string;
 
-    // This is a workaround to get the current user on the server.
-    // In a real app, you would have a more robust session management system.
+    if (!idToken) {
+        return { success: false, message: 'Authentication token not provided.' };
+    }
+
     let user;
-    const adminAuth = await getAuth();
-    if (!adminAuth) {
-      return { success: false, message: 'Authentication service not available.' };
-    }
-
-    const sessionCookie = (formData.get('session') as string) || '';
-     if (sessionCookie) {
-        try {
-            const decodedIdToken = await adminAuth.verifySessionCookie(sessionCookie, true);
-            user = await adminAuth.getUser(decodedIdToken.uid);
-        } catch (error) {
-            console.error("Error verifying session cookie:", error);
-            return { success: false, message: 'Invalid session. Please log in again.' };
+    try {
+        const adminAuth = await getAuth();
+        if (!adminAuth) {
+            throw new Error('Authentication service not available.');
         }
+        const decodedToken = await adminAuth.verifyIdToken(idToken);
+        user = await adminAuth.getUser(decodedToken.uid);
+    } catch (error) {
+        console.error("Error verifying ID token:", error);
+        return { success: false, message: 'Invalid authentication token. Please log in again.' };
     }
 
-    // This is a fallback to get user from the form data if not in session, not ideal.
     if (!user) {
-        const userId = formData.get('userId');
-        const userEmail = formData.get('userEmail');
-        if (userId && userEmail) {
-            user = { uid: userId as string, email: userEmail as string } as any;
-        } else {
-             return { success: false, message: 'Authentication Error: User not found. Please log in.' };
-        }
+        return { success: false, message: 'Authentication Error: User not found. Please log in.' };
     }
-  
-  if (!user) {
-    return { success: false, message: 'Authentication Error: You must be logged in to create an article.' };
-  }
   
   const rawFormData = {
       title: formData.get('title'),
