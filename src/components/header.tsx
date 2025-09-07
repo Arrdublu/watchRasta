@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -65,8 +66,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/watchRasta_2024_logo-10.png?alt=media&token=5c16b454-c804-4aa8-8e8f-78115837cc14" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
-          
+          <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/watchRasta_2024_logo-10.png?alt=media&token=5c16b454-c804-4aa8-8e8f-78115837cc14" alt="watchRasta logo" width={32} height={32} className="h-8 w-8" />
         </Link>
         <div className="flex flex-1 items-center justify-end">
           <nav className="hidden md:flex md:items-center md:space-x-6 text-sm font-medium">

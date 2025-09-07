@@ -37,8 +37,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-1 flex items-start flex-col">
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/watchRasta_2024_logo-10.png?alt=media&token=5c16b454-c804-4aa8-8e8f-78115837cc14" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
-              
+              <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/watchRasta_2024_logo-10.png?alt=media&token=5c16b454-c804-4aa8-8e8f-78115837cc14" alt="watchRasta logo" width={32} height={32} className="h-8 w-8" />
             </Link>
             <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} watchRasta. All rights reserved.
