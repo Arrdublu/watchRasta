@@ -13,7 +13,7 @@ import { Edit, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
-import { getArticleById, updateArticle, articleCategories } from '@/lib/articles';
+import { getArticleById, updateArticle, articleCategories, Article } from '@/lib/articles';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { storage } from '@/lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -36,6 +36,7 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
   const { user, loading: authLoading } = useAuth();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [currentArticle, setCurrentArticle] = useState<Article | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,6 +65,8 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
            return;
         }
         
+        setCurrentArticle(article);
+
         let content = article.content;
         if (content.startsWith('http')) {
             const response = await fetch(content);
@@ -105,7 +108,7 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user) return;
+    if (!user || !currentArticle) return;
     
     setIsSubmitting(true);
     
@@ -122,7 +125,7 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
       await uploadBytes(contentRef, contentBlob);
       const contentUrl = await getDownloadURL(contentRef);
 
-      await updateArticle(params.id, {
+      await updateArticle(params.id, currentArticle, {
         title: values.title,
         category: values.category,
         content: contentUrl,
