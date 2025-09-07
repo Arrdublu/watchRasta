@@ -1,17 +1,27 @@
+
 rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow public read access to all files
+    // Default deny all
     match /{allPaths=**} {
-      allow read;
+      allow read, write: if false;
     }
 
-    // Allow write access only for authenticated users
-    // This is a basic rule. For more fine-grained control, you could restrict
-    // based on file size, type, or specific paths (e.g., match /articles/{articleId}).
-    match /{allPaths=**} {
+    // Allow public read on articles and products images/content
+    match /articles/{allPaths=**} {
+      allow read: if true;
       allow write: if request.auth != null;
+    }
+    
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Allow users to manage their own files in a user-specific folder
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
