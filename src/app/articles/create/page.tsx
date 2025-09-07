@@ -89,7 +89,7 @@ export default function CreateArticlePage() {
     } catch (error) {
         toast({
             title: 'Error',
-            description: 'Something went wrong. Please try again.',
+            description: (error as Error).message || 'Something went wrong. Please try again.',
             variant: 'destructive',
         });
     } finally {
