@@ -13,9 +13,7 @@ const formSchema = z.object({
   slug: z.string(),
 });
 
-export async function submitComment(values: z.infer<typeof formSchema>) {
-  const user = auth.currentUser;
-
+export async function submitComment(values: z.infer<typeof formSchema>, user: User | null) {
   if (!user) {
     return { success: false, message: 'You must be logged in to comment.' };
   }

@@ -40,7 +40,7 @@ export function CommentSection({ articleId, articleSlug, comments }: CommentSect
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    const result = await submitComment({ ...values, articleId, slug: articleSlug });
+    const result = await submitComment({ ...values, articleId, slug: articleSlug }, user);
     if(result.success) {
         toast({
             title: 'Comment Posted!',

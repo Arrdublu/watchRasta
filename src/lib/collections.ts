@@ -1,6 +1,6 @@
 
 import { collection, getDocs, query, where, doc, getDoc, orderBy } from 'firebase/firestore';
-import { db } from './firebase';
+import { db } from './firebase-admin';
 
 export type Collection = {
   id: string; // Firestore document ID

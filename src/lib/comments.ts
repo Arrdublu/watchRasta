@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/firebase-admin';
 import {
   collection,
   addDoc,
@@ -11,6 +11,8 @@ import {
   orderBy,
   serverTimestamp,
 } from 'firebase/firestore';
+import { auth } from '@/lib/firebase';
+
 
 export type Comment = {
   id: string;

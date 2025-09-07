@@ -15,6 +15,9 @@ scripts:
 requiredServices:
   # The AI service is required for Genkit functionality.
   ai: {}
+  # The database service is required for Firestore functionality.
+  database:
+    databaseId: "(default)"
 
 # Environment variables to make available to your app.
 # IMPORTANT: Replace the placeholder values below with your actual
@@ -33,3 +36,5 @@ env:
     value: "839347362900"
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
     value: "1:839347362900:web:ec8b6be6e0b58bae17e1c1"
+  - variable: SERVICE_ACCOUNT
+    secret: firebase-service-account-watchrasta

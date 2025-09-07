@@ -1,7 +1,7 @@
 
 
 import { collection, getDocs, query, where, addDoc, doc, getDoc, deleteDoc, updateDoc, serverTimestamp, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/firebase-admin';
 
 export type Product = {
   id: string;

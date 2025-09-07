@@ -42,8 +42,10 @@ export function Header() {
 
   const handleSignOut = async () => {
     try {
-        await signOut(auth);
-        toast({ title: "Signed out successfully." });
+        if (auth) {
+            await signOut(auth);
+            toast({ title: "Signed out successfully." });
+        }
     } catch (error) {
         toast({ title: "Error signing out", description: (error as Error).message, variant: "destructive" });
     }

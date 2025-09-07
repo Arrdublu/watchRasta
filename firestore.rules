@@ -63,5 +63,9 @@ service cloud.firestore {
       // Comments cannot be updated or deleted by users
       allow update, delete: if isAdmin();
     }
+
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
   }
 }

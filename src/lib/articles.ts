@@ -1,5 +1,5 @@
 
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/firebase-admin';
 import { collection, addDoc, getDocs, query, where, doc, getDoc, updateDoc, deleteDoc, serverTimestamp, orderBy, limit, writeBatch } from 'firebase/firestore';
 
 export type ArticleCategory = 'News' | 'Lifestyle' | 'Brands' | 'Album Reviews' | 'Interviews' | 'Tour Diaries' | 'Gear';
