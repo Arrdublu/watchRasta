@@ -1,27 +1,18 @@
-
 rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Default deny all
-    match /{allPaths=**} {
-      allow read, write: if false;
-    }
-
-    // Allow public read on articles and products images/content
+    // Allow public read access to article and product files
     match /articles/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
+      allow read;
     }
-    
     match /products/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
+      allow read;
     }
 
-    // Allow users to manage their own files in a user-specific folder
-    match /users/{userId}/{allPaths=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Allow authenticated users to write to any path
+    match /{allPaths=**} {
+      allow write: if request.auth != null;
     }
   }
 }
