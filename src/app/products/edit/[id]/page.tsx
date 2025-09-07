@@ -30,6 +30,7 @@ const formSchema = z.object({
 });
 
 export default function EditProductPage({ params }: { params: { id: string }}) {
+  const { id } = params;
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -50,11 +51,11 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
   
   useEffect(() => {
     async function fetchProduct() {
-      if (!params.id) return;
+      if (!id) return;
       setIsFetching(true);
       try {
         const [product, availableCollections] = await Promise.all([
-            getProductById(params.id),
+            getProductById(id),
             getCollections({ status: 'Published' })
         ]);
         
@@ -94,7 +95,7 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
     if (user) {
         fetchProduct();
     }
-  }, [params.id, user, form, toast, router]);
+  }, [id, user, form, toast, router]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -283,5 +284,7 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
     </div>
   );
 }
+
+    
 
     

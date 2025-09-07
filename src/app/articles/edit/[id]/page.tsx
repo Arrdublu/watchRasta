@@ -29,6 +29,7 @@ const formSchema = z.object({
 });
 
 export default function EditArticlePage({ params }: { params: { id: string }}) {
+  const { id } = params;
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -49,10 +50,10 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
   });
   
   useEffect(() => {
-    async function fetchArticle(id: string) {
+    async function fetchArticle(articleId: string) {
       setIsFetching(true);
       try {
-        const article = await getArticleById(id);
+        const article = await getArticleById(articleId);
         if (!article) {
           toast({ title: "Error", description: "Article not found.", variant: 'destructive'});
           router.push('/my-submissions');
@@ -99,10 +100,10 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
       }
     }
     
-    if (user && params.id) {
-        fetchArticle(params.id);
+    if (user && id) {
+        fetchArticle(id);
     }
-  }, [params.id, user, form, toast, router]);
+  }, [id, user, form, toast, router]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -302,5 +303,7 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
     </div>
   );
 }
+
+    
 
     
