@@ -1,6 +1,6 @@
 
 import { collection, getDocs, query, where, doc, getDoc, orderBy } from 'firebase/firestore';
-import { db } from './firebase-admin';
+import { getDb } from './firebase-admin';
 
 export type Collection = {
   id: string; // Firestore document ID
@@ -14,10 +14,11 @@ export type Collection = {
   createdAt: any;
 };
 
-const collectionsCollection = collection(db, 'collections');
+const getCollectionsCollection = async () => collection(await getDb(), 'collections');
 
 // Get all collections, ordered by creation date
 export async function getCollections(options: { status?: Collection['status'] } = {}): Promise<Collection[]> {
+  const collectionsCollection = await getCollectionsCollection();
   let q = query(collectionsCollection, orderBy('numericId', 'asc'));
 
   if (options.status) {
@@ -30,6 +31,7 @@ export async function getCollections(options: { status?: Collection['status'] } 
 
 // Get a single collection by its original numeric ID
 export async function getCollectionByNumericId(numericId: number): Promise<Collection | null> {
+  const collectionsCollection = await getCollectionsCollection();
   const q = query(collectionsCollection, where('numericId', '==', numericId));
   const snapshot = await getDocs(q);
   if (snapshot.empty) {
@@ -41,6 +43,7 @@ export async function getCollectionByNumericId(numericId: number): Promise<Colle
 
 // Get a single collection by its Firestore ID
 export async function getCollectionById(id: string): Promise<Collection | null> {
+  const db = await getDb();
   const docRef = doc(db, 'collections', id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {

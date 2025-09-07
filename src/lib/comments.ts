@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/lib/firebase-admin';
+import { getDb } from '@/lib/firebase-admin';
 import {
   collection,
   addDoc,
@@ -23,7 +23,7 @@ export type Comment = {
   createdAt: string;
 };
 
-const commentsCollection = collection(db, 'comments');
+const getCommentsCollection = async () => collection(await getDb(), 'comments');
 
 // CREATE
 export async function addComment(comment: Omit<Comment, 'id' | 'createdAt'>) {
@@ -31,12 +31,14 @@ export async function addComment(comment: Omit<Comment, 'id' | 'createdAt'>) {
     ...comment,
     createdAt: serverTimestamp(),
   };
+  const commentsCollection = await getCommentsCollection();
   const docRef = await addDoc(commentsCollection, newComment);
   return { ...newComment, id: docRef.id };
 }
 
 // READ (by articleId)
 export async function getCommentsByArticleId(articleId: string): Promise<Comment[]> {
+  const commentsCollection = await getCommentsCollection();
   const q = query(
     commentsCollection,
     where('articleId', '==', articleId),

@@ -3,20 +3,33 @@
 
 import admin from 'firebase-admin';
 
-if (!admin.apps.length) {
-    try {
-        const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT as string);
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount),
-        });
-    } catch (e) {
-        console.error('Failed to parse SERVICE_ACCOUNT or initialize firebase-admin', e);
+const initializeFirebaseAdmin = () => {
+    if (!admin.apps.length) {
+        try {
+            if (!process.env.SERVICE_ACCOUNT) {
+                throw new Error('SERVICE_ACCOUNT environment variable is not set.');
+            }
+            const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT as string);
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount),
+            });
+        } catch (e) {
+            console.error('Failed to parse SERVICE_ACCOUNT or initialize firebase-admin', e);
+        }
     }
+};
+
+export async function getDb() {
+    initializeFirebaseAdmin();
+    return admin.firestore();
 }
 
+export async function getStorage() {
+    initializeFirebaseAdmin();
+    return admin.storage();
+}
 
-const db = admin.firestore();
-const storage = admin.storage();
-const auth = admin.auth();
-
-export { db, storage, auth };
+export async function getAuth() {
+    initializeFirebaseAdmin();
+    return admin.auth();
+}

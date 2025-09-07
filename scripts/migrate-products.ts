@@ -1,7 +1,7 @@
 
 // scripts/migrate-data.ts
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase-admin';
+import { getDb } from '@/lib/firebase-admin';
 
 const collectionsData = [
   {
@@ -175,6 +175,7 @@ const productsData = [
 ];
 
 async function migrateData() {
+  const db = await getDb();
   // Migrate Collections
   const collectionsCollection = collection(db, 'collections');
   console.log('Starting collection migration...');
