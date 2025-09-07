@@ -84,7 +84,7 @@ export default function CreateArticlePage() {
             title: 'Article Submitted!',
             description: 'Your article has been submitted for review. Thank you!',
         });
-        router.push('/my-favorites'); // Or a "my submissions" page
+        router.push('/my-submissions');
     } catch (error) {
         toast({
             title: 'Error',
