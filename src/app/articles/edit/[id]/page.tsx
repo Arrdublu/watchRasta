@@ -49,11 +49,14 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
   });
   
   useEffect(() => {
-    async function fetchArticle() {
-      if (!params.id) return;
+    if (!user || !params.id) {
+        return;
+    }
+
+    async function fetchArticle(id: string) {
       setIsFetching(true);
       try {
-        const article = await getArticleById(params.id);
+        const article = await getArticleById(id);
         if (!article) {
           toast({ title: "Error", description: "Article not found.", variant: 'destructive'});
           router.push('/my-submissions');
@@ -100,9 +103,8 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
       }
     }
     
-    if (user) {
-        fetchArticle();
-    }
+    fetchArticle(params.id);
+
   }, [params.id, user, form, toast, router]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -303,5 +305,3 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
     </div>
   );
 }
-
-    
