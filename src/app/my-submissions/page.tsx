@@ -155,14 +155,12 @@ export default function MySubmissionsPage() {
                                       <DropdownMenuContent>
                                         <DropdownMenuItem 
                                             onClick={() => handleEditArticle(article.id)}
-                                            disabled={article.status === 'Published'}
                                         >
                                             <Edit className="mr-2 h-4 w-4"/>Edit
                                         </DropdownMenuItem>
                                         <DropdownMenuItem 
                                             onClick={() => handleDeleteArticle(article.id)} 
                                             className="text-destructive"
-                                            disabled={article.status === 'Published'}
                                         >
                                             <Trash2 className="mr-2 h-4 w-4"/>Delete
                                         </DropdownMenuItem>
@@ -210,14 +208,12 @@ export default function MySubmissionsPage() {
                                       <DropdownMenuContent>
                                         <DropdownMenuItem 
                                             onClick={() => toast({ title: 'Coming Soon!', description: 'Product editing will be available soon.' })}
-                                            disabled={product.status === 'Published'}
                                         >
                                             <Edit className="mr-2 h-4 w-4"/>Edit
                                         </DropdownMenuItem>
                                         <DropdownMenuItem 
                                             onClick={() => handleDeleteProduct(product.id)} 
                                             className="text-destructive"
-                                            disabled={product.status === 'Published'}
                                         >
                                             <Trash2 className="mr-2 h-4 w-4"/>Delete
                                         </DropdownMenuItem>
