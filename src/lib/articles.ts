@@ -63,12 +63,16 @@ export async function getArticles(options: { category?: ArticleCategory, limit?:
     }
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-        ...doc.data() as Omit<Article, 'id' | 'date'>,
-        id: doc.id,
-        // Convert timestamp to string
-        date: new Date(doc.data().createdAt?.toDate() || Date.now()).toISOString(),
-    }));
+    return snapshot.docs.map(doc => {
+        const data = doc.data();
+        const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+        return {
+            ...data,
+            id: doc.id,
+            date: createdAt,
+            createdAt: createdAt,
+        } as Article;
+    });
 }
 
 
@@ -80,11 +84,14 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
     return null;
   }
   const docRef = snapshot.docs[0];
-  return { 
-      ...docRef.data() as Omit<Article, 'id' | 'date'>,
+  const data = docRef.data();
+  const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+  return {
+      ...data,
       id: docRef.id,
-      date: new Date(docRef.data().createdAt?.toDate() || Date.now()).toISOString(),
-  };
+      date: createdAt,
+      createdAt: createdAt,
+  } as Article;
 }
 
 // READ (by ID) - useful for admin/user updates
@@ -94,11 +101,13 @@ export async function getArticleById(id: string): Promise<Article | null> {
 
     if (docSnap.exists()) {
         const data = docSnap.data();
+        const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
         return {
-            ...data as Omit<Article, 'id' | 'date'>,
+            ...data,
             id: docSnap.id,
-            date: new Date(data.createdAt?.toDate() || Date.now()).toISOString(),
-        };
+            date: createdAt,
+            createdAt: createdAt,
+        } as Article;
     } else {
         return null;
     }

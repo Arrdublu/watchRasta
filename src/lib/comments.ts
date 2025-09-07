@@ -19,7 +19,7 @@ export type Comment = {
   authorName: string;
   authorAvatar: string | null;
   content: string;
-  createdAt: any;
+  createdAt: string;
 };
 
 const commentsCollection = collection(db, 'comments');
