@@ -115,27 +115,12 @@ export async function getArticleById(id: string): Promise<Article | null> {
 
 
 // UPDATE
-export async function updateArticle(id: string, currentArticleData: Article, updates: Partial<Omit<Article, 'id' | 'createdAt' | 'slug' | 'date' | 'author' | 'authorId'>>) {
-    const batch = writeBatch(db);
-
-    const articleRef = doc(db, 'articles', id);
-    
-    // 1. Archive the current version
-    const versionRef = doc(collection(articleRef, 'versions'));
-    const versionData = {
-        ...currentArticleData,
-        archivedAt: serverTimestamp(),
-    };
-    batch.set(versionRef, versionData);
-
-    // 2. Update the main document with new data
-    const finalUpdates = {
-      ...updates,
-      updatedAt: serverTimestamp(), // Add an 'updatedAt' timestamp
-    };
-    batch.update(articleRef, finalUpdates);
-    
-    await batch.commit();
+export async function updateArticle(id: string, updates: Partial<Omit<Article, 'id' | 'createdAt' | 'slug' | 'date' | 'author' | 'authorId'>>) {
+    const docRef = doc(db, 'articles', id);
+    await updateDoc(docRef, {
+        ...updates,
+        updatedAt: serverTimestamp(),
+    });
 }
 
 // UPDATE STATUS
@@ -149,3 +134,5 @@ export async function deleteArticle(id: string) {
     const docRef = doc(db, 'articles', id);
     await deleteDoc(docRef);
 }
+
+    

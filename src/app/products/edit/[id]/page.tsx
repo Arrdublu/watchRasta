@@ -50,6 +50,7 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
   
   useEffect(() => {
     async function fetchProduct() {
+      if (!params.id) return;
       setIsFetching(true);
       try {
         const [product, availableCollections] = await Promise.all([
@@ -121,6 +122,7 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
       }
 
       await updateProduct(params.id, {
+        ...currentProduct,
         title: values.title,
         collectionId: values.collectionId,
         description: values.description,
@@ -281,3 +283,5 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
     </div>
   );
 }
+
+    

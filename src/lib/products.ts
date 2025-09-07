@@ -75,7 +75,7 @@ export async function getAllProducts(options: { authorId?: string } = {}): Promi
 }
 
 // UPDATE
-export async function updateProduct(id: string, updates: Partial<Omit<Product, 'id' | 'createdAt' | 'author' | 'authorId' | 'dataAiHint'>>) {
+export async function updateProduct(id: string, updates: Partial<Product>) {
     const docRef = doc(db, 'products', id);
     await updateDoc(docRef, {
         ...updates,
@@ -94,3 +94,5 @@ export async function deleteProduct(id: string) {
     const docRef = doc(db, 'products', id);
     await deleteDoc(docRef);
 }
+
+    

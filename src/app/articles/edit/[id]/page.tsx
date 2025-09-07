@@ -50,6 +50,7 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
   
   useEffect(() => {
     async function fetchArticle() {
+      if (!params.id) return;
       setIsFetching(true);
       try {
         const article = await getArticleById(params.id);
@@ -134,7 +135,7 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
       await uploadBytes(contentRef, contentBlob);
       const contentUrl = await getDownloadURL(contentRef);
 
-      await updateArticle(params.id, currentArticle, {
+      await updateArticle(params.id, {
         title: values.title,
         category: values.category,
         content: contentUrl,
@@ -302,3 +303,5 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
     </div>
   );
 }
+
+    
