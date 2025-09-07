@@ -1,3 +1,4 @@
+
 import { getArticleBySlug, articles } from '@/lib/articles';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -6,6 +7,7 @@ import { ArticleCard } from '@/components/article-card';
 import { Clock, User } from 'lucide-react';
 import parse, { domToReact, Element } from 'html-react-parser';
 import { Embed } from '@/components/embed';
+import { Metadata } from 'next';
 
 
 export function generateStaticParams() {
@@ -14,7 +16,7 @@ export function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const article = getArticleBySlug(params.slug);
 
   if (!article) {
@@ -23,9 +25,34 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
   }
 
+  const url = `/articles/${article.slug}`;
+
   return {
     title: `${article.title} | watchRasta`,
     description: article.excerpt,
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      url,
+      siteName: 'watchRasta',
+      images: [
+        {
+          url: article.opengraphImage,
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        },
+      ],
+      locale: 'en_US',
+      type: 'article',
+      authors: [article.author],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: article.excerpt,
+      images: [article.opengraphImage],
+    },
   };
 }
 

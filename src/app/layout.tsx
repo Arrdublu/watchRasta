@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -7,6 +8,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/auth-context';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://watchrasta.com'),
   title: 'watchRasta | Official Website',
   description: 'The official website for the artist watchRasta. Get the latest music, tour dates, and news.',
 };
