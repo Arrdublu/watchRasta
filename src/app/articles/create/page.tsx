@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
   category: z.enum(articleCategories),
+  excerpt: z.string().min(10, { message: 'Excerpt must be at least 10 characters.' }).max(200, { message: 'Excerpt must be less than 200 characters.'}),
   content: z.string().min(50, { message: 'Content must be at least 50 characters.' }),
   image: z.any().optional(),
 });
@@ -41,6 +42,7 @@ export default function CreateArticlePage() {
     defaultValues: {
       title: '',
       category: 'News',
+      excerpt: '',
       content: '',
     },
   });
@@ -73,7 +75,7 @@ export default function CreateArticlePage() {
             content: values.content, 
             image: imageUrl,
             dataAiHint: 'user submitted',
-            excerpt: values.content.substring(0, 100).replace(/<[^>]*>?/gm, '') + '...',
+            excerpt: values.excerpt,
             author: user.email || 'Anonymous',
             authorId: user.uid,
             status: 'Pending Review',
@@ -166,6 +168,22 @@ export default function CreateArticlePage() {
                         <FormMessage />
                     </FormItem>
 
+                     <FormField
+                        control={form.control}
+                        name="excerpt"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Excerpt / Subheading</FormLabel>
+                            <FormControl>
+                            <Textarea placeholder="A short summary for social media and previews..." {...field} />
+                            </FormControl>
+                             <FormDescription>
+                                A brief description of your article (under 200 characters).
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
 
                     <FormField
                         control={form.control}
