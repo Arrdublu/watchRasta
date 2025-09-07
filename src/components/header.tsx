@@ -66,7 +66,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.appspot.com/o/images%2F3wR-logo.png?alt=media&token=8d272378-752e-40f4-8848-036125b29267" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
+          <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/branding%2FHeader-icon.png?alt=media&token=ddfb823f-9d79-4f03-aed6-8f7ddfaecb80" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
         </Link>
         <div className="flex flex-1 items-center justify-end">
           <nav className="hidden md:flex md:items-center md:space-x-6 text-sm font-medium">
