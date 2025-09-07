@@ -44,12 +44,12 @@ export function StyleAnalyzer() {
     setResult(null);
 
     try {
-      const [image1DataUri, image2DataUri] = await Promise.all([
+      const [track1DataUri, track2DataUri] = await Promise.all([
         toBase64(track1.file),
         toBase64(track2.file),
       ]);
       
-      const analysisResult = await analyzeStyleCompatibility({ image1DataUri, image2DataUri });
+      const analysisResult = await analyzeStyleCompatibility({ track1DataUri, track2DataUri });
       setResult(analysisResult);
     } catch (err) {
       console.error(err);
