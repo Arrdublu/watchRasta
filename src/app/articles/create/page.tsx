@@ -13,11 +13,9 @@ import { PlusCircle, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
-import { addArticle, articleCategories } from '@/lib/articles';
+import { articleCategories } from '@/lib/article-categories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { storage } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { v4 as uuidv4 } from 'uuid';
+import { submitArticle } from './actions';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
@@ -64,43 +62,32 @@ export default function CreateArticlePage() {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user) {
-        toast({ title: "Authentication Error", description: "You must be logged in to create an article.", variant: "destructive" });
+    if (!user || !imageFile) {
+        toast({ title: "Authentication Error", description: "You must be logged in and provide an image to create an article.", variant: "destructive" });
         return;
     }
     
     setIsSubmitting(true);
     
     try {
-      let imageUrl = 'https://picsum.photos/600/400';
-      if (imageFile) {
-        const imageRef = ref(storage, `articles/${uuidv4()}`);
-        await uploadBytes(imageRef, imageFile);
-        imageUrl = await getDownloadURL(imageRef);
+      const formData = new FormData();
+      formData.append('title', values.title);
+      formData.append('category', values.category);
+      formData.append('excerpt', values.excerpt);
+      formData.append('content', values.content);
+      formData.append('image', imageFile);
+
+      const result = await submitArticle(formData);
+
+      if (result.success) {
+        toast({
+          title: 'Article Submitted!',
+          description: 'Your article has been submitted for review. Thank you!',
+        });
+        router.push('/my-submissions');
+      } else {
+        throw new Error(result.message);
       }
-
-      const contentBlob = new Blob([values.content], { type: 'text/plain' });
-      const contentRef = ref(storage, `articles/${uuidv4()}.txt`);
-      await uploadBytes(contentRef, contentBlob);
-      const contentUrl = await getDownloadURL(contentRef);
-
-      await addArticle({
-        title: values.title,
-        category: values.category,
-        content: contentUrl, 
-        image: imageUrl,
-        dataAiHint: 'user submitted',
-        excerpt: values.excerpt,
-        author: user.email || 'Anonymous',
-        authorId: user.uid,
-        status: 'Pending Review',
-      });
-      
-      toast({
-        title: 'Article Submitted!',
-        description: 'Your article has been submitted for review. Thank you!',
-      });
-      router.push('/my-submissions');
     } catch (error) {
       console.error(error);
         toast({

@@ -1,18 +1,10 @@
 
+import admin from 'firebase-admin';
 import { getDb } from '@/lib/firebase-admin';
-import { collection, addDoc, getDocs, query, where, doc, getDoc, updateDoc, deleteDoc, serverTimestamp, orderBy, limit, writeBatch } from 'firebase/firestore';
+import type { ArticleCategory } from '@/lib/article-categories';
+export type { ArticleCategory } from '@/lib/article-categories';
+export { articleCategories } from '@/lib/article-categories';
 
-export type ArticleCategory = 'News' | 'Being' | 'Brands' | 'Album Reviews' | 'Interviews' | 'Tour Diaries' | 'Gear';
-
-export const articleCategories: [ArticleCategory, ...ArticleCategory[]] = [
-  'News',
-  'Being',
-  'Brands',
-  'Album Reviews',
-  'Interviews',
-  'Tour Diaries',
-  'Gear',
-];
 
 export type Article = {
   id: string; // Firestore document ID
@@ -32,13 +24,11 @@ export type Article = {
 };
 
 const getArticlesCollection = async () => {
-    // During build, env vars are not available, so we can't connect to DB.
-    if (!process.env.SERVICE_ACCOUNT) {
+    const db = await getDb();
+    if (!db) {
         return null;
     }
-    const db = await getDb();
-    if (!db) return null;
-    return collection(db, 'articles');
+    return db.collection('articles');
 };
 
 
@@ -49,11 +39,11 @@ export async function addArticle(article: Omit<Article, 'id' | 'slug' | 'date' |
     slug: article.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, ''),
     date: new Date().toISOString(),
     opengraphImage: article.image.replace('600/400', '1200/630'),
-    createdAt: serverTimestamp(),
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
   };
   const articlesCollection = await getArticlesCollection();
   if (!articlesCollection) throw new Error("Database not available");
-  const docRef = await addDoc(articlesCollection, newArticle);
+  const docRef = await articlesCollection.add(newArticle);
   return { ...newArticle, id: docRef.id };
 }
 
@@ -62,21 +52,21 @@ export async function getArticles(options: { category?: ArticleCategory, limit?:
     const articlesCollection = await getArticlesCollection();
     if (!articlesCollection) return [];
 
-    let q = query(articlesCollection, orderBy('createdAt', 'desc'));
+    let q: admin.firestore.Query = articlesCollection.orderBy('createdAt', 'desc');
 
     if (options.category) {
-        q = query(q, where('category', '==', options.category));
+        q = q.where('category', '==', options.category);
     }
     
     if (options.limit) {
-        q = query(q, limit(options.limit));
+        q = q.limit(options.limit);
     }
 
     if (options.authorId) {
-        q = query(q, where('authorId', '==', options.authorId));
+        q = q.where('authorId', '==', options.authorId);
     }
 
-    const snapshot = await getDocs(q);
+    const snapshot = await q.get();
     return snapshot.docs.map(doc => {
         const data = doc.data();
         const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
@@ -95,8 +85,8 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
   const articlesCollection = await getArticlesCollection();
   if (!articlesCollection) return null;
 
-  const q = query(articlesCollection, where('slug', '==', slug));
-  const snapshot = await getDocs(q);
+  const q = articlesCollection.where('slug', '==', slug);
+  const snapshot = await q.get();
   if (snapshot.empty) {
     return null;
   }
@@ -111,26 +101,28 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
   } as Article;
 }
 
-// READ (by ID) - useful for admin/user updates
+// READ (by ID)
 export async function getArticleById(id: string): Promise<Article | null> {
     const db = await getDb();
     if (!db) return null;
 
-    const docRef = doc(db, 'articles', id);
-    const docSnap = await getDoc(docRef);
+    const docRef = db.collection('articles').doc(id);
+    const docSnap = await docRef.get();
 
-    if (docSnap.exists()) {
+    if (docSnap.exists) {
         const data = docSnap.data();
-        const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
-        return {
-            ...data,
-            id: docSnap.id,
-            date: createdAt,
-            createdAt: createdAt,
-        } as Article;
-    } else {
-        return null;
+        if (data) {
+            const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+            return {
+                ...data,
+                id: docSnap.id,
+                date: createdAt,
+                createdAt: createdAt,
+            } as Article;
+        }
     }
+    
+    return null;
 }
 
 
@@ -139,10 +131,10 @@ export async function updateArticle(id: string, updates: Partial<Omit<Article, '
     const db = await getDb();
     if (!db) throw new Error("Database not available");
 
-    const docRef = doc(db, 'articles', id);
-    await updateDoc(docRef, {
+    const docRef = db.collection('articles').doc(id);
+    await docRef.update({
         ...updates,
-        updatedAt: serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 }
 
@@ -150,15 +142,14 @@ export async function updateArticle(id: string, updates: Partial<Omit<Article, '
 export async function updateArticleStatus(id: string, status: Article['status']) {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
-    const docRef = doc(db, 'articles', id);
-    await updateDoc(docRef, { status });
+    const docRef = db.collection('articles').doc(id);
+    await docRef.update({ status });
 }
 
 // DELETE
 export async function deleteArticle(id: string) {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
-    const docRef = doc(db, 'articles', id);
-    await deleteDoc(docRef);
+    const docRef = db.collection('articles').doc(id);
+    await docRef.delete();
 }
-

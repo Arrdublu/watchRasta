@@ -1,17 +1,8 @@
 
 'use server';
 
+import admin from 'firebase-admin';
 import { getDb } from '@/lib/firebase-admin';
-import {
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  serverTimestamp,
-} from 'firebase/firestore';
-
 
 export type Comment = {
   id: string;
@@ -24,24 +15,22 @@ export type Comment = {
 };
 
 const getCommentsCollection = async () => {
-    // During build, env vars are not available, so we can't connect to DB.
-    if (!process.env.SERVICE_ACCOUNT) {
+    const db = await getDb();
+    if (!db) {
         return null;
     }
-    const db = await getDb();
-    if (!db) return null;
-    return collection(db, 'comments');
+    return db.collection('comments');
 };
 
 // CREATE
 export async function addComment(comment: Omit<Comment, 'id' | 'createdAt'>) {
   const newComment = {
     ...comment,
-    createdAt: serverTimestamp(),
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
   };
   const commentsCollection = await getCommentsCollection();
   if (!commentsCollection) throw new Error("Database not available");
-  const docRef = await addDoc(commentsCollection, newComment);
+  const docRef = await commentsCollection.add(newComment);
   return { ...newComment, id: docRef.id };
 }
 
@@ -50,12 +39,11 @@ export async function getCommentsByArticleId(articleId: string): Promise<Comment
   const commentsCollection = await getCommentsCollection();
   if (!commentsCollection) return [];
 
-  const q = query(
-    commentsCollection,
-    where('articleId', '==', articleId),
-    orderBy('createdAt', 'asc')
-  );
-  const snapshot = await getDocs(q);
+  const q = commentsCollection
+    .where('articleId', '==', articleId)
+    .orderBy('createdAt', 'asc');
+
+  const snapshot = await q.get();
   return snapshot.docs.map(doc => {
     const data = doc.data();
     return {

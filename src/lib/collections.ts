@@ -1,5 +1,5 @@
 
-import { collection, getDocs, query, where, doc, getDoc, orderBy } from 'firebase/firestore';
+import admin from 'firebase-admin';
 import { getDb } from './firebase-admin';
 
 export type Collection = {
@@ -15,13 +15,11 @@ export type Collection = {
 };
 
 const getCollectionsCollection = async () => {
-    // During build, env vars are not available, so we can't connect to DB.
-    if (!process.env.SERVICE_ACCOUNT) {
+    const db = await getDb();
+    if (!db) {
         return null;
     }
-    const db = await getDb();
-    if (!db) return null;
-    return collection(db, 'collections');
+    return db.collection('collections');
 };
 
 // Get all collections, ordered by creation date
@@ -29,13 +27,13 @@ export async function getCollections(options: { status?: Collection['status'] } 
   const collectionsCollection = await getCollectionsCollection();
   if (!collectionsCollection) return [];
   
-  let q = query(collectionsCollection, orderBy('numericId', 'asc'));
+  let q: admin.firestore.Query = collectionsCollection.orderBy('numericId', 'asc');
 
   if (options.status) {
-    q = query(q, where('status', '==', options.status));
+    q = q.where('status', '==', options.status);
   }
 
-  const snapshot = await getDocs(q);
+  const snapshot = await q.get();
   return snapshot.docs.map(doc => ({ ...doc.data() as Omit<Collection, 'id'>, id: doc.id }));
 }
 
@@ -44,8 +42,8 @@ export async function getCollectionByNumericId(numericId: number): Promise<Colle
   const collectionsCollection = await getCollectionsCollection();
   if (!collectionsCollection) return null;
 
-  const q = query(collectionsCollection, where('numericId', '==', numericId));
-  const snapshot = await getDocs(q);
+  const q = collectionsCollection.where('numericId', '==', numericId);
+  const snapshot = await q.get();
   if (snapshot.empty) {
     return null;
   }
@@ -58,9 +56,9 @@ export async function getCollectionById(id: string): Promise<Collection | null> 
   const db = await getDb();
   if (!db) return null;
 
-  const docRef = doc(db, 'collections', id);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
+  const docRef = db.collection('collections').doc(id);
+  const docSnap = await docRef.get();
+  if (docSnap.exists) {
     return { ...docSnap.data() as Omit<Collection, 'id'>, id: docSnap.id };
   }
   return null;

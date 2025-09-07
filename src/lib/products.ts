@@ -1,5 +1,5 @@
 
-import { collection, getDocs, query, where, addDoc, doc, getDoc, deleteDoc, updateDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import admin from 'firebase-admin';
 import { getDb } from '@/lib/firebase-admin';
 
 export type Product = {
@@ -17,24 +17,22 @@ export type Product = {
 };
 
 const getProductsCollection = async () => {
-    // During build, env vars are not available, so we can't connect to DB.
-    if (!process.env.SERVICE_ACCOUNT) {
+    const db = await getDb();
+    if (!db) {
         return null;
     }
-    const db = await getDb();
-    if (!db) return null;
-    return collection(db, 'products');
+    return db.collection('products');
 };
 
 // CREATE
 export async function addProduct(product: Omit<Product, 'id' | 'createdAt'>) {
   const newProduct = {
     ...product,
-    createdAt: serverTimestamp(),
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
   };
   const productsCollection = await getProductsCollection();
   if (!productsCollection) throw new Error("Database not available");
-  const docRef = await addDoc(productsCollection, newProduct);
+  const docRef = await productsCollection.add(newProduct);
   return { ...newProduct, id: docRef.id };
 }
 
@@ -43,12 +41,11 @@ export async function getProductsByCollectionId(collectionId: number): Promise<P
   const productsCollection = await getProductsCollection();
   if (!productsCollection) return [];
 
-  const q = query(
-    productsCollection, 
-    where('collectionId', '==', collectionId), 
-    where('status', '==', 'Published')
-  );
-  const querySnapshot = await getDocs(q);
+  const q = productsCollection
+    .where('collectionId', '==', collectionId)
+    .where('status', '==', 'Published');
+
+  const querySnapshot = await q.get();
   return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
 }
 
@@ -57,12 +54,11 @@ export async function getProductsByAuthorId(authorId: string): Promise<Product[]
     const productsCollection = await getProductsCollection();
     if (!productsCollection) return [];
 
-    const q = query(
-        productsCollection,
-        where('authorId', '==', authorId),
-        orderBy('createdAt', 'desc')
-    );
-    const querySnapshot = await getDocs(q);
+    const q = productsCollection
+        .where('authorId', '==', authorId)
+        .orderBy('createdAt', 'desc');
+        
+    const querySnapshot = await q.get();
     return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
 }
 
@@ -72,9 +68,9 @@ export async function getProductById(id: string): Promise<Product | undefined> {
     const db = await getDb();
     if (!db) return undefined;
 
-    const docRef = doc(db, 'products', id);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
+    const docRef = db.collection('products').doc(id);
+    const docSnap = await docRef.get();
+    if (docSnap.exists) {
         return { ...docSnap.data(), id: docSnap.id } as Product;
     }
     return undefined;
@@ -85,13 +81,13 @@ export async function getAllProducts(options: { authorId?: string } = {}): Promi
   const productsCollection = await getProductsCollection();
   if (!productsCollection) return [];
 
-  let q = query(productsCollection, orderBy('createdAt', 'desc'));
+  let q: admin.firestore.Query = productsCollection.orderBy('createdAt', 'desc');
 
   if (options.authorId) {
-      q = query(q, where('authorId', '==', options.authorId));
+      q = q.where('authorId', '==', options.authorId);
   }
 
-  const querySnapshot = await getDocs(q);
+  const querySnapshot = await q.get();
   return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
 }
 
@@ -99,10 +95,10 @@ export async function getAllProducts(options: { authorId?: string } = {}): Promi
 export async function updateProduct(id: string, updates: Partial<Product>) {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
-    const docRef = doc(db, 'products', id);
-    await updateDoc(docRef, {
+    const docRef = db.collection('products').doc(id);
+    await docRef.update({
         ...updates,
-        updatedAt: serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 }
 
@@ -110,14 +106,14 @@ export async function updateProduct(id: string, updates: Partial<Product>) {
 export async function updateProductStatus(id: string, status: Product['status']) {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
-    const docRef = doc(db, 'products', id);
-    await updateDoc(docRef, { status });
+    const docRef = db.collection('products').doc(id);
+    await docRef.update({ status });
 }
 
 // DELETE
 export async function deleteProduct(id: string) {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
-    const docRef = doc(db, 'products', id);
-    await deleteDoc(docRef);
+    const docRef = db.collection('products').doc(id);
+    await docRef.delete();
 }

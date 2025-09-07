@@ -37,11 +37,11 @@ export function useCollection() {
     }
   }, [collection, saveCollection]);
 
-  const removeFromCollection = useCallback((articleId: number) => {
+  const removeFromCollection = useCallback((articleId: string) => {
     saveCollection(collection.filter((item) => item.id !== articleId));
   }, [collection, saveCollection]);
 
-  const isInCollection = useCallback((articleId: number) => {
+  const isInCollection = useCallback((articleId: string) => {
     return collection.some((item) => item.id === articleId);
   }, [collection]);
 
