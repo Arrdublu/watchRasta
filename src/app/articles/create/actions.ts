@@ -29,7 +29,7 @@ export async function submitArticle(formData: FormData) {
     try {
         const adminDb = await getDb();
         if (!adminDb) throw new Error("Database not available");
-        const adminAuth = getAuth(admin.apps[0]!);
+        const adminAuth = getAuth();
         const decodedToken = await adminAuth.verifyIdToken(idToken);
         user = await adminAuth.getUser(decodedToken.uid);
     } catch (error) {

@@ -69,11 +69,13 @@ export async function getArticles(options: { category?: ArticleCategory, limit?:
     return snapshot.docs.map(doc => {
         const data = doc.data();
         const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+        const updatedAt = data.updatedAt?.toDate ? new Date(data.updatedAt.toDate()).toISOString() : null;
         return {
             ...data,
             id: doc.id,
             date: createdAt,
             createdAt: createdAt,
+            updatedAt: updatedAt,
         } as Article;
     });
 }
@@ -92,11 +94,14 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
   const docRef = snapshot.docs[0];
   const data = docRef.data();
   const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+  const updatedAt = data.updatedAt?.toDate ? new Date(data.updatedAt.toDate()).toISOString() : null;
+
   return {
       ...data,
       id: docRef.id,
       date: createdAt,
       createdAt: createdAt,
+      updatedAt: updatedAt,
   } as Article;
 }
 
@@ -112,11 +117,13 @@ export async function getArticleById(id: string): Promise<Article | null> {
         const data = docSnap.data();
         if (data) {
             const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+            const updatedAt = data.updatedAt?.toDate ? new Date(data.updatedAt.toDate()).toISOString() : null;
             return {
                 ...data,
                 id: docSnap.id,
                 date: createdAt,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
             } as Article;
         }
     }

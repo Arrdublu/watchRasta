@@ -3,18 +3,34 @@
 
 import admin from 'firebase-admin';
 
-if (!admin.apps.length) {
-  try {
-    admin.initializeApp();
-  } catch (e: any) {
-    console.error('Firebase Admin SDK initialization error:', e.stack);
-  }
+function initializeAdminApp() {
+    if (admin.apps.length === 0) {
+        try {
+            console.log("Initializing Firebase Admin SDK...");
+            admin.initializeApp({
+                credential: admin.credential.applicationDefault(),
+            });
+            console.log("Firebase Admin SDK initialized successfully.");
+        } catch (e: any) {
+            console.error('Firebase Admin SDK initialization error:', e.stack);
+            throw new Error(`Failed to initialize Firebase Admin SDK: ${e.message}`);
+        }
+    }
+    return admin.app();
 }
 
-const db = admin.firestore();
-const auth = admin.auth();
-const storage = admin.storage();
+// Keep async signature to avoid breaking calling code.
+export async function getDb() {
+    initializeAdminApp();
+    return admin.firestore();
+}
 
-export const getDb = async () => db;
-export const getAuth = async () => auth;
-export const getStorage = async () => storage;
+export async function getAuth() {
+    initializeAdminApp();
+    return admin.auth();
+}
+
+export async function getStorage() {
+    initializeAdminApp();
+    return admin.storage();
+}
