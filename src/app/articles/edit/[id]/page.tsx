@@ -49,10 +49,6 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
   });
   
   useEffect(() => {
-    if (!user || !params.id) {
-        return;
-    }
-
     async function fetchArticle(id: string) {
       setIsFetching(true);
       try {
@@ -103,8 +99,9 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
       }
     }
     
-    fetchArticle(params.id);
-
+    if (user && params.id) {
+        fetchArticle(params.id);
+    }
   }, [params.id, user, form, toast, router]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -305,3 +302,5 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
     </div>
   );
 }
+
+    
