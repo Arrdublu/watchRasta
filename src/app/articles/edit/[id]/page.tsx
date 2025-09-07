@@ -69,8 +69,17 @@ export default function EditArticlePage({ params }: { params: { id: string }}) {
 
         let content = article.content;
         if (content.startsWith('http')) {
-            const response = await fetch(content);
-            content = await response.text();
+            try {
+                const response = await fetch(content, { cache: 'no-store' });
+                if (response.ok) {
+                    content = await response.text();
+                } else {
+                     throw new Error('Failed to fetch article content from URL');
+                }
+            } catch (fetchError) {
+                console.error("Error fetching content from URL: ", fetchError);
+                content = "Error loading content. Please edit and save to fix.";
+            }
         }
 
         form.reset({
