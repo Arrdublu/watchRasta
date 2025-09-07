@@ -13,16 +13,16 @@ import { PlusCircle, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
-import { addProduct } from '@/lib/products';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getCollections, type Collection } from '@/lib/collections';
+import { submitProduct } from './actions';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
   collectionId: z.coerce.number(),
   description: z.string().min(20, { message: 'Description must be at least 20 characters.' }),
   price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
-  image: z.any().optional(),
+  image: z.any().refine((files) => files?.length > 0, 'Image is required.'),
 });
 
 export default function CreateProductPage() {
@@ -31,6 +31,7 @@ export default function CreateProductPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [collections, setCollections] = useState<Collection[]>([]);
 
   useEffect(() => {
@@ -62,6 +63,7 @@ export default function CreateProductPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+        setImageFile(file);
         const reader = new FileReader();
         reader.onloadend = () => {
             setImagePreview(reader.result as string);
@@ -71,33 +73,34 @@ export default function CreateProductPage() {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !user.email) {
-        toast({ title: "Authentication Error", description: "You must be logged in to create a product.", variant: "destructive" });
+    if (!user || !imageFile) {
+        toast({ title: "Authentication Error", description: "You must be logged in and provide an image to create a product.", variant: "destructive" });
         return;
     }
     
     setIsSubmitting(true);
-    
-    const imageUrl = imagePreview || 'https://picsum.photos/400/400';
 
     try {
-        await addProduct({
-            title: values.title,
-            collectionId: values.collectionId,
-            description: values.description,
-            price: String(values.price),
-            imageUrl: imageUrl,
-            dataAiHint: 'user submitted product',
-            status: 'Pending Review',
-            author: user.email,
-            authorId: user.uid,
-        });
-      
-        toast({
-            title: 'Product Submitted!',
-            description: 'Your product has been submitted for review. Thank you!',
-        });
-        router.push('/my-submissions');
+        const idToken = await user.getIdToken();
+        const formData = new FormData();
+        formData.append('idToken', idToken);
+        formData.append('title', values.title);
+        formData.append('collectionId', String(values.collectionId));
+        formData.append('description', values.description);
+        formData.append('price', String(values.price));
+        formData.append('image', imageFile);
+
+        const result = await submitProduct(formData);
+
+        if (result.success) {
+            toast({
+                title: 'Product Submitted!',
+                description: 'Your product has been submitted for review. Thank you!',
+            });
+            router.push('/my-submissions');
+        } else {
+            throw new Error(result.message);
+        }
     } catch (error) {
         toast({
             title: 'Error',
@@ -162,23 +165,29 @@ export default function CreateProductPage() {
                         )}
                     />
 
-                    <FormItem>
-                        <FormLabel>Product Image</FormLabel>
-                        <FormControl>
-                            <div className="relative w-full aspect-video border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-background/50 hover:border-primary transition-colors">
-                                {imagePreview ? (
-                                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-md"/>
-                                ) : (
-                                    <div className="text-center text-muted-foreground">
-                                    <Upload className="mx-auto h-12 w-12" />
-                                    <p>Click or drag to upload an image</p>
+                    <FormField
+                        control={form.control}
+                        name="image"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Product Image</FormLabel>
+                                <FormControl>
+                                    <div className="relative w-full aspect-video border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-background/50 hover:border-primary transition-colors">
+                                        {imagePreview ? (
+                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-md"/>
+                                        ) : (
+                                            <div className="text-center text-muted-foreground">
+                                            <Upload className="mx-auto h-12 w-12" />
+                                            <p>Click or drag to upload an image</p>
+                                            </div>
+                                        )}
+                                        <Input id="image" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={(e) => {field.onChange(e.target.files); handleImageChange(e)}} />
                                     </div>
-                                )}
-                                <Input id="image" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleImageChange} />
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
                     <FormField
                         control={form.control}

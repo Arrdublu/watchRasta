@@ -1,45 +1,28 @@
+
 'use server';
 
 import admin from 'firebase-admin';
 
-const initializeFirebaseAdmin = () => {
-    if (admin.apps.length > 0) {
-        return;
-    }
+let app;
 
-    // Only attempt to initialize if the service account is available.
-    // This will be true at runtime, but false during the build process.
-    if (process.env.SERVICE_ACCOUNT) {
-         try {
-            const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT as string);
-            admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount),
-            });
-        } catch (e) {
-            console.error('Failed to parse SERVICE_ACCOUNT or initialize firebase-admin', e);
-        }
+try {
+    app = admin.initializeApp({
+        credential: admin.credential.cert(JSON.parse(process.env.SERVICE_ACCOUNT!)),
+    });
+} catch (e: any) {
+    if (e.code === 'auth/invalid-credential') {
+        console.log("Firebase Admin SDK already initialized.");
+        app = admin.app();
+    } else {
+        console.error("Firebase Admin SDK initialization error:", e);
+        throw e;
     }
-};
-
-initializeFirebaseAdmin();
-
-export async function getDb() {
-    if (!admin.apps.length) {
-        return null;
-    }
-    return admin.firestore();
 }
 
-export async function getStorage() {
-    if (!admin.apps.length) {
-        return null;
-    }
-    return admin.storage();
-}
+const db = admin.firestore(app);
+const auth = admin.auth(app);
+const storage = admin.storage(app);
 
-export async function getAuth() {
-    if (!admin.apps.length) {
-        return null;
-    }
-    return admin.auth();
-}
+export const getDb = async () => db;
+export const getAuth = async () => auth;
+export const getStorage = async () => storage;

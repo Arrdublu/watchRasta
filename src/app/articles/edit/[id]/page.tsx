@@ -13,13 +13,11 @@ import { Edit, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
-import { getArticleById, updateArticle, type Article } from '@/lib/articles';
+import { getArticleById, type Article } from '@/lib/articles';
 import { articleCategories } from '@/lib/article-categories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { storage } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { v4 as uuidv4 } from 'uuid';
 import { Skeleton } from '@/components/ui/skeleton';
+import { updateArticleAction } from './actions';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
@@ -121,38 +119,39 @@ export default function EditArticlePage() {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !currentArticle) return;
+    if (!user || !currentArticle) {
+        toast({ title: "Authentication Error", description: "You must be logged in to update an article.", variant: "destructive" });
+        return;
+    }
     
     setIsSubmitting(true);
     
     try {
-      let imageUrl = imagePreview; // Keep old image if not changed
-      if (imageFile) {
-        const imageRef = ref(storage, `articles/${uuidv4()}`);
-        await uploadBytes(imageRef, imageFile);
-        imageUrl = await getDownloadURL(imageRef);
-      }
-      
-      const contentBlob = new Blob([values.content], { type: 'text/plain' });
-      const contentRef = ref(storage, `articles/${uuidv4()}.txt`);
-      await uploadBytes(contentRef, contentBlob);
-      const contentUrl = await getDownloadURL(contentRef);
+        const idToken = await user.getIdToken();
+        const formData = new FormData();
+        formData.append('idToken', idToken);
+        formData.append('articleId', currentArticle.id);
+        formData.append('title', values.title);
+        formData.append('category', values.category);
+        formData.append('excerpt', values.excerpt);
+        formData.append('content', values.content);
+        if (imageFile) {
+            formData.append('image', imageFile);
+        } else if (imagePreview) {
+            formData.append('existingImageUrl', imagePreview);
+        }
 
-      await updateArticle(currentArticle.id, {
-        title: values.title,
-        category: values.category,
-        content: contentUrl,
-        image: imageUrl || '',
-        opengraphImage: (imageUrl || '').replace('600/400', '1200/630'),
-        excerpt: values.excerpt,
-        status: 'Pending Review', // Always reset to pending review on edit
-      });
-      
-      toast({
-        title: 'Article Updated!',
-        description: 'Your changes have been submitted for review.',
-      });
-      router.push('/my-submissions');
+        const result = await updateArticleAction(formData);
+        
+        if (result.success) {
+            toast({
+                title: 'Article Updated!',
+                description: 'Your changes have been submitted for review.',
+            });
+            router.push('/my-submissions');
+        } else {
+            throw new Error(result.message);
+        }
     } catch (error) {
         console.error(error);
         toast({
@@ -221,7 +220,7 @@ export default function EditArticlePage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>Category</FormLabel>
-                             <Select onValueChange={field.onChange} defaultValue={field.value}>
+                             <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select a category" />

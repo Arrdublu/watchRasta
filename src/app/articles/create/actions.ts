@@ -4,10 +4,11 @@
 import { z } from 'zod';
 import { addArticle } from '@/lib/articles';
 import { articleCategories } from '@/lib/article-categories';
-import { storage } from '@/lib/firebase';
+import { storage, auth as clientAuth } from '@/lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
-import { getAuth } from '@/lib/firebase-admin';
+import { getAuth } from 'firebase-admin/auth';
+import { getDb } from '@/lib/firebase-admin';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
@@ -26,10 +27,9 @@ export async function submitArticle(formData: FormData) {
 
     let user;
     try {
-        const adminAuth = await getAuth();
-        if (!adminAuth) {
-            throw new Error('Authentication service not available.');
-        }
+        const adminDb = await getDb();
+        if (!adminDb) throw new Error("Database not available");
+        const adminAuth = getAuth(admin.apps[0]!);
         const decodedToken = await adminAuth.verifyIdToken(idToken);
         user = await adminAuth.getUser(decodedToken.uid);
     } catch (error) {

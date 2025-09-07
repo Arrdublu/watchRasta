@@ -13,13 +13,11 @@ import { Edit, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
-import { getProductById, updateProduct, type Product } from '@/lib/products';
+import { getProductById, type Product } from '@/lib/products';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getCollections, type Collection } from '@/lib/collections';
-import { storage } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { v4 as uuidv4 } from 'uuid';
 import { Skeleton } from '@/components/ui/skeleton';
+import { updateProductAction } from './actions';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
@@ -110,33 +108,39 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !currentProduct) return;
+    if (!user || !currentProduct) {
+         toast({ title: "Authentication Error", description: "You must be logged in to update a product.", variant: "destructive" });
+        return;
+    }
     
     setIsSubmitting(true);
     
     try {
-      let imageUrl = imagePreview; // Keep old image if not changed
-      if (imageFile) {
-        const imageRef = ref(storage, `products/${uuidv4()}`);
-        await uploadBytes(imageRef, imageFile);
-        imageUrl = await getDownloadURL(imageRef);
-      }
+        const idToken = await user.getIdToken();
+        const formData = new FormData();
+        formData.append('idToken', idToken);
+        formData.append('productId', currentProduct.id);
+        formData.append('title', values.title);
+        formData.append('collectionId', String(values.collectionId));
+        formData.append('description', values.description);
+        formData.append('price', String(values.price));
+        if (imageFile) {
+            formData.append('image', imageFile);
+        } else if (imagePreview) {
+            formData.append('existingImageUrl', imagePreview);
+        }
 
-      await updateProduct(currentProduct.id, {
-        ...currentProduct,
-        title: values.title,
-        collectionId: values.collectionId,
-        description: values.description,
-        price: String(values.price),
-        imageUrl: imageUrl || '',
-        status: 'Pending Review', // Always reset to pending review on edit
-      });
+        const result = await updateProductAction(formData);
       
-      toast({
-        title: 'Product Updated!',
-        description: 'Your changes have been submitted for review.',
-      });
-      router.push('/my-submissions');
+        if (result.success) {
+            toast({
+                title: 'Product Updated!',
+                description: 'Your changes have been submitted for review.',
+            });
+            router.push('/my-submissions');
+        } else {
+            throw new Error(result.message);
+        }
     } catch (error) {
         console.error(error);
         toast({
@@ -284,7 +288,3 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
     </div>
   );
 }
-
-    
-
-    
