@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
-import { articles as allArticles, type Article } from '@/lib/articles';
+import { getArticles, deleteArticle, type Article } from '@/lib/articles';
 import { products as allProducts, type Product } from '@/lib/products';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -27,14 +27,22 @@ export default function MySubmissionsPage() {
 
   const [myArticles, setMyArticles] = useState<Article[]>([]);
   const [myProducts, setMyProducts] = useState<Product[]>([]);
+  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
+      return;
     }
     if (user?.email) {
-      setMyArticles(allArticles.filter(a => a.author === user.email));
-      setMyProducts(allProducts.filter(p => p.authorEmail === user.email));
+      const fetchSubmissions = async () => {
+        setIsFetching(true);
+        const allUserArticles = await getArticles(); // In a real app, you'd query by author
+        setMyArticles(allUserArticles.filter(a => a.author === user.email));
+        setMyProducts(allProducts.filter(p => p.authorEmail === user.email));
+        setIsFetching(false);
+      }
+      fetchSubmissions();
     }
   }, [user, loading, router]);
   
@@ -55,7 +63,7 @@ export default function MySubmissionsPage() {
     return collections.find(c => c.id === collectionId)?.title || 'Unknown';
   }
 
-  const handleEdit = (type: 'article' | 'product', id: number) => {
+  const handleEdit = (type: 'article' | 'product', id: string) => {
     // In a real app, you would navigate to an edit page
     // For now, we'll just show a toast
     toast({ title: "Edit Action", description: `Editing ${type} with ID: ${id}.` });
@@ -63,18 +71,28 @@ export default function MySubmissionsPage() {
     // router.push(`/${type}s/edit/${id}`);
   };
 
-  const handleDelete = (type: 'article' | 'product', id: number) => {
-    // In a real app, you would make an API call to delete the item
-    if (type === 'article') {
-        setMyArticles(myArticles.filter(a => a.id !== id));
-    } else {
-        setMyProducts(myProducts.filter(p => p.id !== id));
+  const handleDelete = async (type: 'article' | 'product', id: string) => {
+    try {
+        if (type === 'article') {
+            await deleteArticle(id);
+            setMyArticles(myArticles.filter(a => a.id !== id));
+        } else {
+            // await deleteProduct(id); // Implement this function in products.ts
+            setMyProducts(myProducts.filter(p => p.id !== Number(id)));
+             toast({ title: "Product Deleted", description: "The item has been removed.", variant: 'destructive' });
+        }
+        toast({ title: `${type.charAt(0).toUpperCase() + type.slice(1)} Deleted`, description: "The item has been removed.", variant: 'destructive' });
+    } catch (error) {
+         toast({ title: `Error deleting ${type}`, description: "There was a problem removing the item.", variant: 'destructive' });
     }
-    toast({ title: `${type.charAt(0).toUpperCase() + type.slice(1)} Deleted`, description: "The item has been removed.", variant: 'destructive' });
   };
 
 
   if (loading || !user) {
+    return <div className="container flex items-center justify-center min-h-[60vh]">Loading...</div>;
+  }
+  
+  if (isFetching) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Loading your submissions...</div>;
   }
 
@@ -157,8 +175,8 @@ export default function MySubmissionsPage() {
                                         <Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4" /></Button>
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent>
-                                        <DropdownMenuItem onClick={() => handleEdit('product', product.id)}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleDelete('product', product.id)} className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleEdit('product', String(product.id))}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleDelete('product', String(product.id))} className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>

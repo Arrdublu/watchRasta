@@ -1,8 +1,9 @@
-import { ArticleCard } from '@/components/article-card';
-import { articles } from '@/lib/articles';
 
-export default function BrandsPage() {
-  const brandArticles = articles.filter(a => a.category === 'Brands');
+import { ArticleCard } from '@/components/article-card';
+import { getArticles } from '@/lib/articles';
+
+export default async function BrandsPage() {
+  const brandArticles = await getArticles({ category: 'Brands' });
 
   return (
     <div className="container py-16 md:py-24">

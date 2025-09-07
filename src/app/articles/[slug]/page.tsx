@@ -1,5 +1,5 @@
 
-import { getArticleBySlug, articles } from '@/lib/articles';
+import { getArticleBySlug, getArticles } from '@/lib/articles';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
@@ -10,14 +10,15 @@ import { Embed } from '@/components/embed';
 import { Metadata } from 'next';
 
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const articles = await getArticles();
   return articles.map((article) => ({
     slug: article.slug,
   }));
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article = getArticleBySlug(params.slug);
+  const article = await getArticleBySlug(params.slug);
 
   if (!article) {
     return {
@@ -56,14 +57,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = getArticleBySlug(params.slug);
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
+  const article = await getArticleBySlug(params.slug);
 
   if (!article) {
     notFound();
   }
   
-  const relatedArticles = articles.filter(a => a.category === article.category && a.id !== article.id).slice(0, 3);
+  const relatedArticles = (await getArticles({ category: article.category, limit: 4 }))
+    .filter(a => a.id !== article.id)
+    .slice(0, 3);
+
   const options = {
     replace: (domNode: any) => {
         if (domNode instanceof Element && domNode.name === 'iframe') {

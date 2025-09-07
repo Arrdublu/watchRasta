@@ -1,15 +1,13 @@
 
 import { HeroBanner } from '@/components/hero-banner';
 import { ArticleCard } from '@/components/article-card';
-import { articles, articleCategories } from '@/lib/articles';
+import { articles as staticArticles, articleCategories, getArticles } from '@/lib/articles';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
-export default function Home() {
-  const mainArticle = articles[0];
-  const sideArticles = articles.slice(1, 3);
-  const lowerArticles = articles.slice(3, 6);
+export default async function Home() {
+  const articles = await getArticles({ limit: 6 });
 
   // Exclude categories that might not be primary navigation items
   const navCategories = articleCategories.filter(c => !['Album Reviews', 'Interviews', 'Tour Diaries', 'Gear'].includes(c));

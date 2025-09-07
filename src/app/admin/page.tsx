@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { articles as initialArticles, type Article } from '@/lib/articles';
+import { getArticles, updateArticleStatus, deleteArticle, type Article } from '@/lib/articles';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +24,8 @@ import { useRouter } from 'next/navigation';
 const ADMIN_EMAIL = 'watchrasta@gmail.com';
 
 export default function AdminDashboardPage() {
-  const [articles, setArticles] = useState<Article[]>(initialArticles);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [isFetching, setIsFetching] = useState(true);
   const { toast } = useToast();
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -32,23 +33,41 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (!loading && user?.email !== ADMIN_EMAIL) {
       router.push('/');
+    } else if (user?.email === ADMIN_EMAIL) {
+      const fetchArticles = async () => {
+        setIsFetching(true);
+        const articlesFromDb = await getArticles({});
+        setArticles(articlesFromDb);
+        setIsFetching(false);
+      }
+      fetchArticles();
     }
   }, [user, loading, router]);
 
 
-  const handleStatusChange = (id: number, status: Article['status']) => {
-    setArticles(articles.map(article => 
-      article.id === id ? { ...article, status } : article
-    ));
-    toast({ title: "Article Updated", description: `Article status changed to ${status}.` });
+  const handleStatusChange = async (id: string, status: Article['status']) => {
+    try {
+      await updateArticleStatus(id, status);
+      setArticles(articles.map(article => 
+        article.id === id ? { ...article, status } : article
+      ));
+      toast({ title: "Article Updated", description: `Article status changed to ${status}.` });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to update article status.", variant: 'destructive'});
+    }
   };
 
-  const handleDelete = (id: number) => {
-    setArticles(articles.filter(article => article.id !== id));
-    toast({ title: "Article Deleted", description: "The article has been successfully deleted.", variant: 'destructive' });
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteArticle(id);
+      setArticles(articles.filter(article => article.id !== id));
+      toast({ title: "Article Deleted", description: "The article has been successfully deleted.", variant: 'destructive' });
+    } catch (error) {
+       toast({ title: "Error", description: "Failed to delete article.", variant: 'destructive'});
+    }
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     toast({ title: "Edit Action", description: `Triggered edit for article ID: ${id}.` });
     // In a real app, this would navigate to an edit page e.g. router.push(`/admin/edit/${id}`)
   }
@@ -68,6 +87,10 @@ export default function AdminDashboardPage() {
   
   if (loading || user?.email !== ADMIN_EMAIL) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Checking authorization...</div>;
+  }
+  
+  if (isFetching) {
+      return <div className="container flex items-center justify-center min-h-[60vh]">Loading articles...</div>;
   }
 
   return (

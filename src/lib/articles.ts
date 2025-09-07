@@ -1,4 +1,7 @@
 
+import { db } from '@/lib/firebase';
+import { collection, addDoc, getDocs, query, where, doc, getDoc, updateDoc, deleteDoc, serverTimestamp, orderBy, limit } from 'firebase/firestore';
+
 export type ArticleCategory = 'News' | 'Lifestyle' | 'Brands' | 'Album Reviews' | 'Interviews' | 'Tour Diaries' | 'Gear';
 
 export const articleCategories: [ArticleCategory, ...ArticleCategory[]] = [
@@ -12,7 +15,7 @@ export const articleCategories: [ArticleCategory, ...ArticleCategory[]] = [
 ];
 
 export type Article = {
-  id: number;
+  id: string; // Firestore document ID
   slug: string;
   title: string;
   category: ArticleCategory;
@@ -22,110 +25,95 @@ export type Article = {
   excerpt: string;
   content: string;
   author: string;
-  date: string;
+  date: string; // Keep as ISO string for consistency
+  createdAt: any; // Firestore server timestamp
   status: 'Published' | 'Draft' | 'Pending Review';
 };
 
-export let articles: Article[] = [
-  {
-    id: 1,
-    slug: 'new-album-celestial-echoes-out-now',
-    title: 'New Album "Celestial Echoes" Out Now',
-    category: 'News',
-    image: 'https://picsum.photos/600/400',
-    opengraphImage: 'https://picsum.photos/1200/630',
-    dataAiHint: 'album cover',
-    excerpt: 'The long-awaited new album from watchRasta, "Celestial Echoes," is available on all streaming platforms.',
-    content: '<p>The moment is finally here. "Celestial Echoes" has arrived. This album is a journey through sound, a project years in the making. Thank you to everyone who supported this vision. Go listen, share, and let the music speak.</p><p>Crafted in studios from Kingston to London, the album blends genres and pushes boundaries. It\'s a reflection of my personal journey and the sounds that inspire me. I hope it connects with you.</p><h3>Check out the lead single:</h3><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/27jAav0wogMYRHzeyGLoKs?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
-    author: 'watchRasta',
-    date: '2024-05-15',
-    status: 'Published',
-  },
-  {
-    id: 2,
-    slug: 'on-the-road-tokyo-diaries',
-    title: 'On the Road: Tokyo Diaries',
-    category: 'Tour Diaries',
-    image: 'https://picsum.photos/600/401',
-    opengraphImage: 'https://picsum.photos/1200/631',
-    dataAiHint: 'tokyo neon',
-    excerpt: 'First stop, Tokyo. The energy, the people, the inspiration. A look inside the first leg of the world tour.',
-    content: '<p>Tokyo is a city of beautiful contradictions. The serene temples and the bustling energy of Shibuya. The food, the fashion, the art - it all seeps into the music. The shows have been electric. Feeling the energy from the crowd is something I\'ll never take for granted.</p><p>Between soundchecks and shows, I explored the city\'s hidden gems. Found some incredible vinyl shops and tasted the best ramen of my life. Japan has my heart.</p>',
-    author: 'watchRasta',
-    date: '2024-05-20',
-    status: 'Published',
-  },
-  {
-    id: 3,
-    slug: 'the-making-of-rebel-sound',
-    title: 'The Making of "Rebel Sound"',
-    category: 'Brands',
-    image: 'https://picsum.photos/600/402',
-    opengraphImage: 'https://picsum.photos/1200/632',
-    dataAiHint: 'music studio',
-    excerpt: 'A look back at the creative process behind the breakout single, "Rebel Sound".',
-    content: '<p>"Rebel Sound" started with a simple bassline in a small studio in Kingston. It was raw, it was real. This article breaks down the layers, the lyrics, and the collaboration that brought the track to life.</p><p>We wanted to capture a feeling of defiance and hope. The track features legendary percussionist "Sly" Dunbar, whose contribution was a dream come true. It\'s more than a song; it\'s an anthem.</p>',
-    author: 'The Team',
-    date: '2024-05-25',
-    status: 'Pending Review',
-  },
-  {
-    id: 4,
-    slug: 'new-merch-line-released',
-    title: 'New Merch Line Released',
-    category: 'News',
-    image: 'https://picsum.photos/600/403',
-    opengraphImage: 'https://picsum.photos/1200/633',
-    dataAiHint: 't-shirt design',
-    excerpt: 'Fresh designs inspired by the new album are now available in the official store.',
-    content: '<p>You asked, and we delivered. The new "Celestial Echoes" merch line is here. We worked with some incredible designers to create pieces that reflect the album\'s aesthetic. Hoodies, tees, vinyl, and more.</p><p>Every item is high-quality and ethically sourced. We hope you love it as much as we do. Wear it proud and represent the movement.</p>',
-    author: 'The Team',
-    date: '2024-06-01',
-    status: 'Draft',
-  },
-  {
-    id: 5,
-    slug: 'berlin-nights-and-studio-sessions',
-    title: 'Berlin Nights and Studio Sessions',
-    category: 'Tour Diaries',
-    image: 'https://picsum.photos/600/404',
-    opengraphImage: 'https://picsum.photos/1200/634',
-    dataAiHint: 'berlin graffiti',
-    excerpt: 'The European leg of the tour continues. A recap of an unforgettable week in Berlin.',
-    content: '<p>Berlin\'s creative energy is unmatched. The history, the art scene, it\'s all so inspiring. We played a sold-out show at Astra Kulturhaus and the vibe was incredible. The love was real.</p><p>I also hit the studio with some amazing local producers to work on new ideas. The city has a sound, and I tried to capture a piece of it. More to come on that soon.</p>',
-    author: 'watchRasta',
-    date: '2024-06-05',
-    status: 'Published',
-  },
-  {
-    id: 6,
-    slug: 'lyrical-breakdown-starlight',
-    title: 'Lyrical Breakdown: "Starlight"',
-    category: 'Brands',
-    image: 'https://picsum.photos/600/405',
-    opengraphImage: 'https://picsum.photos/1200/635',
-    dataAiHint: 'starlight sky',
-    excerpt: 'Diving deep into the lyrics and meaning of the fan-favorite track, "Starlight".',
-    content: '<p>"Starlight" is a song about finding hope in the darkness. It\'s about connection, and the idea that we are all under the same sky, guided by the same stars. This piece explores the inspiration and the double meanings behind the words.</p><p>It was written on a quiet night in the Jamaican countryside, just looking up at the sky. It\'s a reminder to look up, to connect with something bigger than ourselves. It\'s one of the most personal songs on the album.</p>',
-    author: 'watchRasta',
-    date: '2024-06-10',
-    status: 'Published',
-  },
-];
+const articlesCollection = collection(db, 'articles');
 
-// This is a mock function. In a real app, you'd be saving to a database.
-export function addArticle(article: Omit<Article, 'id' | 'slug' | 'date' | 'opengraphImage'> & {image: string}) {
-  const newArticle: Article = {
+// CREATE
+export async function addArticle(article: Omit<Article, 'id' | 'slug' | 'date' | 'opengraphImage' | 'createdAt'> & {image: string}) {
+  const newArticle = {
     ...article,
-    id: articles.length + 1,
     slug: article.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, ''),
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString(),
     opengraphImage: article.image.replace('600/400', '1200/630'),
+    createdAt: serverTimestamp(),
   };
-  articles.unshift(newArticle); // Add to the beginning of the array
-  return newArticle;
+  const docRef = await addDoc(articlesCollection, newArticle);
+  return { ...newArticle, id: docRef.id };
 }
 
-export function getArticleBySlug(slug: string) {
-  return articles.find((article) => article.slug === slug);
+// READ (all)
+export async function getArticles(options: { category?: ArticleCategory, limit?: number } = {}) {
+    let q = query(articlesCollection, orderBy('createdAt', 'desc'));
+
+    if (options.category) {
+        q = query(q, where('category', '==', options.category));
+    }
+    
+    if (options.limit) {
+        q = query(q, limit(options.limit));
+    }
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+        ...doc.data() as Omit<Article, 'id' | 'date'>,
+        id: doc.id,
+        // Convert timestamp to string
+        date: new Date(doc.data().createdAt?.toDate() || Date.now()).toISOString(),
+    }));
+}
+
+
+// READ (by slug)
+export async function getArticleBySlug(slug: string): Promise<Article | null> {
+  const q = query(articlesCollection, where('slug', '==', slug));
+  const snapshot = await getDocs(q);
+  if (snapshot.empty) {
+    return null;
+  }
+  const doc = snapshot.docs[0];
+  return { 
+      ...doc.data() as Omit<Article, 'id' | 'date'>,
+      id: doc.id,
+      date: new Date(doc.data().createdAt?.toDate() || Date.now()).toISOString(),
+  };
+}
+
+// READ (by ID) - useful for admin/user updates
+export async function getArticleById(id: string): Promise<Article | null> {
+    const docRef = doc(db, 'articles', id);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        return {
+            ...data as Omit<Article, 'id' | 'date'>,
+            id: docSnap.id,
+            date: new Date(data.createdAt?.toDate() || Date.now()).toISOString(),
+        };
+    } else {
+        return null;
+    }
+}
+
+
+// UPDATE
+export async function updateArticle(id: string, updates: Partial<Omit<Article, 'id' | 'createdAt'>>) {
+    const docRef = doc(db, 'articles', id);
+    await updateDoc(docRef, updates);
+}
+
+// UPDATE STATUS
+export async function updateArticleStatus(id: string, status: Article['status']) {
+    const docRef = doc(db, 'articles', id);
+    await updateDoc(docRef, { status });
+}
+
+// DELETE
+export async function deleteArticle(id: string) {
+    const docRef = doc(db, 'articles', id);
+    await deleteDoc(docRef);
 }
