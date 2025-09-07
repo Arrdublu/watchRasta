@@ -10,6 +10,7 @@ import { Clock, User } from 'lucide-react';
 import parse from 'html-react-parser';
 import { Embed } from '@/components/embed';
 import { Element } from 'html-react-parser';
+import { SocialShare } from '@/components/social-share';
 
 async function getArticleData(slug: string) {
     const article = await getArticleBySlug(slug);
@@ -79,6 +80,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                     {new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </time>
               </div>
+              <SocialShare title={article.title} />
           </div>
         </header>
 
