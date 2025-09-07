@@ -1,16 +1,19 @@
 
 import { getArticleBySlug, getArticles } from '@/lib/articles';
+import { getCommentsByArticleId } from '@/lib/comments';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { ArticleCard } from '@/components/article-card';
+import { CommentSection } from '@/components/comment-section';
 import { Clock, User } from 'lucide-react';
-import parse, { domToReact, Element } from 'html-react-parser';
+import parse from 'html-react-parser';
 import { Embed } from '@/components/embed';
+import { Element } from 'html-react-parser';
 
 async function getArticleData(slug: string) {
     const article = await getArticleBySlug(slug);
-    if (!article) return { article: null, content: null, relatedArticles: [] };
+    if (!article) return { article: null, content: null, relatedArticles: [], comments: [] };
 
     let content = article.content;
     if (article.content.startsWith('http')) {
@@ -28,16 +31,21 @@ async function getArticleData(slug: string) {
         }
     }
 
-    const relatedArticles = (await getArticles({ category: article.category, limit: 4 }))
+    const [relatedArticles, comments] = await Promise.all([
+      getArticles({ category: article.category, limit: 4 }),
+      getCommentsByArticleId(article.id)
+    ]);
+    
+    const filteredRelated = relatedArticles
         .filter(a => a.id !== article.id)
         .slice(0, 3);
     
-    return { article, content, relatedArticles };
+    return { article, content, relatedArticles: filteredRelated, comments };
 }
 
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const { article, content, relatedArticles } = await getArticleData(params.slug);
+  const { article, content, relatedArticles, comments } = await getArticleData(params.slug);
 
   if (!article || !content) {
     notFound();
@@ -59,6 +67,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           <h1 className="text-4xl md:text-6xl font-headline font-bold text-accent leading-tight">
             {article.title}
           </h1>
+          <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">{article.excerpt}</p>
           <div className="mt-6 flex justify-center items-center gap-6 text-muted-foreground">
               <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
@@ -86,10 +95,12 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
         <div className="max-w-3xl mx-auto">
             <div 
-            className="space-y-6 text-lg text-foreground/90 [&_p]:leading-relaxed [&_h2]:font-headline [&_h2]:text-3xl [&_h2]:mt-12 [&_h2]:mb-4 [&_a]:text-primary hover:[&_a]:underline"
+            className="prose dark:prose-invert prose-lg max-w-none space-y-6 text-foreground/90 [&_p]:leading-relaxed [&_h2]:font-headline [&_h2]:text-3xl [&_h2]:mt-12 [&_h2]:mb-4 [&_a]:text-primary hover:[&_a]:underline"
             >
                 {parse(content, options)}
             </div>
+            <hr className="my-12" />
+            <CommentSection articleId={article.id} articleSlug={article.slug} comments={comments} />
         </div>
       </article>
       
