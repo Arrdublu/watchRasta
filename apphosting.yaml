@@ -8,7 +8,7 @@ runConfig:
 # Use the scripts block to define build and start commands.
 scripts:
   # The command that builds the app.
-  buildCommand: npm run build
+  buildCommand: BUILDING=true npm run build
   # The runCommand is automatically detected for Next.js apps.
 
 # Defines the services and infrastructure that your app needs.
