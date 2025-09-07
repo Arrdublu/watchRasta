@@ -12,7 +12,7 @@ service cloud.firestore {
     function isOwner(resource) {
       return request.auth.uid == resource.data.authorId;
     }
-    
+
     function isAdmin() {
       return request.auth.token.email == 'watchrasta@gmail.com';
     }
@@ -26,7 +26,7 @@ service cloud.firestore {
     // Products can be read by anyone if published.
     // Users can create products and manage their own drafts.
     match /products/{productId} {
-      allow read: if resource.data.status == 'Published' || (isAuth() && isOwner(resource));
+      allow read: if true;
       allow create: if isAuth();
       allow update, delete: if isAuth() && isOwner(resource) && resource.data.status != 'Published';
     }
@@ -34,11 +34,11 @@ service cloud.firestore {
     // Articles can be read if published.
     // Users can create articles and manage their own non-published articles.
     match /articles/{articleId} {
-      allow read: if resource.data.status == 'Published' || (isAuth() && isOwner(resource));
+      allow read: if true;
       allow create: if isAuth();
       allow update, delete: if isAuth() && isOwner(resource) && resource.data.status != 'Published';
     }
-    
+
     // Versions subcollection for articles. Only owners can write.
     match /articles/{articleId}/versions/{versionId} {
         allow read, write: if isAuth() && isOwner(get(/databases/$(database)/documents/articles/$(articleId)));
