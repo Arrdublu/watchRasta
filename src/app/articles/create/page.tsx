@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -67,7 +67,7 @@ export default function CreateArticlePage() {
     const imageUrl = imagePreview || 'https://picsum.photos/600/400';
 
     try {
-        addArticle({
+        await addArticle({
             title: values.title,
             category: values.category,
             content: values.content, 
@@ -174,8 +174,11 @@ export default function CreateArticlePage() {
                         <FormItem>
                             <FormLabel>Content</FormLabel>
                             <FormControl>
-                            <Textarea placeholder="Write your article here. To embed content (e.g., YouTube, Spotify), paste the <iframe> embed code directly." className="min-h-[300px]" {...field} />
+                            <Textarea placeholder="Write your article here..." className="min-h-[300px]" {...field} />
                             </FormControl>
+                            <FormDescription>
+                                To embed content (e.g., YouTube, Spotify), paste the full &lt;iframe&gt; embed code directly into the text area.
+                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                         )}
