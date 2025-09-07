@@ -75,9 +75,14 @@ export default function AdminDashboardPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Article Management</CardTitle>
-          <Button asChild variant="outline">
-            <Link href="/admin/hileaves">Manage HiLeaves</Link>
-          </Button>
+           <div className="flex gap-2">
+             <Button asChild variant="outline">
+                <Link href="/admin/hileaves">Manage Collections</Link>
+             </Button>
+              <Button asChild variant="outline">
+                <Link href="/admin/products">Manage Products</Link>
+             </Button>
+           </div>
         </CardHeader>
         <CardContent>
           <Table>

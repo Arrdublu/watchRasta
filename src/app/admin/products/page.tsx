@@ -80,9 +80,14 @@ export default function AdminProductsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Product Management</CardTitle>
-          <Button asChild variant="outline">
-            <Link href="/admin/hileaves">Manage Collections</Link>
-          </Button>
+          <div className="flex gap-2">
+             <Button asChild variant="outline">
+                <Link href="/admin">Manage Articles</Link>
+             </Button>
+              <Button asChild variant="outline">
+                <Link href="/admin/hileaves">Manage Collections</Link>
+             </Button>
+           </div>
         </CardHeader>
         <CardContent>
           <Table>
