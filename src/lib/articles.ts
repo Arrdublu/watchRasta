@@ -1,9 +1,8 @@
 
+'use server';
 import admin from 'firebase-admin';
 import { getDb } from '@/lib/firebase-admin';
 import type { ArticleCategory } from '@/lib/article-categories';
-export type { ArticleCategory } from '@/lib/article-categories';
-export { articleCategories } from '@/lib/article-categories';
 
 
 export type Article = {

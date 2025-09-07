@@ -2,7 +2,8 @@
 'use server';
 
 import { z } from 'zod';
-import { addArticle, articleCategories } from '@/lib/articles';
+import { addArticle } from '@/lib/articles';
+import { articleCategories } from '@/lib/article-categories';
 import { storage, auth as clientAuth } from '@/lib/firebase'; // We need this for the client user, not the server one
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
