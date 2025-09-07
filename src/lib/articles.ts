@@ -24,7 +24,8 @@ export type Article = {
   dataAiHint: string;
   excerpt: string;
   content: string;
-  author: string;
+  author: string; // user's email
+  authorId: string; // user's UID
   date: string; // Keep as ISO string for consistency
   createdAt: any; // Firestore server timestamp
   status: 'Published' | 'Draft' | 'Pending Review';
@@ -46,7 +47,7 @@ export async function addArticle(article: Omit<Article, 'id' | 'slug' | 'date' |
 }
 
 // READ (all)
-export async function getArticles(options: { category?: ArticleCategory, limit?: number } = {}) {
+export async function getArticles(options: { category?: ArticleCategory, limit?: number, authorId?: string } = {}) {
     let q = query(articlesCollection, orderBy('createdAt', 'desc'));
 
     if (options.category) {
@@ -55,6 +56,10 @@ export async function getArticles(options: { category?: ArticleCategory, limit?:
     
     if (options.limit) {
         q = query(q, limit(options.limit));
+    }
+
+    if (options.authorId) {
+        q = query(q, where('authorId', '==', options.authorId));
     }
 
     const snapshot = await getDocs(q);

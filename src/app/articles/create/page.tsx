@@ -64,19 +64,18 @@ export default function CreateArticlePage() {
     
     setIsSubmitting(true);
     
-    // In a real app, you would upload the image to a storage service (like Firebase Storage)
-    // and get back a URL. For this demo, we'll use the local data URL or a placeholder.
     const imageUrl = imagePreview || 'https://picsum.photos/600/400';
 
     try {
         addArticle({
             title: values.title,
             category: values.category,
-            content: values.content, // Now passing raw HTML content
+            content: values.content, 
             image: imageUrl,
             dataAiHint: 'user submitted',
             excerpt: values.content.substring(0, 100).replace(/<[^>]*>?/gm, '') + '...',
             author: user.email || 'Anonymous',
+            authorId: user.uid,
             status: 'Pending Review',
         });
       

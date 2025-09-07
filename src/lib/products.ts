@@ -1,5 +1,5 @@
 
-import { collection, getDocs, query, where, addDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, addDoc, doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase'; // Assuming you have a firebase initialization file
 
 export type Product = {
@@ -11,7 +11,8 @@ export type Product = {
   imageUrl: string;
   dataAiHint: string;
   status: 'Published' | 'Draft' | 'Pending Review';
-  authorEmail: string;
+  author: string;
+  authorId: string;
 };
 
 // The in-memory array is removed. Data will now be fetched from Firestore.
@@ -36,4 +37,20 @@ export async function getProductById(id: string): Promise<Product | undefined> {
     } else {
         return undefined;
     }
+}
+
+export async function getAllProducts(options: { authorId?: string } = {}): Promise<Product[]> {
+  let q = query(collection(db, 'products'));
+
+  if (options.authorId) {
+      q = query(q, where('authorId', '==', options.authorId));
+  }
+
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+}
+
+export async function deleteProduct(id: string) {
+    const docRef = doc(db, 'products', id);
+    await deleteDoc(docRef);
 }

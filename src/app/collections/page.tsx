@@ -1,9 +1,9 @@
 
 import { ArticleCard } from '@/components/article-card';
-import { articles } from '@/lib/articles';
+import { getArticles } from '@/lib/articles';
 
-export default function NewsPage() {
-  const newsArticles = articles.filter(a => a.category === 'News');
+export default async function NewsPage() {
+  const newsArticles = await getArticles({ category: 'News' });
 
   return (
     <div className="container py-16 md:py-24">

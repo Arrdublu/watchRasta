@@ -77,7 +77,8 @@ export default function CreateProductPage() {
             imageUrl: imageUrl,
             dataAiHint: 'user submitted product',
             status: 'Pending Review',
-            authorEmail: user.email,
+            author: user.email,
+            authorId: user.uid,
         });
       
         toast({

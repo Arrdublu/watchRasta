@@ -1,5 +1,5 @@
 
-import { getProductById, products } from '@/lib/products';
+import { getProductById, getAllProducts } from '@/lib/products';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -7,13 +7,14 @@ import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export async function generateStaticParams() {
+  const products = await getAllProducts();
   return products.map((product) => ({
-    id: String(product.id),
+    id: product.id,
   }));
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-  const product = await getProductById(Number(params.id));
+  const product = await getProductById(params.id);
 
   if (!product) {
     return {
@@ -22,13 +23,13 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   }
 
   return {
-    title: `${product.title} | HiLeaves`,
+    title: `${product.title} | watchRasta`,
     description: product.description,
   };
 }
 
 export default async function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = await getProductById(Number(params.id));
+  const product = await getProductById(params.id);
 
   if (!product) {
     notFound();
@@ -38,7 +39,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
     <div className="container py-16 md:py-24">
       <div className="mb-8">
         <Button asChild variant="outline">
-          <Link href={`/hileaves/${product.collectionId}`}>
+          <Link href={`/collections/${product.collectionId}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Collection
           </Link>
