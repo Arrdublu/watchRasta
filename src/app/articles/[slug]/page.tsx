@@ -1,6 +1,4 @@
 
-'use client';
-
 import { getArticleBySlug, getArticles } from '@/lib/articles';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -9,40 +7,40 @@ import { ArticleCard } from '@/components/article-card';
 import { Clock, User } from 'lucide-react';
 import parse, { domToReact, Element } from 'html-react-parser';
 import { Embed } from '@/components/embed';
-import { useEffect, useState } from 'react';
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const [article, setArticle] = useState<any>(null);
-  const [content, setContent] = useState('');
-  const [relatedArticles, setRelatedArticles] = useState<any[]>([]);
+async function getArticleData(slug: string) {
+    const article = await getArticleBySlug(slug);
+    if (!article) return { article: null, content: null, relatedArticles: [] };
 
-  useEffect(() => {
-    async function fetchData() {
-      const articleData = await getArticleBySlug(params.slug);
-      if (!articleData) {
-        notFound();
-        return;
-      }
-      setArticle(articleData);
-
-      if (articleData.content.startsWith('http')) {
-        const response = await fetch(articleData.content);
-        const text = await response.text();
-        setContent(text);
-      } else {
-        setContent(articleData.content);
-      }
-
-      const related = (await getArticles({ category: articleData.category, limit: 4 }))
-        .filter(a => a.id !== articleData.id)
-        .slice(0, 3);
-      setRelatedArticles(related);
+    let content = article.content;
+    if (article.content.startsWith('http')) {
+        try {
+            const response = await fetch(article.content, { cache: 'no-store' });
+            if (response.ok) {
+                content = await response.text();
+            } else {
+                console.error("Failed to fetch article content:", response.statusText);
+                content = "<p>Error: Could not load article content.</p>";
+            }
+        } catch (error) {
+             console.error("Error fetching article content:", error);
+             content = "<p>Error: Could not load article content.</p>";
+        }
     }
-    fetchData();
-  }, [params.slug]);
 
-  if (!article) {
-    return <div className="container flex items-center justify-center min-h-[60vh]">Loading...</div>;
+    const relatedArticles = (await getArticles({ category: article.category, limit: 4 }))
+        .filter(a => a.id !== article.id)
+        .slice(0, 3);
+    
+    return { article, content, relatedArticles };
+}
+
+
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
+  const { article, content, relatedArticles } = await getArticleData(params.slug);
+
+  if (!article || !content) {
+    notFound();
   }
   
   const options = {
