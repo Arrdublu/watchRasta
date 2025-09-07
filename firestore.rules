@@ -3,52 +3,65 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper functions
-    function isAuth() {
-      return request.auth != null;
-    }
-
-    function isOwner(resource) {
-      return request.auth.uid == resource.data.authorId;
-    }
-
+    
+    // Helper function to check for admin
     function isAdmin() {
       return request.auth.token.email == 'watchrasta@gmail.com';
     }
 
-    // Collections can be read by anyone but only written to by admins
+    // Helper function to check if user is the owner
+    function isOwner(docData) {
+      return request.auth.uid == docData.authorId;
+    }
+
+    // ARTICLES
+    match /articles/{articleId} {
+      // Anyone can read a published article
+      allow read: if resource.data.status == 'Published' || (request.auth != null && isOwner(resource.data)) || isAdmin();
+      
+      // Authenticated users can create articles
+      allow create: if request.auth != null;
+      
+      // Only the author or an admin can update/delete
+      allow update, delete: if request.auth != null && (isOwner(resource.data) || isAdmin());
+
+      // Version history subcollection
+      match /versions/{versionId} {
+        // Only allow creating new versions, no one can edit or delete history
+        allow create: if request.auth != null && (isOwner(request.resource.data) || isAdmin());
+        allow read, update, delete: if false; 
+      }
+    }
+
+    // PRODUCTS
+    match /products/{productId} {
+      // Anyone can read published products
+      allow read: if resource.data.status == 'Published' || (request.auth != null && isOwner(resource.data)) || isAdmin();
+      
+      // Authenticated users can create products
+      allow create: if request.auth != null;
+      
+      // Only the author or an admin can update/delete
+      allow update, delete: if request.auth != null && (isOwner(resource.data) || isAdmin());
+    }
+
+    // COLLECTIONS (HiLeaves)
     match /collections/{collectionId} {
+      // Collections are read-only for clients, managed by admin/scripts
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Products can be read by anyone if published.
-    // Users can create products and manage their own drafts.
-    match /products/{productId} {
-      allow read: if true;
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && isOwner(resource) && resource.data.status != 'Published';
-    }
-
-    // Articles can be read if published.
-    // Users can create articles and manage their own non-published articles.
-    match /articles/{articleId} {
-      allow read: if true;
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && isOwner(resource) && resource.data.status != 'Published';
-    }
-
-    // Versions subcollection for articles. Only owners can write.
-    match /articles/{articleId}/versions/{versionId} {
-        allow read, write: if isAuth() && isOwner(get(/databases/$(database)/documents/articles/$(articleId)));
-    }
-
-    // Comments can be read by anyone.
-    // Authenticated users can create comments. No editing/deleting for now.
+    // COMMENTS
     match /comments/{commentId} {
+      // Anyone can read comments
       allow read: if true;
-      allow create: if isAuth();
+      
+      // Authenticated users can create comments
+      allow create: if request.auth != null;
+      
+      // Comments cannot be updated or deleted by users
+      allow update, delete: if isAdmin();
     }
   }
 }
