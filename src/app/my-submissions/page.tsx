@@ -38,19 +38,29 @@ export default function MySubmissionsPage() {
     if (user?.uid) {
       const fetchSubmissions = async () => {
         setIsFetching(true);
-        const [userArticles, userProducts, allCollections] = await Promise.all([
-            getArticles({ authorId: user.uid }),
-            getProductsByAuthorId(user.uid),
-            getCollections()
-        ]);
-        setMyArticles(userArticles);
-        setMyProducts(userProducts);
-        setCollections(allCollections);
-        setIsFetching(false);
+        try {
+            const [userArticles, userProducts, allCollections] = await Promise.all([
+                getArticles({ authorId: user.uid }),
+                getProductsByAuthorId(user.uid),
+                getCollections()
+            ]);
+            setMyArticles(userArticles);
+            setMyProducts(userProducts);
+            setCollections(allCollections);
+        } catch (error) {
+            console.error("Failed to fetch submissions:", error);
+            toast({
+                title: 'Error',
+                description: 'Could not load your submissions. Please try again later.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsFetching(false);
+        }
       }
       fetchSubmissions();
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, toast]);
   
   const getStatusVariant = (status: Article['status'] | Product['status']) => {
     switch (status) {
