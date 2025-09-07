@@ -28,7 +28,7 @@ export type Article = {
   authorId: string; // user's UID
   date: string; // Keep as ISO string for consistency
   createdAt: any; // Firestore server timestamp
-  status: 'Published' | 'Draft' | 'Pending Review';
+  status: 'Published' | 'Draft' | 'Pending Review' | 'Rejected';
 };
 
 const articlesCollection = collection(db, 'articles');

@@ -72,6 +72,8 @@ export default function MySubmissionsPage() {
         return 'secondary';
       case 'Pending Review':
         return 'outline';
+      case 'Rejected':
+        return 'destructive';
       default:
         return 'default';
     }
@@ -86,6 +88,7 @@ export default function MySubmissionsPage() {
   };
 
   const handleDeleteArticle = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this article? This action cannot be undone.')) return;
     try {
         await deleteArticle(id);
         setMyArticles(myArticles.filter(a => a.id !== id));
@@ -96,6 +99,7 @@ export default function MySubmissionsPage() {
   };
 
   const handleDeleteProduct = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) return;
     try {
         await deleteProduct(id);
         setMyProducts(myProducts.filter(p => p.id !== id));
@@ -149,8 +153,19 @@ export default function MySubmissionsPage() {
                                         <Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4" /></Button>
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent>
-                                        <DropdownMenuItem onClick={() => handleEditArticle(article.id)}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleDeleteArticle(article.id)} className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
+                                        <DropdownMenuItem 
+                                            onClick={() => handleEditArticle(article.id)}
+                                            disabled={article.status === 'Published'}
+                                        >
+                                            <Edit className="mr-2 h-4 w-4"/>Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem 
+                                            onClick={() => handleDeleteArticle(article.id)} 
+                                            className="text-destructive"
+                                            disabled={article.status === 'Published'}
+                                        >
+                                            <Trash2 className="mr-2 h-4 w-4"/>Delete
+                                        </DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
@@ -193,8 +208,19 @@ export default function MySubmissionsPage() {
                                         <Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4" /></Button>
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent>
-                                        <DropdownMenuItem onClick={() => toast({ title: 'Coming Soon!', description: 'Product editing will be available soon.' })}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleDeleteProduct(product.id)} className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
+                                        <DropdownMenuItem 
+                                            onClick={() => toast({ title: 'Coming Soon!', description: 'Product editing will be available soon.' })}
+                                            disabled={product.status === 'Published'}
+                                        >
+                                            <Edit className="mr-2 h-4 w-4"/>Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem 
+                                            onClick={() => handleDeleteProduct(product.id)} 
+                                            className="text-destructive"
+                                            disabled={product.status === 'Published'}
+                                        >
+                                            <Trash2 className="mr-2 h-4 w-4"/>Delete
+                                        </DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>

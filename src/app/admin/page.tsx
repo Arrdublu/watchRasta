@@ -61,7 +61,7 @@ export default function AdminDashboardPage() {
     try {
       await deleteArticle(id);
       setArticles(articles.filter(article => article.id !== id));
-      toast({ title: "Article Deleted", description: "The article has been successfully deleted.", variant: 'destructive' });
+      toast({ title: "Article Deleted", description: "The article has been permanently deleted.", variant: 'destructive' });
     } catch (error) {
        toast({ title: "Error", description: "Failed to delete article.", variant: 'destructive'});
     }
@@ -80,6 +80,8 @@ export default function AdminDashboardPage() {
         return 'secondary';
       case 'Pending Review':
         return 'outline';
+      case 'Rejected':
+        return 'destructive';
       default:
         return 'default';
     }
@@ -135,7 +137,7 @@ export default function AdminDashboardPage() {
                            <Button variant="outline" size="sm" onClick={() => handleStatusChange(article.id, 'Published')}>
                                <Check className="h-4 w-4 mr-1" /> Approve
                            </Button>
-                           <Button variant="destructive" size="sm" onClick={() => handleDelete(article.id)}>
+                           <Button variant="secondary" size="sm" onClick={() => handleStatusChange(article.id, 'Rejected')}>
                                <X className="h-4 w-4 mr-1" /> Reject
                            </Button>
                            <Button variant="ghost" size="icon" asChild>
@@ -154,6 +156,7 @@ export default function AdminDashboardPage() {
                         <DropdownMenuItem onClick={() => handleEdit(article.id)}>
                           Edit
                         </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem 
                           onClick={() => handleStatusChange(article.id, 'Published')}
                           disabled={article.status === 'Published'}
@@ -166,12 +169,18 @@ export default function AdminDashboardPage() {
                         >
                           Move to Draft
                         </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleStatusChange(article.id, 'Rejected')}
+                          disabled={article.status === 'Rejected'}
+                        >
+                          Reject
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem 
                             className="text-destructive"
                             onClick={() => handleDelete(article.id)}
                         >
-                            Delete
+                            Delete Permanently
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
