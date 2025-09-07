@@ -86,6 +86,10 @@ export default function MySubmissionsPage() {
   const handleEditArticle = (id: string) => {
     router.push(`/articles/edit/${id}`);
   };
+  
+  const handleEditProduct = (id: string) => {
+    router.push(`/products/edit/${id}`);
+  };
 
   const handleDeleteArticle = async (id: string) => {
     if (!confirm('Are you sure you want to delete this article? This action cannot be undone.')) return;
@@ -207,7 +211,7 @@ export default function MySubmissionsPage() {
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent>
                                         <DropdownMenuItem 
-                                            onClick={() => toast({ title: 'Coming Soon!', description: 'Product editing will be available soon.' })}
+                                            onClick={() => handleEditProduct(product.id)}
                                         >
                                             <Edit className="mr-2 h-4 w-4"/>Edit
                                         </DropdownMenuItem>

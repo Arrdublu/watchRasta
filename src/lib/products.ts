@@ -1,4 +1,5 @@
 
+
 import { collection, getDocs, query, where, addDoc, doc, getDoc, deleteDoc, updateDoc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -71,6 +72,15 @@ export async function getAllProducts(options: { authorId?: string } = {}): Promi
 
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
+}
+
+// UPDATE
+export async function updateProduct(id: string, updates: Partial<Omit<Product, 'id' | 'createdAt' | 'author' | 'authorId' | 'dataAiHint'>>) {
+    const docRef = doc(db, 'products', id);
+    await updateDoc(docRef, {
+        ...updates,
+        updatedAt: serverTimestamp(),
+    });
 }
 
 // UPDATE STATUS
