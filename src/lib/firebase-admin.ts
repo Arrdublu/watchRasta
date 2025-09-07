@@ -23,27 +23,35 @@ const initializeFirebaseAdmin = () => {
     }
 };
 
+initializeFirebaseAdmin();
+
 export async function getDb() {
-    initializeFirebaseAdmin();
     if (process.env.BUILDING) {
         // Return a mock/dummy object during build to avoid errors
-        return null as unknown as admin.firestore.Firestore;
+        return null;
+    }
+    if (!admin.apps.length) {
+        initializeFirebaseAdmin();
     }
     return admin.firestore();
 }
 
 export async function getStorage() {
-    initializeFirebaseAdmin();
     if (process.env.BUILDING) {
-        return null as unknown as admin.storage.Storage;
+        return null;
+    }
+     if (!admin.apps.length) {
+        initializeFirebaseAdmin();
     }
     return admin.storage();
 }
 
 export async function getAuth() {
-    initializeFirebaseAdmin();
      if (process.env.BUILDING) {
-        return null as unknown as admin.auth.Auth;
+        return null;
+    }
+     if (!admin.apps.length) {
+        initializeFirebaseAdmin();
     }
     return admin.auth();
 }

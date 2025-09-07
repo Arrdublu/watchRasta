@@ -23,7 +23,11 @@ export type Comment = {
   createdAt: string;
 };
 
-const getCommentsCollection = async () => collection(await getDb(), 'comments');
+const getCommentsCollection = async () => {
+    const db = await getDb();
+    if (!db) return null;
+    return collection(db, 'comments');
+};
 
 // CREATE
 export async function addComment(comment: Omit<Comment, 'id' | 'createdAt'>) {
@@ -32,6 +36,7 @@ export async function addComment(comment: Omit<Comment, 'id' | 'createdAt'>) {
     createdAt: serverTimestamp(),
   };
   const commentsCollection = await getCommentsCollection();
+  if (!commentsCollection) throw new Error("Database not available");
   const docRef = await addDoc(commentsCollection, newComment);
   return { ...newComment, id: docRef.id };
 }
@@ -39,6 +44,8 @@ export async function addComment(comment: Omit<Comment, 'id' | 'createdAt'>) {
 // READ (by articleId)
 export async function getCommentsByArticleId(articleId: string): Promise<Comment[]> {
   const commentsCollection = await getCommentsCollection();
+  if (!commentsCollection) return [];
+
   const q = query(
     commentsCollection,
     where('articleId', '==', articleId),

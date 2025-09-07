@@ -14,11 +14,17 @@ export type Collection = {
   createdAt: any;
 };
 
-const getCollectionsCollection = async () => collection(await getDb(), 'collections');
+const getCollectionsCollection = async () => {
+    const db = await getDb();
+    if (!db) return null;
+    return collection(db, 'collections');
+};
 
 // Get all collections, ordered by creation date
 export async function getCollections(options: { status?: Collection['status'] } = {}): Promise<Collection[]> {
   const collectionsCollection = await getCollectionsCollection();
+  if (!collectionsCollection) return [];
+  
   let q = query(collectionsCollection, orderBy('numericId', 'asc'));
 
   if (options.status) {
@@ -32,6 +38,8 @@ export async function getCollections(options: { status?: Collection['status'] } 
 // Get a single collection by its original numeric ID
 export async function getCollectionByNumericId(numericId: number): Promise<Collection | null> {
   const collectionsCollection = await getCollectionsCollection();
+  if (!collectionsCollection) return null;
+
   const q = query(collectionsCollection, where('numericId', '==', numericId));
   const snapshot = await getDocs(q);
   if (snapshot.empty) {
@@ -44,6 +52,8 @@ export async function getCollectionByNumericId(numericId: number): Promise<Colle
 // Get a single collection by its Firestore ID
 export async function getCollectionById(id: string): Promise<Collection | null> {
   const db = await getDb();
+  if (!db) return null;
+
   const docRef = doc(db, 'collections', id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {

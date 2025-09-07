@@ -16,7 +16,11 @@ export type Product = {
   createdAt: any; 
 };
 
-const getProductsCollection = async () => collection(await getDb(), 'products');
+const getProductsCollection = async () => {
+    const db = await getDb();
+    if (!db) return null;
+    return collection(db, 'products');
+};
 
 // CREATE
 export async function addProduct(product: Omit<Product, 'id' | 'createdAt'>) {
@@ -25,6 +29,7 @@ export async function addProduct(product: Omit<Product, 'id' | 'createdAt'>) {
     createdAt: serverTimestamp(),
   };
   const productsCollection = await getProductsCollection();
+  if (!productsCollection) throw new Error("Database not available");
   const docRef = await addDoc(productsCollection, newProduct);
   return { ...newProduct, id: docRef.id };
 }
@@ -32,6 +37,8 @@ export async function addProduct(product: Omit<Product, 'id' | 'createdAt'>) {
 // READ (by collection ID)
 export async function getProductsByCollectionId(collectionId: number): Promise<Product[]> {
   const productsCollection = await getProductsCollection();
+  if (!productsCollection) return [];
+
   const q = query(
     productsCollection, 
     where('collectionId', '==', collectionId), 
@@ -44,6 +51,8 @@ export async function getProductsByCollectionId(collectionId: number): Promise<P
 // READ (by author ID)
 export async function getProductsByAuthorId(authorId: string): Promise<Product[]> {
     const productsCollection = await getProductsCollection();
+    if (!productsCollection) return [];
+
     const q = query(
         productsCollection,
         where('authorId', '==', authorId),
@@ -57,6 +66,8 @@ export async function getProductsByAuthorId(authorId: string): Promise<Product[]
 // READ (by ID)
 export async function getProductById(id: string): Promise<Product | undefined> {
     const db = await getDb();
+    if (!db) return undefined;
+
     const docRef = doc(db, 'products', id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
@@ -68,6 +79,8 @@ export async function getProductById(id: string): Promise<Product | undefined> {
 // READ (all)
 export async function getAllProducts(options: { authorId?: string } = {}): Promise<Product[]> {
   const productsCollection = await getProductsCollection();
+  if (!productsCollection) return [];
+
   let q = query(productsCollection, orderBy('createdAt', 'desc'));
 
   if (options.authorId) {
@@ -81,6 +94,7 @@ export async function getAllProducts(options: { authorId?: string } = {}): Promi
 // UPDATE
 export async function updateProduct(id: string, updates: Partial<Product>) {
     const db = await getDb();
+    if (!db) throw new Error("Database not available");
     const docRef = doc(db, 'products', id);
     await updateDoc(docRef, {
         ...updates,
@@ -91,6 +105,7 @@ export async function updateProduct(id: string, updates: Partial<Product>) {
 // UPDATE STATUS
 export async function updateProductStatus(id: string, status: Product['status']) {
     const db = await getDb();
+    if (!db) throw new Error("Database not available");
     const docRef = doc(db, 'products', id);
     await updateDoc(docRef, { status });
 }
@@ -98,6 +113,7 @@ export async function updateProductStatus(id: string, status: Product['status'])
 // DELETE
 export async function deleteProduct(id: string) {
     const db = await getDb();
+    if (!db) throw new Error("Database not available");
     const docRef = doc(db, 'products', id);
     await deleteDoc(docRef);
 }
