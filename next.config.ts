@@ -28,12 +28,11 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    // This is required to fix a Next.js issue with Turbopack in this environment.
-    allowedDevOrigins: [
-      'https://6000-firebase-studio-1757177215256.cluster-xvr5pmatm5a4gx76fmat6kxt6o.cloudworkstations.dev',
-    ],
-  },
+  experimental: {},
+  // This is required to fix a Next.js issue with Turbopack in this environment.
+  allowedDevOrigins: [
+    'https://6000-firebase-studio-1757177215256.cluster-xvr5pmatm5a4gx76fmat6kxt6o.cloudworkstations.dev',
+  ],
 };
 
 export default nextConfig;
