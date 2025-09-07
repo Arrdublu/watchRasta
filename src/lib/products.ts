@@ -1,4 +1,6 @@
 
+'use server';
+
 import admin from 'firebase-admin';
 import { getDb } from '@/lib/firebase-admin';
 

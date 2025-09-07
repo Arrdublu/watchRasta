@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { getAllProducts, updateProductStatus, deleteProduct, type Product } from '@/lib/products';
+import { getAllProducts, type Product } from '@/lib/products';
 import { getCollections, type Collection } from '@/lib/collections';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -22,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
+import { updateProductStatus, deleteProduct } from './actions';
 
 const ADMIN_EMAIL = 'watchrasta@gmail.com';
 
@@ -75,7 +76,7 @@ export default function AdminProductsPage() {
   };
 
   const handleEdit = (id: string) => {
-    toast({ title: "Edit Action", description: `Triggered edit for product ID: ${id}.` });
+    router.push(`/products/edit/${id}`);
   }
 
   const getStatusVariant = (status: Product['status']) => {

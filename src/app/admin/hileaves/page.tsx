@@ -21,6 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
+import { updateCollectionStatus, deleteCollection } from './actions';
 
 const ADMIN_EMAIL = 'watchrasta@gmail.com';
 
@@ -46,18 +47,27 @@ export default function AdminHileavesPage() {
   }, [user, loading, router]);
 
 
-  const handleStatusChange = (id: string, status: Collection['status']) => {
-    // In a real app, you would update this in the database.
-    setCollections(collections.map(item => 
-      item.id === id ? { ...item, status } : item
-    ));
-    toast({ title: "Collection Updated", description: `Collection status changed to ${status}.` });
+  const handleStatusChange = async (id: string, status: Collection['status']) => {
+    const result = await updateCollectionStatus(id, status);
+    if (result.success) {
+        setCollections(collections.map(item => 
+        item.id === id ? { ...item, status } : item
+        ));
+        toast({ title: "Collection Updated", description: `Collection status changed to ${status}.` });
+    } else {
+        toast({ title: "Error", description: result.message, variant: 'destructive'});
+    }
   };
 
-  const handleDelete = (id: string) => {
-     // In a real app, you would delete this from the database.
-    setCollections(collections.filter(item => item.id !== id));
-    toast({ title: "Collection Deleted", description: "The collection has been successfully deleted.", variant: 'destructive' });
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this collection? This action is permanent.')) return;
+    const result = await deleteCollection(id);
+    if (result.success) {
+        setCollections(collections.filter(item => item.id !== id));
+        toast({ title: "Collection Deleted", description: "The collection has been successfully deleted.", variant: 'destructive' });
+    } else {
+        toast({ title: "Error", description: result.message, variant: 'destructive'});
+    }
   };
 
   const handleEdit = (id: string) => {

@@ -50,16 +50,3 @@ export async function getCollectionByNumericId(numericId: number): Promise<Colle
   const docRef = snapshot.docs[0];
   return { ...docRef.data() as Omit<Collection, 'id'>, id: docRef.id };
 }
-
-// Get a single collection by its Firestore ID
-export async function getCollectionById(id: string): Promise<Collection | null> {
-  const db = await getDb();
-  if (!db) return null;
-
-  const docRef = db.collection('collections').doc(id);
-  const docSnap = await docRef.get();
-  if (docSnap.exists) {
-    return { ...docSnap.data() as Omit<Collection, 'id'>, id: docSnap.id };
-  }
-  return null;
-}
