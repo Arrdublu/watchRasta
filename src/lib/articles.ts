@@ -2,11 +2,11 @@
 import { getDb } from '@/lib/firebase-admin';
 import { collection, addDoc, getDocs, query, where, doc, getDoc, updateDoc, deleteDoc, serverTimestamp, orderBy, limit, writeBatch } from 'firebase/firestore';
 
-export type ArticleCategory = 'News' | 'Lifestyle' | 'Brands' | 'Album Reviews' | 'Interviews' | 'Tour Diaries' | 'Gear';
+export type ArticleCategory = 'News' | 'Being' | 'Brands' | 'Album Reviews' | 'Interviews' | 'Tour Diaries' | 'Gear';
 
 export const articleCategories: [ArticleCategory, ...ArticleCategory[]] = [
   'News',
-  'Lifestyle',
+  'Being',
   'Brands',
   'Album Reviews',
   'Interviews',
@@ -161,3 +161,4 @@ export async function deleteArticle(id: string) {
     const docRef = doc(db, 'articles', id);
     await deleteDoc(docRef);
 }
+

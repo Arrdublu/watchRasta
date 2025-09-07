@@ -2,8 +2,8 @@
 import { ArticleCard } from '@/components/article-card';
 import { getArticles } from '@/lib/articles';
 
-export default async function LifestylePage() {
-  const lifestyleArticles = await getArticles({ category: 'Lifestyle' });
+export default async function BeingPage() {
+  const beingArticles = await getArticles({ category: 'Being' });
 
   return (
     <div className="container py-16 md:py-24">
@@ -14,9 +14,9 @@ export default async function LifestylePage() {
         </p>
       </div>
       
-      {lifestyleArticles.length > 0 ? (
+      {beingArticles.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {lifestyleArticles.map((article) => (
+          {beingArticles.map((article) => (
             <ArticleCard key={article.id} article={article} />
           ))}
         </div>
@@ -29,3 +29,4 @@ export default async function LifestylePage() {
     </div>
   );
 }
+

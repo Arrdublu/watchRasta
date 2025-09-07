@@ -23,7 +23,7 @@ import Image from 'next/image';
 
 const allNavLinks = [
   { href: '/news', label: 'News' },
-  { href: '/lifestyle', label: 'Being' },
+  { href: '/being', label: 'Being' },
   { href: '/brands', label: 'Brands' },
   { href: '/my-favorites', label: 'My Favorites' },
   { href: '/style-guide', label: 'AI Analyzer' },
@@ -176,3 +176,4 @@ export function Header() {
     </header>
   );
 }
+
