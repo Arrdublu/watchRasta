@@ -23,6 +23,12 @@ const socialLinks = [
     { href: 'https://music.apple.com/us/artist/watchrasta/1668401118', icon: Music, label: 'Apple Music' },
 ];
 
+const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.03-4.83-.96-6.46-2.99-1.63-2.02-2.06-4.87-1.34-7.44.88-3.09 3.83-5.34 6.92-5.45.02-.45.01-.89.02-1.34.02-2.64-.01-5.28-.01-7.92-.01-1.51.53-3.01 1.62-4.08C7.34 1.16 8.9 0 10.5.02c.67.01 1.34-.01 2.02.02z"/>
+    </svg>
+)
+
 export function Footer() {
   return (
     <footer className="border-t border-border/40 bg-background">
@@ -76,6 +82,9 @@ export function Footer() {
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
                         <path d="M9 18v-5l5-2.5V6" /><path d="M18 6v1" /><path d="M21.17 8.83a11.72 11.72 0 0 0-11.83-2.31 11.72 11.72 0 0 0-5.83 5.34 12.02 12.02 0 0 0 4.1 8.35 11.72 11.72 0 0 0 8.35 4.1 11.72 11.72 0 0 0 5.34-5.83 11.93 11.93 0 0 0-2.3-10.45Z" />
                     </svg>
+                </Link>
+                <Link href="https://www.tiktok.com/@watchrasta" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="TikTok">
+                   <TikTokIcon className="h-6 w-6" />
                 </Link>
              </div>
           </div>
