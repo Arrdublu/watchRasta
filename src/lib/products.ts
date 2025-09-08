@@ -157,6 +157,7 @@ export async function updateProduct(id: string, updates: Partial<Product>) {
         ...updates,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+    return await getProductById(id);
 }
 
 // UPDATE STATUS

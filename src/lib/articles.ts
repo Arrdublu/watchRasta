@@ -1,4 +1,5 @@
 
+
 'use server';
 import admin from 'firebase-admin';
 import { getDb, getStorage } from '@/lib/firebase-admin';
@@ -43,7 +44,19 @@ export async function addArticle(article: Omit<Article, 'id' | 'slug' | 'date' |
   const articlesCollection = await getArticlesCollection();
   if (!articlesCollection) throw new Error("Database not available");
   const docRef = await articlesCollection.add(newArticle);
-  return { ...newArticle, id: docRef.id };
+  
+  const docSnap = await docRef.get();
+  const data = docSnap.data();
+  if (!data) {
+    throw new Error("Failed to fetch the newly created article.");
+  }
+  const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+
+  return {
+      ...data,
+      id: docRef.id,
+      createdAt,
+  } as Article;
 }
 
 // READ (all)
@@ -179,6 +192,7 @@ export async function updateArticle(id: string, updates: Partial<Omit<Article, '
         ...updates,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+    return await getArticleById(id);
 }
 
 // UPDATE STATUS
