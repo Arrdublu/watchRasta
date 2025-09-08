@@ -45,6 +45,7 @@ export default function SignupPage() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       
+      console.log(`New user signed up: ${values.email}`);
       // Send notification email
       await sendNewUserEmail({ email: values.email });
       

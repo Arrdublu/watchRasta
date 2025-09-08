@@ -99,6 +99,7 @@ export async function submitArticle(formData: FormData) {
       status: 'Pending Review',
     });
     
+    console.log(`New article submitted by ${user.email}: "${title}"`);
     return { success: true, message: 'Article submitted for review!' };
   } catch (error) {
     console.error('Error submitting article:', error);

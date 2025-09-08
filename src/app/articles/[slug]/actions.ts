@@ -34,6 +34,7 @@ export async function submitComment(values: z.infer<typeof formSchema>, user: Us
     });
 
     revalidatePath(`/articles/${parsedData.data.slug}`);
+    console.log(`New comment by ${user.email} on article ${parsedData.data.slug}`);
     return { success: true, message: 'Comment posted successfully!' };
   } catch (error) {
     console.error('Error posting comment:', error);

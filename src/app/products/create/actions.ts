@@ -84,6 +84,7 @@ export async function submitProduct(formData: FormData) {
             authorId: user.uid,
         });
 
+        console.log(`New product submitted by ${user.email}: "${title}"`);
         return { success: true, message: 'Product submitted for review!' };
 
     } catch (error) {

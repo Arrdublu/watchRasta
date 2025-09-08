@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -40,6 +41,7 @@ export async function submitContactForm(data: z.infer<typeof formSchema>) {
             replyTo: parsedData.data.email,
         });
 
+        console.log(`Contact form submission from ${parsedData.data.name} <${parsedData.data.email}>`);
         return { success: true, message: 'Your message has been sent successfully!' };
     } catch (error) {
         console.error('Error sending email:', error);
