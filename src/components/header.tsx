@@ -20,6 +20,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const allNavLinks = [
   { href: '/news', label: 'News' },
@@ -82,6 +83,7 @@ export function Header() {
           </nav>
 
           <div className="hidden md:flex items-center ml-4">
+            <ThemeToggle />
             {user ? (
                  <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -166,7 +168,10 @@ export function Header() {
                         <button onClick={() => { handleSignOut(); setIsOpen(false); }} className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline text-left">Log Out</button>
                     </>
                  ) : (
-                    <Link href="/login" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>Login</Link>
+                    <div className="flex items-center justify-between">
+                      <Link href="/login" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>Login</Link>
+                      <ThemeToggle />
+                    </div>
                  )}
                 </div>
             </nav>
