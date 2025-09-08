@@ -4,11 +4,9 @@
 import { z } from 'zod';
 import { addArticle } from '@/lib/articles';
 import { articleCategories } from '@/lib/article-categories';
-import { storage, auth as clientAuth } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 import { getAuth } from 'firebase-admin/auth';
-import { getDb } from '@/lib/firebase-admin';
+import { getDb, getStorage } from '@/lib/firebase-admin';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
@@ -27,8 +25,10 @@ export async function submitArticle(formData: FormData) {
 
     let user;
     try {
+        // Ensure the database is initialized before continuing
         const adminDb = await getDb();
         if (!adminDb) throw new Error("Database not available");
+
         const adminAuth = getAuth();
         const decodedToken = await adminAuth.verifyIdToken(idToken);
         user = await adminAuth.getUser(decodedToken.uid);
@@ -59,14 +59,28 @@ export async function submitArticle(formData: FormData) {
   const { title, category, excerpt, content, image } = parsedData.data;
 
   try {
-    const imageRef = ref(storage, `articles/${uuidv4()}`);
-    await uploadBytes(imageRef, image);
-    const imageUrl = await getDownloadURL(imageRef);
+    const adminStorage = await getStorage();
+    const bucket = adminStorage.bucket();
+    
+    // Handle Image Upload
+    const imageBuffer = Buffer.from(await image.arrayBuffer());
+    const imageFileName = `articles/${uuidv4()}-${image.name}`;
+    const imageFile = bucket.file(imageFileName);
+    await imageFile.save(imageBuffer, {
+        metadata: { contentType: image.type }
+    });
+    await imageFile.makePublic();
+    const imageUrl = imageFile.publicUrl();
 
-    const contentBlob = new Blob([content], { type: 'text/plain' });
-    const contentRef = ref(storage, `articles/${uuidv4()}.txt`);
-    await uploadBytes(contentRef, contentBlob);
-    const contentUrl = await getDownloadURL(contentRef);
+    // Handle Content Upload
+    const contentBuffer = Buffer.from(content, 'utf8');
+    const contentFileName = `articles/${uuidv4()}.txt`;
+    const contentFile = bucket.file(contentFileName);
+    await contentFile.save(contentBuffer, {
+        metadata: { contentType: 'text/plain' }
+    });
+    await contentFile.makePublic();
+    const contentUrl = contentFile.publicUrl();
 
     await addArticle({
       title: title,
