@@ -1,12 +1,14 @@
 
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+
 import { getArticleById, updateArticle } from '@/lib/articles';
 import { articleCategories } from '@/lib/article-categories';
 import { v4 as uuidv4 } from 'uuid';
 import { getAuth } from 'firebase-admin/auth';
-import { getStorage } from '@/lib/firebase-admin';
+import { getStorage, getCurrentUser, getDb } from '@/lib/firebase-admin';
 import admin from 'firebase-admin';
 
 const formSchema = z.object({
@@ -87,10 +89,28 @@ export async function updateArticleAction(formData: FormData) {
             status: 'Pending Review',
         });
 
+        revalidatePath(`/articles/edit/${articleId}`);
+        revalidatePath('/admin');
         return { success: true, message: 'Article updated successfully!' };
 
     } catch (error) {
         console.error('Error updating article:', error);
         return { success: false, message: (error as Error).message || 'Failed to update article.' };
     }
+}
+
+export async function deleteArticle(id: string) {
+  const user = await getCurrentUser();
+  if (!user || !user.customClaims?.admin) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
+  try {
+    const db = await getDb();
+    await db.collection('articles').doc(id).delete();
+    revalidatePath('/admin');
+    return { success: true, message: 'Article deleted successfully' };
+  } catch (error) {
+    return { success: false, message: 'Failed to delete article' };
+  }
 }

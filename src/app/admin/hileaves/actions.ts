@@ -1,6 +1,7 @@
 
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { getDb } from '@/lib/firebase-admin';
 import type { Collection } from '@/lib/collections';
 
@@ -11,6 +12,7 @@ export async function updateCollectionStatus(id: string, status: Collection['sta
         if (!db) throw new Error("Database not available");
         const docRef = db.collection('collections').doc(id);
         await docRef.update({ status });
+        revalidatePath('/admin/hileaves');
         return { success: true, message: `Collection status updated to ${status}.` };
     } catch(error) {
         console.error("Failed to update collection status:", error);
@@ -26,6 +28,7 @@ export async function deleteCollection(id: string): Promise<{ success: boolean; 
         if (!db) throw new Error("Database not available");
         const docRef = db.collection('collections').doc(id);
         await docRef.delete();
+        revalidatePath('/admin/hileaves');
         return { success: true, message: 'Collection deleted successfully.' };
     } catch(error) {
         console.error("Failed to delete collection:", error);

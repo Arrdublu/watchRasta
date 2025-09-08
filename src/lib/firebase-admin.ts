@@ -1,6 +1,8 @@
 
 'use server';
 import admin from 'firebase-admin';
+import { cookies } from 'next/headers';
+import { DecodedIdToken } from 'firebase-admin/auth';
 
 function initializeFirebaseAdmin() {
     if (admin.apps.length > 0) {
@@ -18,6 +20,25 @@ function initializeFirebaseAdmin() {
         throw new Error('Failed to initialize Firebase Admin SDK. Please check server logs for details.');
     }
 }
+
+
+export async function getCurrentUser(): Promise<DecodedIdToken | null> {
+  initializeFirebaseAdmin();
+  const session = (await cookies()).get('session')?.value || '';
+
+  if (!session) {
+    return null;
+  }
+
+  try {
+    const decodedClaims = await admin.auth().verifySessionCookie(session, true);
+    return decodedClaims;
+  } catch (error) {
+    console.error('Error verifying session cookie:', error);
+    return null;
+  }
+}
+
 
 export async function getDb() {
     initializeFirebaseAdmin();
