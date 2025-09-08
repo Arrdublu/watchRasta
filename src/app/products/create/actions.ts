@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { addProduct } from '@/lib/products';
 import { v4 as uuidv4 } from 'uuid';
 import { getAuth } from 'firebase-admin/auth';
-import { getStorage } from '@/lib/firebase-admin';
+import { getDb, getStorage } from '@/lib/firebase-admin';
 import admin from 'firebase-admin';
 
 const formSchema = z.object({
@@ -21,6 +21,9 @@ export async function submitProduct(formData: FormData) {
     if (!idToken) {
         return { success: false, message: 'Authentication token not provided.' };
     }
+    
+    const adminDb = await getDb();
+    if (!adminDb) throw new Error("Database not available");
 
     try {
         const adminAuth = getAuth(admin.apps[0]!);
@@ -47,6 +50,16 @@ export async function submitProduct(formData: FormData) {
         }
 
         const { title, collectionId, description, price, image } = parsedData.data;
+
+        const productsCollection = adminDb.collection('products');
+        const existingProduct = await productsCollection
+            .where('title', '==', title)
+            .where('collectionId', '==', collectionId)
+            .get();
+        
+        if (!existingProduct.empty) {
+            return { success: false, message: 'A product with this name already exists in this collection.' };
+        }
 
         const adminStorage = await getStorage();
         const bucket = adminStorage.bucket();

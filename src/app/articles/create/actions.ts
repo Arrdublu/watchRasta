@@ -24,11 +24,10 @@ export async function submitArticle(formData: FormData) {
     }
 
     let user;
-    try {
-        // Ensure the database is initialized before continuing
-        const adminDb = await getDb();
-        if (!adminDb) throw new Error("Database not available");
+    const adminDb = await getDb();
+    if (!adminDb) throw new Error("Database not available");
 
+    try {
         const adminAuth = getAuth();
         const decodedToken = await adminAuth.verifyIdToken(idToken);
         user = await adminAuth.getUser(decodedToken.uid);
@@ -57,23 +56,28 @@ export async function submitArticle(formData: FormData) {
   }
   
   const { title, category, excerpt, content, image } = parsedData.data;
+  
+  const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
   try {
+    const articlesCollection = adminDb.collection('articles');
+    const existingArticle = await articlesCollection.where('slug', '==', slug).get();
+    if (!existingArticle.empty) {
+        return { success: false, message: 'An article with this title already exists.' };
+    }
+
     const adminStorage = await getStorage();
     const bucket = adminStorage.bucket();
     
-    // Handle Image Upload
     const imageFileName = `articles/${uuidv4()}-${image.name}`;
     const imageFile = bucket.file(imageFileName);
     const imageBuffer = Buffer.from(await image.arrayBuffer());
     
-    // Handle Content Upload
     const contentFileName = `articles/${uuidv4()}.txt`;
     const contentFile = bucket.file(contentFileName);
     const contentBuffer = Buffer.from(content, 'utf8');
 
-    // Upload both files in parallel
-    const [imageUploadResult, contentUploadResult] = await Promise.all([
+    await Promise.all([
         imageFile.save(imageBuffer, { metadata: { contentType: image.type } }),
         contentFile.save(contentBuffer, { metadata: { contentType: 'text/plain' } })
     ]);
