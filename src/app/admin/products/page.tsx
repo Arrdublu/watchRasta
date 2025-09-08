@@ -70,6 +70,7 @@ export default function AdminProductsPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this product? This action is permanent.')) return;
      const result = await deleteProduct(id);
      if (result.success) {
       setProducts(products.filter(product => product.id !== id));

@@ -62,6 +62,7 @@ export default function AdminDashboardPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this article permanently?')) return;
     const result = await deleteArticle(id);
     if (result.success) {
       setArticles(articles.filter(article => article.id !== id));
