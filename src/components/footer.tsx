@@ -67,7 +67,7 @@ export function Footer() {
             </ul>
           </div>
           
-          <div className="col-span-2 md:col-span-2 md:justify-self-end">
+          <div className="col-span-2 md:col-span-2 flex flex-col items-center md:items-end">
              <h3 className="font-semibold mb-4 text-foreground">Follow Us [@watchRasta]</h3>
              <div className="flex gap-4">
                 {socialLinks.map((link) => (
