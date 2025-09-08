@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -79,24 +78,29 @@ export default function CreateArticlePage() {
       formData.append('content', values.content);
       formData.append('image', imageFile);
 
-      const result = await submitArticle(formData);
+      const { success, message } = await submitArticle(formData);
 
-      if (result.success) {
+      if (success) {
         toast({
           title: 'Article Submitted!',
           description: 'Your article has been submitted for review. Thank you!',
         });
         router.push('/my-submissions');
       } else {
-        throw new Error(result.message);
-      }
-    } catch (error) {
-      console.error(error);
+        const errorMessage = typeof message === 'string' ? message : 'An unknown error occurred.';
         toast({
             title: 'Error',
-            description: (error as Error).message || 'Something went wrong. Please try again.',
+            description: errorMessage,
             variant: 'destructive',
         });
+      }
+    } catch (error) {
+      console.error('Error in onSubmit:', error);
+      toast({
+          title: 'Error',
+          description: 'An unexpected error occurred. Please try again.',
+          variant: 'destructive',
+      });
     } finally {
         setIsSubmitting(false);
     }
