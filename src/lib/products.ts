@@ -29,27 +29,27 @@ const getProductsCollection = async () => {
 
 // CREATE
 export async function addProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) {
-  const newProduct = {
-    ...product,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-  };
-  const productsCollection = await getProductsCollection();
-  if (!productsCollection) throw new Error("Database not available");
-  const docRef = await productsCollection.add(newProduct);
-  
-  const docSnap = await docRef.get();
-  const data = docSnap.data();
-  if (!data) {
-      throw new Error("Failed to fetch the newly created product.");
-  }
-  
-  const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
-  
-  return { 
-      ...data,
-      id: docRef.id,
-      createdAt,
-  } as Product;
+    const newProduct = {
+        ...product,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    const productsCollection = await getProductsCollection();
+    if (!productsCollection) throw new Error("Database not available");
+    const docRef = await productsCollection.add(newProduct);
+
+    const docSnap = await docRef.get();
+    const data = docSnap.data();
+    if (!data) {
+        throw new Error("Failed to fetch the newly created product.");
+    }
+
+    const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+
+    return {
+        ...data,
+        id: docRef.id,
+        createdAt,
+    } as Product;
 }
 
 // READ (by collection ID)
