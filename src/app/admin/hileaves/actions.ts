@@ -5,7 +5,7 @@ import { getDb } from '@/lib/firebase-admin';
 import type { Collection } from '@/lib/collections';
 
 // UPDATE STATUS
-export async function updateCollectionStatus(id: string, status: Collection['status']) {
+export async function updateCollectionStatus(id: string, status: Collection['status']): Promise<{ success: boolean; message?: string }> {
     try {
         const db = await getDb();
         if (!db) throw new Error("Database not available");
@@ -13,12 +13,14 @@ export async function updateCollectionStatus(id: string, status: Collection['sta
         await docRef.update({ status });
         return { success: true };
     } catch(error) {
-        return { success: false, message: 'Failed to update collection status.' };
+        console.error("Failed to update collection status:", error);
+        const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+        return { success: false, message: `Failed to update collection status: ${message}` };
     }
 }
 
 // DELETE
-export async function deleteCollection(id: string) {
+export async function deleteCollection(id: string): Promise<{ success: boolean; message?: string }>{
     try {
         const db = await getDb();
         if (!db) throw new Error("Database not available");
@@ -26,6 +28,8 @@ export async function deleteCollection(id: string) {
         await docRef.delete();
         return { success: true };
     } catch(error) {
-        return { success: false, message: 'Failed to delete collection.' };
+        console.error("Failed to delete collection:", error);
+        const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+        return { success: false, message: `Failed to delete collection: ${message}` };
     }
 }
