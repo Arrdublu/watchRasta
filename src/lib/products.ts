@@ -84,7 +84,18 @@ export async function getProductById(id: string): Promise<Product | undefined> {
     const docRef = db.collection('products').doc(id);
     const docSnap = await docRef.get();
     if (docSnap.exists) {
-        return { ...docSnap.data(), id: docSnap.id } as Product;
+        const data = docSnap.data();
+        if (!data) return undefined;
+        
+        const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+        const updatedAt = data.updatedAt?.toDate ? new Date(data.updatedAt.toDate()).toISOString() : null;
+
+        return { 
+            ...data, 
+            id: docSnap.id,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+        } as Product;
     }
     return undefined;
 }
