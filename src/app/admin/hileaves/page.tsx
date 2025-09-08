@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { getCollections, type Collection } from '@/lib/collections';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,8 +22,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { updateCollectionStatus, deleteCollection } from './actions';
-
-const ADMIN_EMAIL = 'watchrasta@gmail.com';
+import { ADMIN_EMAIL } from '@/lib/config';
 
 export default function AdminHileavesPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -38,13 +37,18 @@ export default function AdminHileavesPage() {
     } else if (user?.email === ADMIN_EMAIL) {
         const fetchCollections = async () => {
             setIsFetching(true);
-            const collectionsFromDb = await getCollections({});
-            setCollections(collectionsFromDb);
-            setIsFetching(false);
+            try {
+                const collectionsFromDb = await getCollections({});
+                setCollections(collectionsFromDb);
+            } catch (error) {
+                toast({ title: "Error fetching collections", description: "Could not load collection data.", variant: "destructive"})
+            } finally {
+                setIsFetching(false);
+            }
         }
         fetchCollections();
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, toast]);
 
 
   const handleStatusChange = async (id: string, status: Collection['status']) => {
@@ -53,7 +57,7 @@ export default function AdminHileavesPage() {
         setCollections(collections.map(item => 
         item.id === id ? { ...item, status } : item
         ));
-        toast({ title: "Collection Updated", description: `Collection status changed to ${status}.` });
+        toast({ title: "Collection Updated", description: result.message });
     } else {
         toast({ title: "Error", description: result.message, variant: 'destructive'});
     }

@@ -11,7 +11,7 @@ export async function updateCollectionStatus(id: string, status: Collection['sta
         if (!db) throw new Error("Database not available");
         const docRef = db.collection('collections').doc(id);
         await docRef.update({ status });
-        return { success: true };
+        return { success: true, message: `Collection status updated to ${status}.` };
     } catch(error) {
         console.error("Failed to update collection status:", error);
         const message = error instanceof Error ? error.message : 'An unknown error occurred.';

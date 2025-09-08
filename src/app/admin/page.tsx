@@ -20,8 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
-
-const ADMIN_EMAIL = 'watchrasta@gmail.com';
+import { ADMIN_EMAIL } from '@/lib/config';
 
 export default function AdminDashboardPage() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -36,13 +35,18 @@ export default function AdminDashboardPage() {
     } else if (user?.email === ADMIN_EMAIL) {
       const fetchArticles = async () => {
         setIsFetching(true);
-        const articlesFromDb = await getArticles({});
-        setArticles(articlesFromDb);
-        setIsFetching(false);
+        try {
+            const articlesFromDb = await getArticles({});
+            setArticles(articlesFromDb);
+        } catch (error) {
+            toast({ title: "Error fetching articles", description: "Could not load article data.", variant: "destructive" });
+        } finally {
+            setIsFetching(false);
+        }
       }
       fetchArticles();
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, toast]);
 
 
   const handleStatusChange = async (id: string, status: Article['status']) => {

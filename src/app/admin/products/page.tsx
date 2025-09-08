@@ -23,8 +23,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { updateProductStatus, deleteProduct } from './actions';
-
-const ADMIN_EMAIL = 'watchrasta@gmail.com';
+import { ADMIN_EMAIL } from '@/lib/config';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -40,17 +39,22 @@ export default function AdminProductsPage() {
     } else if (user?.email === ADMIN_EMAIL) {
       const fetchAllData = async () => {
         setIsFetching(true);
-        const [allProducts, allCollections] = await Promise.all([
-          getAllProducts(),
-          getCollections(),
-        ]);
-        setProducts(allProducts);
-        setCollections(allCollections);
-        setIsFetching(false);
+        try {
+            const [allProducts, allCollections] = await Promise.all([
+            getAllProducts(),
+            getCollections(),
+            ]);
+            setProducts(allProducts);
+            setCollections(allCollections);
+        } catch (error) {
+            toast({ title: "Error fetching data", description: "Could not load product and collection data.", variant: "destructive" });
+        } finally {
+            setIsFetching(false);
+        }
       };
       fetchAllData();
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, toast]);
 
 
   const handleStatusChange = async (id: string, status: Product['status']) => {
