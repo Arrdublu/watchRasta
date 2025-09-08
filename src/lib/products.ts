@@ -49,7 +49,17 @@ export async function getProductsByCollectionId(collectionId: number): Promise<P
     .where('status', '==', 'Published');
 
   const querySnapshot = await q.get();
-  return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
+  return querySnapshot.docs.map(doc => {
+    const data = doc.data();
+    const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+    const updatedAt = data.updatedAt?.toDate ? new Date(data.updatedAt.toDate()).toISOString() : null;
+    return {
+      ...data,
+      id: doc.id,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    } as Product;
+  });
 }
 
 // READ (by author ID)
