@@ -61,7 +61,6 @@ export async function submitArticle(formData: FormData) {
   try {
     const adminStorage = await getStorage();
     const bucket = adminStorage.bucket();
-    const bucketName = bucket.name;
     
     // Handle Image Upload
     const imageFileName = `articles/${uuidv4()}-${image.name}`;
@@ -79,9 +78,10 @@ export async function submitArticle(formData: FormData) {
         contentFile.save(contentBuffer, { metadata: { contentType: 'text/plain' } })
     ]);
 
-    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(imageFileName)}?alt=media`;
-    const contentUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(contentFileName)}?alt=media`;
+    const getPublicUrl = (fileName: string) => `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
 
+    const imageUrl = getPublicUrl(imageFileName);
+    const contentUrl = getPublicUrl(contentFileName);
 
     await addArticle({
       title: title,

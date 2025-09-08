@@ -3,10 +3,9 @@
 
 import { z } from 'zod';
 import { addProduct } from '@/lib/products';
-import { storage } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 import { getAuth } from 'firebase-admin/auth';
+import { getStorage } from '@/lib/firebase-admin';
 import admin from 'firebase-admin';
 
 const formSchema = z.object({
@@ -49,9 +48,16 @@ export async function submitProduct(formData: FormData) {
 
         const { title, collectionId, description, price, image } = parsedData.data;
 
-        const imageRef = ref(storage, `products/${uuidv4()}`);
-        await uploadBytes(imageRef, image);
-        const imageUrl = await getDownloadURL(imageRef);
+        const adminStorage = await getStorage();
+        const bucket = adminStorage.bucket();
+        
+        const imageFileName = `products/${uuidv4()}-${image.name}`;
+        const imageFile = bucket.file(imageFileName);
+        const imageBuffer = Buffer.from(await image.arrayBuffer());
+
+        await imageFile.save(imageBuffer, { metadata: { contentType: image.type } });
+
+        const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(imageFileName)}?alt=media`;
 
         await addProduct({
             title,

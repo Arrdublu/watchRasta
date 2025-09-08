@@ -4,10 +4,9 @@
 import { z } from 'zod';
 import { getArticleById, updateArticle } from '@/lib/articles';
 import { articleCategories } from '@/lib/article-categories';
-import { storage } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 import { getAuth } from 'firebase-admin/auth';
+import { getStorage } from '@/lib/firebase-admin';
 import admin from 'firebase-admin';
 
 const formSchema = z.object({
@@ -59,17 +58,24 @@ export async function updateArticleAction(formData: FormData) {
             return { success: false, message: 'Unauthorized or article not found.' };
         }
 
+        const adminStorage = await getStorage();
+        const bucket = adminStorage.bucket();
+        const getPublicUrl = (fileName: string) => `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
+
         let finalImageUrl = existingImageUrl;
         if (image) {
-            const imageRef = ref(storage, `articles/${uuidv4()}`);
-            await uploadBytes(imageRef, image);
-            finalImageUrl = await getDownloadURL(imageRef);
+            const imageFileName = `articles/${uuidv4()}-${image.name}`;
+            const imageFile = bucket.file(imageFileName);
+            const imageBuffer = Buffer.from(await image.arrayBuffer());
+            await imageFile.save(imageBuffer, { metadata: { contentType: image.type } });
+            finalImageUrl = getPublicUrl(imageFileName);
         }
 
-        const contentBlob = new Blob([content], { type: 'text/plain' });
-        const contentRef = ref(storage, `articles/${uuidv4()}.txt`);
-        await uploadBytes(contentRef, contentBlob);
-        const contentUrl = await getDownloadURL(contentRef);
+        const contentFileName = `articles/${uuidv4()}.txt`;
+        const contentFile = bucket.file(contentFileName);
+        const contentBuffer = Buffer.from(content, 'utf8');
+        await contentFile.save(contentBuffer, { metadata: { contentType: 'text/plain' } });
+        const contentUrl = getPublicUrl(contentFileName);
         
         await updateArticle(articleId, {
             title,
