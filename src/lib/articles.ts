@@ -18,7 +18,7 @@ export type Article = {
   author: string; // user's email
   authorId: string; // user's UID
   date: string; // Keep as ISO string for consistency
-  createdAt: any; // Firestore server timestamp
+  createdAt: string; // Firestore server timestamp
   status: 'Published' | 'Draft' | 'Pending Review' | 'Rejected';
 };
 

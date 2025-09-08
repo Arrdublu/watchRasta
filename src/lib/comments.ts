@@ -46,10 +46,11 @@ export async function getCommentsByArticleId(articleId: string): Promise<Comment
   const snapshot = await q.get();
   return snapshot.docs.map(doc => {
     const data = doc.data();
+    const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
     return {
       ...data,
       id: doc.id,
-      createdAt: data.createdAt?.toDate()?.toISOString() || new Date().toISOString(),
+      createdAt: createdAt,
     } as Comment;
   });
 }
