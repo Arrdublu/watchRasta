@@ -14,24 +14,7 @@ import { SocialShare } from '@/components/social-share';
 
 async function getArticleData(slug: string) {
     const article = await getArticleBySlug(slug);
-    if (!article) return { article: null, content: null, relatedArticles: [], comments: [] };
-
-    let content = article.content;
-    if (article.content.startsWith('http')) {
-        try {
-            const proxyUrl = article.content.replace('https://firebasestorage.googleapis.com', '/api/gcs');
-            const response = await fetch(proxyUrl, { cache: 'no-store' });
-            if (response.ok) {
-                content = await response.text();
-            } else {
-                console.error("Failed to fetch article content:", response.statusText);
-                content = "<p>Error: Could not load article content.</p>";
-            }
-        } catch (error) {
-             console.error("Error fetching article content:", error);
-             content = "<p>Error: Could not load article content.</p>";
-        }
-    }
+    if (!article) return { article: null, comments: [], relatedArticles: [] };
 
     const [relatedArticles, comments] = await Promise.all([
       getArticles({ category: article.category, limit: 4 }),
@@ -42,14 +25,14 @@ async function getArticleData(slug: string) {
         .filter(a => a.id !== article.id)
         .slice(0, 3);
     
-    return { article, content, relatedArticles: filteredRelated, comments };
+    return { article, relatedArticles: filteredRelated, comments };
 }
 
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const { article, content, relatedArticles, comments } = await getArticleData(params.slug);
+  const { article, comments, relatedArticles } = await getArticleData(params.slug);
 
-  if (!article || !content) {
+  if (!article) {
     notFound();
   }
   
@@ -100,7 +83,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             <div 
             className="prose dark:prose-invert prose-lg max-w-none space-y-6 text-foreground/90 [&_p]:leading-relaxed [&_h2]:font-headline [&_h2]:text-3xl [&_h2]:mt-12 [&_h2]:mb-4 [&_a]:text-primary hover:[&_a]:underline"
             >
-                {parse(content, options)}
+                {parse(article.content, options)}
             </div>
             <hr className="my-12" />
             <CommentSection articleId={article.id} articleSlug={article.slug} comments={comments} />

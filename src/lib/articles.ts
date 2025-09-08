@@ -1,7 +1,7 @@
 
 'use server';
 import admin from 'firebase-admin';
-import { getDb } from '@/lib/firebase-admin';
+import { getDb, getStorage } from '@/lib/firebase-admin';
 import type { ArticleCategory } from '@/lib/article-categories';
 
 
@@ -93,12 +93,33 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
   }
   const docRef = snapshot.docs[0];
   const data = docRef.data();
+
+  if (!data) return null;
+
+  let content = data.content;
+  if (content && content.startsWith('https://firebasestorage.googleapis.com')) {
+    try {
+        const storage = await getStorage();
+        const bucket = storage.bucket();
+        // Extract the file path from the URL
+        const filePath = decodeURIComponent(content.split('/o/')[1].split('?')[0]);
+        const file = bucket.file(filePath);
+        const [fileContent] = await file.download();
+        content = fileContent.toString('utf8');
+    } catch (error) {
+        console.error("Error downloading article content from storage:", error);
+        content = "<p>Error: Could not load article content.</p>";
+    }
+  }
+
+
   const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
   const updatedAt = data.updatedAt?.toDate ? new Date(data.updatedAt.toDate()).toISOString() : null;
 
   return {
       ...data,
       id: docRef.id,
+      content: content,
       date: createdAt,
       createdAt: createdAt,
       updatedAt: updatedAt,
@@ -116,11 +137,27 @@ export async function getArticleById(id: string): Promise<Article | null> {
     if (docSnap.exists) {
         const data = docSnap.data();
         if (data) {
+            let content = data.content;
+            if (content && content.startsWith('https://firebasestorage.googleapis.com')) {
+                try {
+                    const storage = await getStorage();
+                    const bucket = storage.bucket();
+                    const filePath = decodeURIComponent(content.split('/o/')[1].split('?')[0]);
+                    const file = bucket.file(filePath);
+                    const [fileContent] = await file.download();
+                    content = fileContent.toString('utf8');
+                } catch (error) {
+                    console.error("Error downloading article content for edit:", error);
+                    content = "Error loading content. Please try saving again.";
+                }
+            }
+
             const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
             const updatedAt = data.updatedAt?.toDate ? new Date(data.updatedAt.toDate()).toISOString() : null;
             return {
                 ...data,
                 id: docSnap.id,
+                content: content,
                 date: createdAt,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
