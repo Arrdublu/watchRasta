@@ -1,3 +1,4 @@
+
 'use server';
 import admin from 'firebase-admin';
 
@@ -9,6 +10,7 @@ function initializeFirebaseAdmin() {
     try {
         admin.initializeApp({
             credential: admin.credential.applicationDefault(),
+            storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
         });
         console.log("Firebase Admin SDK initialized successfully.");
     } catch (e: any) {
