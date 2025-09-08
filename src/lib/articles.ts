@@ -20,6 +20,7 @@ export type Article = {
   authorId: string; // user's UID
   date: string; // Keep as ISO string for consistency
   createdAt: string; // Firestore server timestamp
+  updatedAt?: string | null;
   status: 'Published' | 'Draft' | 'Pending Review' | 'Rejected';
 };
 
@@ -33,7 +34,7 @@ const getArticlesCollection = async () => {
 
 
 // CREATE
-export async function addArticle(article: Omit<Article, 'id' | 'slug' | 'date' | 'opengraphImage' | 'createdAt'> & {image: string}) {
+export async function addArticle(article: Omit<Article, 'id' | 'slug' | 'date' | 'opengraphImage' | 'createdAt' | 'updatedAt'> & {image: string}) {
   const newArticle = {
     ...article,
     slug: article.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, ''),
@@ -44,19 +45,7 @@ export async function addArticle(article: Omit<Article, 'id' | 'slug' | 'date' |
   const articlesCollection = await getArticlesCollection();
   if (!articlesCollection) throw new Error("Database not available");
   const docRef = await articlesCollection.add(newArticle);
-  
-  const docSnap = await docRef.get();
-  const data = docSnap.data();
-  if (!data) {
-    throw new Error("Failed to fetch the newly created article.");
-  }
-  const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
-
-  return {
-      ...data,
-      id: docRef.id,
-      createdAt,
-  } as Article;
+  return await getArticleById(docRef.id);
 }
 
 // READ (all)
