@@ -160,7 +160,7 @@ export default function AdminProductsPage() {
                            <Button variant="outline" size="sm" onClick={() => handleStatusChange(product.id, 'Published')}>
                                <Check className="h-4 w-4 mr-1" /> Approve
                            </Button>
-                           <Button variant="destructive" size="sm" onClick={() => handleStatusChange(product.id, 'Rejected')}>
+                           <Button variant="secondary" size="sm" onClick={() => handleStatusChange(product.id, 'Rejected')}>
                                <X className="h-4 w-4 mr-1" /> Reject
                            </Button>
                            <Button variant="ghost" size="icon" asChild>
