@@ -1,5 +1,4 @@
 
-
 'use server';
 import admin from 'firebase-admin';
 import { getDb, getStorage } from '@/lib/firebase-admin';
@@ -23,6 +22,40 @@ export type Article = {
   updatedAt?: string | null;
   status: 'Published' | 'Draft' | 'Pending Review' | 'Rejected';
 };
+
+// Helper to convert Firestore timestamp to a serializable date string
+const toSerializableDate = (timestamp: any): string => {
+    if (timestamp?.toDate) {
+        return timestamp.toDate().toISOString();
+    }
+    return new Date().toISOString();
+};
+
+// Helper to convert a Firestore document to a serializable Article object
+const fromDocToArticle = (doc: admin.firestore.DocumentSnapshot): Article => {
+    const data = doc.data()!;
+    const createdAt = toSerializableDate(data.createdAt);
+    const updatedAt = data.updatedAt ? toSerializableDate(data.updatedAt) : null;
+
+    return {
+        id: doc.id,
+        slug: data.slug,
+        title: data.title,
+        category: data.category,
+        image: data.image,
+        opengraphImage: data.opengraphImage,
+        dataAiHint: data.dataAiHint,
+        excerpt: data.excerpt,
+        content: data.content,
+        author: data.author,
+        authorId: data.authorId,
+        date: createdAt, // Using createdAt for the main 'date' field
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+        status: data.status,
+    };
+}
+
 
 const getArticlesCollection = async () => {
     const db = await getDb();
@@ -68,18 +101,7 @@ export async function getArticles(options: { category?: ArticleCategory, limit?:
     }
 
     const snapshot = await q.get();
-    return snapshot.docs.map(doc => {
-        const data = doc.data();
-        const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
-        const updatedAt = data.updatedAt?.toDate ? new Date(data.updatedAt.toDate()).toISOString() : null;
-        return {
-            ...data,
-            id: doc.id,
-            date: createdAt,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-        } as unknown as Article;
-    });
+    return snapshot.docs.map(fromDocToArticle);
 }
 
 
@@ -94,38 +116,25 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
     return null;
   }
   const docRef = snapshot.docs[0];
-  const data = docRef.data();
+  const article = fromDocToArticle(docRef);
 
-  if (!data) return null;
 
-  let content = data.content;
-  if (content && content.startsWith('https://firebasestorage.googleapis.com')) {
+  if (article.content && article.content.startsWith('https://firebasestorage.googleapis.com')) {
     try {
         const storage = await getStorage();
         const bucket = storage.bucket();
         // Extract the file path from the URL
-        const filePath = decodeURIComponent(content.split('/o/')[1].split('?')[0]);
+        const filePath = decodeURIComponent(article.content.split('/o/')[1].split('?')[0]);
         const file = bucket.file(filePath);
         const [fileContent] = await file.download();
-        content = fileContent.toString('utf8');
+        article.content = fileContent.toString('utf8');
     } catch (error) {
         console.error("Error downloading article content from storage:", error);
-        content = "<p>Error: Could not load article content.</p>";
+        article.content = "<p>Error: Could not load article content.</p>";
     }
   }
 
-
-  const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
-  const updatedAt = data.updatedAt?.toDate ? new Date(data.updatedAt.toDate()).toISOString() : null;
-
-  return {
-      ...data,
-      id: docRef.id,
-      content: content,
-      date: createdAt,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-  } as unknown as Article;
+  return article;
 }
 
 // READ (by ID)
@@ -137,34 +146,21 @@ export async function getArticleById(id: string): Promise<Article | null> {
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
-        const data = docSnap.data();
-        if (data) {
-            let content = data.content;
-            if (content && content.startsWith('https://firebasestorage.googleapis.com')) {
-                try {
-                    const storage = await getStorage();
-                    const bucket = storage.bucket();
-                    const filePath = decodeURIComponent(content.split('/o/')[1].split('?')[0]);
-                    const file = bucket.file(filePath);
-                    const [fileContent] = await file.download();
-                    content = fileContent.toString('utf8');
-                } catch (error) {
-                    console.error("Error downloading article content for edit:", error);
-                    content = "Error loading content. Please try saving again.";
-                }
+        const article = fromDocToArticle(docSnap);
+        if (article.content && article.content.startsWith('https://firebasestorage.googleapis.com')) {
+            try {
+                const storage = await getStorage();
+                const bucket = storage.bucket();
+                const filePath = decodeURIComponent(article.content.split('/o/')[1].split('?')[0]);
+                const file = bucket.file(filePath);
+                const [fileContent] = await file.download();
+                article.content = fileContent.toString('utf8');
+            } catch (error) {
+                console.error("Error downloading article content for edit:", error);
+                article.content = "Error loading content. Please try saving again.";
             }
-
-            const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
-            const updatedAt = data.updatedAt?.toDate ? new Date(data.updatedAt.toDate()).toISOString() : null;
-            return {
-                ...data,
-                id: docSnap.id,
-                content: content,
-                date: createdAt,
-                createdAt: createdAt,
-                updatedAt: updatedAt,
-            } as unknown as Article;
         }
+        return article;
     }
     
     return null;
@@ -193,9 +189,15 @@ export async function updateArticleStatus(id: string, status: Article['status'])
 }
 
 // DELETE
-export async function deleteArticle(id: string) {
-    const db = await getDb();
-    if (!db) throw new Error("Database not available");
-    const docRef = db.collection('articles').doc(id);
-    await docRef.delete();
+export async function deleteArticle(id: string): Promise<{ success: boolean; message?: string }> {
+    try {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const docRef = db.collection('articles').doc(id);
+        await docRef.delete();
+        return { success: true };
+    } catch(error) {
+        const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+        return { success: false, message: `Failed to delete article: ${message}` };
+    }
 }

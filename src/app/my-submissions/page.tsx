@@ -6,7 +6,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { getArticles, deleteArticle, type Article } from '@/lib/articles';
-import { getProductsByAuthorId, deleteProduct, type Product } from '@/lib/products';
+import { getProductsByAuthorId, type Product } from '@/lib/products';
+import { deleteProduct } from '@/app/admin/products/actions';
 import { getCollections, type Collection } from '@/lib/collections';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -93,23 +94,23 @@ export default function MySubmissionsPage() {
 
   const handleDeleteArticle = async (id: string) => {
     if (!confirm('Are you sure you want to delete this article? This action cannot be undone.')) return;
-    try {
-        await deleteArticle(id);
+    const result = await deleteArticle(id);
+    if (result.success) {
         setMyArticles(myArticles.filter(a => a.id !== id));
         toast({ title: "Article Deleted", description: "The article has been removed.", variant: 'destructive' });
-    } catch (error) {
-         toast({ title: "Error deleting article", description: "There was a problem removing the article.", variant: 'destructive' });
+    } else {
+        toast({ title: "Error deleting article", description: result.message, variant: 'destructive' });
     }
   };
 
   const handleDeleteProduct = async (id: string) => {
     if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) return;
-    try {
-        await deleteProduct(id);
+    const result = await deleteProduct(id);
+    if (result.success) {
         setMyProducts(myProducts.filter(p => p.id !== id));
         toast({ title: "Product Deleted", description: "The product has been removed.", variant: 'destructive' });
-    } catch (error) {
-         toast({ title: "Error deleting product", description: "There was a problem removing the product.", variant: 'destructive' });
+    } else {
+        toast({ title: "Error deleting product", description: result.message, variant: 'destructive' });
     }
   };
 

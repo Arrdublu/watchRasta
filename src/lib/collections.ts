@@ -1,3 +1,4 @@
+'use server';
 
 import admin from 'firebase-admin';
 import { getDb } from './firebase-admin';
@@ -13,6 +14,34 @@ export type Collection = {
   status: 'Published' | 'Draft' | 'Archived';
   createdAt: string;
 };
+
+
+// Helper to convert Firestore timestamp to a serializable date string
+const toSerializableDate = (timestamp: any): string => {
+    if (timestamp?.toDate) {
+        return timestamp.toDate().toISOString();
+    }
+    return new Date().toISOString();
+};
+
+// Helper to convert a Firestore document to a serializable Collection object
+const fromDocToCollection = (doc: admin.firestore.DocumentSnapshot): Collection => {
+    const data = doc.data()!;
+    const createdAt = toSerializableDate(data.createdAt);
+
+    return {
+        id: doc.id,
+        numericId: data.numericId,
+        title: data.title,
+        description: data.description,
+        imageUrl: data.imageUrl,
+        dataAiHint: data.dataAiHint,
+        href: data.href,
+        status: data.status,
+        createdAt: createdAt,
+    };
+}
+
 
 const getCollectionsCollection = async () => {
     const db = await getDb();
@@ -34,15 +63,7 @@ export async function getCollections(options: { status?: Collection['status'] } 
   }
 
   const snapshot = await q.get();
-  return snapshot.docs.map(doc => {
-    const data = doc.data();
-    const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
-    return { 
-      ...data,
-      id: doc.id,
-      createdAt,
-    } as Collection;
-  });
+  return snapshot.docs.map(fromDocToCollection);
 }
 
 // Get a single collection by its original numeric ID
@@ -56,11 +77,5 @@ export async function getCollectionByNumericId(numericId: number): Promise<Colle
     return null;
   }
   const docRef = snapshot.docs[0];
-  const data = docRef.data();
-  const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
-  return { 
-    ...data,
-    id: docRef.id,
-    createdAt,
-  } as Collection;
+  return fromDocToCollection(docRef);
 }
