@@ -24,6 +24,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { updateProductStatus, deleteProduct } from './actions';
 import { ADMIN_EMAIL } from '@/lib/config';
+import { DeleteConfirmationDialog } from '@/components/delete-confirmation-dialog';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -70,7 +71,6 @@ export default function AdminProductsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this product? This action is permanent.')) return;
      const result = await deleteProduct(id);
      if (result.success) {
       setProducts(products.filter(product => product.id !== id));
@@ -203,12 +203,17 @@ export default function AdminProductsPage() {
                           Reject
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem 
-                            className="text-destructive"
-                            onClick={() => handleDelete(product.id)}
+                        <DeleteConfirmationDialog 
+                          onConfirm={() => handleDelete(product.id)}
+                          itemType="product"
                         >
-                            <Trash2 className="mr-2 h-4 w-4"/>Delete
-                        </DropdownMenuItem>
+                          <DropdownMenuItem 
+                              className="text-destructive"
+                              onSelect={(e) => e.preventDefault()}
+                          >
+                              <Trash2 className="mr-2 h-4 w-4"/>Delete
+                          </DropdownMenuItem>
+                        </DeleteConfirmationDialog>
                       </DropdownMenuContent>
                     </DropdownMenu>
                     )}

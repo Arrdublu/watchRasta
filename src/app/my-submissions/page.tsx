@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { DeleteConfirmationDialog } from '@/components/delete-confirmation-dialog';
 
 export default function MySubmissionsPage() {
   const { user, loading } = useAuth();
@@ -93,7 +94,6 @@ export default function MySubmissionsPage() {
   };
 
   const handleDeleteArticle = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this article? This action cannot be undone.')) return;
     const result = await deleteArticle(id);
     if (result.success) {
         setMyArticles(myArticles.filter(a => a.id !== id));
@@ -104,7 +104,6 @@ export default function MySubmissionsPage() {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) return;
     const result = await deleteProduct(id);
     if (result.success) {
         setMyProducts(myProducts.filter(p => p.id !== id));
@@ -163,12 +162,14 @@ export default function MySubmissionsPage() {
                                         >
                                             <Edit className="mr-2 h-4 w-4"/>Edit
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem 
-                                            onClick={() => handleDeleteArticle(article.id)} 
-                                            className="text-destructive"
-                                        >
-                                            <Trash2 className="mr-2 h-4 w-4"/>Delete
-                                        </DropdownMenuItem>
+                                        <DeleteConfirmationDialog onConfirm={() => handleDeleteArticle(article.id)} itemType='article' description='This action cannot be undone.'>
+                                            <DropdownMenuItem 
+                                                className="text-destructive"
+                                                onSelect={(e) => e.preventDefault()}
+                                            >
+                                                <Trash2 className="mr-2 h-4 w-4"/>Delete
+                                            </DropdownMenuItem>
+                                        </DeleteConfirmationDialog>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
@@ -216,12 +217,14 @@ export default function MySubmissionsPage() {
                                         >
                                             <Edit className="mr-2 h-4 w-4"/>Edit
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem 
-                                            onClick={() => handleDeleteProduct(product.id)} 
-                                            className="text-destructive"
-                                        >
-                                            <Trash2 className="mr-2 h-4 w-4"/>Delete
-                                        </DropdownMenuItem>
+                                        <DeleteConfirmationDialog onConfirm={() => handleDeleteProduct(product.id)} itemType='product' description='This action cannot be undone.'>
+                                            <DropdownMenuItem 
+                                                className="text-destructive"
+                                                onSelect={(e) => e.preventDefault()}
+                                            >
+                                                <Trash2 className="mr-2 h-4 w-4"/>Delete
+                                            </DropdownMenuItem>
+                                        </DeleteConfirmationDialog>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>

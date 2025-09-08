@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { ADMIN_EMAIL } from '@/lib/config';
+import { DeleteConfirmationDialog } from '@/components/delete-confirmation-dialog';
 
 export default function AdminDashboardPage() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -62,7 +63,6 @@ export default function AdminDashboardPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this article? This action is permanent.')) return;
     const result = await deleteArticle(id);
     if (result.success) {
       setArticles(articles.filter(article => article.id !== id));
@@ -181,12 +181,17 @@ export default function AdminDashboardPage() {
                           Reject
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem 
-                            className="text-destructive"
-                            onClick={() => handleDelete(article.id)}
+                        <DeleteConfirmationDialog 
+                          onConfirm={() => handleDelete(article.id)}
+                          itemType="article"
                         >
-                            <Trash2 className="mr-2 h-4 w-4"/>Delete
-                        </DropdownMenuItem>
+                          <DropdownMenuItem 
+                              className="text-destructive"
+                              onSelect={(e) => e.preventDefault()}
+                          >
+                              <Trash2 className="mr-2 h-4 w-4"/>Delete
+                          </DropdownMenuItem>
+                        </DeleteConfirmationDialog>
                       </DropdownMenuContent>
                     </DropdownMenu>
                     )}

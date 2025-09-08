@@ -23,6 +23,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { updateCollectionStatus, deleteCollection } from './actions';
 import { ADMIN_EMAIL } from '@/lib/config';
+import { DeleteConfirmationDialog } from '@/components/delete-confirmation-dialog';
 
 export default function AdminHileavesPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -64,7 +65,6 @@ export default function AdminHileavesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this collection? This action is permanent.')) return;
     const result = await deleteCollection(id);
     if (result.success) {
         setCollections(collections.filter(item => item.id !== id));
@@ -175,12 +175,17 @@ export default function AdminHileavesPage() {
                           Archive
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem 
-                            className="text-destructive"
-                            onClick={() => handleDelete(collection.id)}
+                        <DeleteConfirmationDialog 
+                            onConfirm={() => handleDelete(collection.id)}
+                            itemType="collection"
                         >
-                            Delete
-                        </DropdownMenuItem>
+                            <DropdownMenuItem 
+                                className="text-destructive"
+                                onSelect={(e) => e.preventDefault()}
+                            >
+                                Delete
+                            </DropdownMenuItem>
+                        </DeleteConfirmationDialog>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
