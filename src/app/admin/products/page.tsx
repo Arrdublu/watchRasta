@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Check, X, Eye } from 'lucide-react';
+import { MoreVertical, Check, X, Eye, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -207,7 +207,7 @@ export default function AdminProductsPage() {
                             className="text-destructive"
                             onClick={() => handleDelete(product.id)}
                         >
-                            Delete
+                            <Trash2 className="mr-2 h-4 w-4"/>Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

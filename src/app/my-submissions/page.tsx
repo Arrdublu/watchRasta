@@ -97,7 +97,7 @@ export default function MySubmissionsPage() {
     const result = await deleteArticle(id);
     if (result.success) {
         setMyArticles(myArticles.filter(a => a.id !== id));
-        toast({ title: "Article Deleted", description: "The article has been removed.", variant: 'destructive' });
+        toast({ title: "Article Deleted", description: result.message, variant: 'destructive' });
     } else {
         toast({ title: "Error deleting article", description: result.message, variant: 'destructive' });
     }
@@ -108,7 +108,7 @@ export default function MySubmissionsPage() {
     const result = await deleteProduct(id);
     if (result.success) {
         setMyProducts(myProducts.filter(p => p.id !== id));
-        toast({ title: "Product Deleted", description: "The product has been removed.", variant: 'destructive' });
+        toast({ title: "Product Deleted", description: result.message, variant: 'destructive' });
     } else {
         toast({ title: "Error deleting product", description: result.message, variant: 'destructive' });
     }

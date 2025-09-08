@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Check, X, Eye } from 'lucide-react';
+import { MoreVertical, Check, X, Eye, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this article permanently?')) return;
+    if (!confirm('Are you sure you want to delete this article? This action is permanent.')) return;
     const result = await deleteArticle(id);
     if (result.success) {
       setArticles(articles.filter(article => article.id !== id));
@@ -185,7 +185,7 @@ export default function AdminDashboardPage() {
                             className="text-destructive"
                             onClick={() => handleDelete(article.id)}
                         >
-                            Delete Permanently
+                            <Trash2 className="mr-2 h-4 w-4"/>Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
