@@ -43,7 +43,7 @@ const nextConfig = {
       },
     ]
   },
-  webpack: (config) => {
+  webpack: (config: any) => {
     config.ignoreWarnings = [
       ...(config.ignoreWarnings || []),
       {
