@@ -87,6 +87,8 @@ export default function AdminProductsPage() {
         return 'secondary';
       case 'Pending Review':
         return 'outline';
+      case 'Rejected':
+        return 'destructive';
       default:
         return 'default';
     }
@@ -158,7 +160,7 @@ export default function AdminProductsPage() {
                            <Button variant="outline" size="sm" onClick={() => handleStatusChange(product.id, 'Published')}>
                                <Check className="h-4 w-4 mr-1" /> Approve
                            </Button>
-                           <Button variant="destructive" size="sm" onClick={() => handleDelete(product.id)}>
+                           <Button variant="destructive" size="sm" onClick={() => handleStatusChange(product.id, 'Rejected')}>
                                <X className="h-4 w-4 mr-1" /> Reject
                            </Button>
                            <Button variant="ghost" size="icon" asChild>
@@ -188,6 +190,12 @@ export default function AdminProductsPage() {
                           disabled={product.status === 'Draft'}
                         >
                           Move to Draft
+                        </DropdownMenuItem>
+                         <DropdownMenuItem 
+                          onClick={() => handleStatusChange(product.id, 'Rejected')}
+                          disabled={product.status === 'Rejected'}
+                        >
+                          Reject
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem 
