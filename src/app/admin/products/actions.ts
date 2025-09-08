@@ -19,7 +19,7 @@ export async function deleteProduct(id: string): Promise<{ success: boolean; mes
         if (!db) throw new Error("Database not available");
         const docRef = db.collection('products').doc(id);
         await docRef.delete();
-        return { success: true };
+        return { success: true, message: 'Product deleted successfully.' };
     } catch(error) {
         const message = error instanceof Error ? error.message : 'An unknown error occurred.';
         return { success: false, message: `Failed to delete product: ${message}` };
