@@ -12,7 +12,7 @@ export type Product = {
   price: string;
   imageUrl: string;
   dataAiHint: string;
-  status: 'Published' | 'Draft' | 'Pending Review';
+  status: 'Published' | 'Draft' | 'Pending Review' | 'Rejected';
   author: string;
   authorId: string;
   createdAt: string; 
@@ -28,7 +28,7 @@ const getProductsCollection = async () => {
 };
 
 // CREATE
-export async function addProduct(product: Omit<Product, 'id' | 'createdAt'>) {
+export async function addProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) {
   const newProduct = {
     ...product,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -40,7 +40,6 @@ export async function addProduct(product: Omit<Product, 'id' | 'createdAt'>) {
   const docSnap = await docRef.get();
   const data = docSnap.data();
   if (!data) {
-      // This should ideally not happen if the add was successful
       throw new Error("Failed to fetch the newly created product.");
   }
   
