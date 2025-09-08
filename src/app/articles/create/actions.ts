@@ -66,23 +66,22 @@ export async function submitArticle(formData: FormData) {
     // Handle Image Upload
     const imageFileName = `articles/${uuidv4()}-${image.name}`;
     const imageFile = bucket.file(imageFileName);
-    const imageStream = imageFile.createWriteStream({
-        metadata: { contentType: image.type }
-    });
     const imageBuffer = Buffer.from(await image.arrayBuffer());
-    imageStream.end(imageBuffer);
-    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(imageFileName)}?alt=media`;
-
-
+    
     // Handle Content Upload
     const contentFileName = `articles/${uuidv4()}.txt`;
     const contentFile = bucket.file(contentFileName);
-    const contentStream = contentFile.createWriteStream({
-        metadata: { contentType: 'text/plain' }
-    });
     const contentBuffer = Buffer.from(content, 'utf8');
-    contentStream.end(contentBuffer);
+
+    // Upload both files in parallel
+    const [imageUploadResult, contentUploadResult] = await Promise.all([
+        imageFile.save(imageBuffer, { metadata: { contentType: image.type } }),
+        contentFile.save(contentBuffer, { metadata: { contentType: 'text/plain' } })
+    ]);
+
+    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(imageFileName)}?alt=media`;
     const contentUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(contentFileName)}?alt=media`;
+
 
     await addArticle({
       title: title,
