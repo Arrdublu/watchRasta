@@ -11,7 +11,7 @@ export type Collection = {
   dataAiHint: string;
   href: string;
   status: 'Published' | 'Draft' | 'Archived';
-  createdAt: any;
+  createdAt: string;
 };
 
 const getCollectionsCollection = async () => {
@@ -34,7 +34,15 @@ export async function getCollections(options: { status?: Collection['status'] } 
   }
 
   const snapshot = await q.get();
-  return snapshot.docs.map(doc => ({ ...doc.data() as Omit<Collection, 'id'>, id: doc.id }));
+  return snapshot.docs.map(doc => {
+    const data = doc.data();
+    const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+    return { 
+      ...data,
+      id: doc.id,
+      createdAt,
+    } as Collection;
+  });
 }
 
 // Get a single collection by its original numeric ID
@@ -48,5 +56,11 @@ export async function getCollectionByNumericId(numericId: number): Promise<Colle
     return null;
   }
   const docRef = snapshot.docs[0];
-  return { ...docRef.data() as Omit<Collection, 'id'>, id: docRef.id };
+  const data = docRef.data();
+  const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+  return { 
+    ...data as Omit<Collection, 'id'>, 
+    id: docRef.id,
+    createdAt,
+  };
 }
