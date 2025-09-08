@@ -76,7 +76,7 @@ export async function getArticles(options: { category?: ArticleCategory, limit?:
             date: createdAt,
             createdAt: createdAt,
             updatedAt: updatedAt,
-        } as Article;
+        } as unknown as Article;
     });
 }
 
@@ -102,7 +102,7 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
       date: createdAt,
       createdAt: createdAt,
       updatedAt: updatedAt,
-  } as Article;
+  } as unknown as Article;
 }
 
 // READ (by ID)
@@ -124,7 +124,7 @@ export async function getArticleById(id: string): Promise<Article | null> {
                 date: createdAt,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-            } as Article;
+            } as unknown as Article;
         }
     }
     
