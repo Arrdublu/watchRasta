@@ -68,7 +68,7 @@ export default function AdminHileavesPage() {
     const result = await deleteCollection(id);
     if (result.success) {
         setCollections(collections.filter(item => item.id !== id));
-        toast({ title: "Collection Deleted", description: "The collection has been successfully deleted.", variant: 'destructive' });
+        toast({ title: "Collection Deleted", description: result.message, variant: 'destructive' });
     } else {
         toast({ title: "Error", description: result.message, variant: 'destructive'});
     }

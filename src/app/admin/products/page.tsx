@@ -70,12 +70,12 @@ export default function AdminProductsPage() {
   };
 
   const handleDelete = async (id: string) => {
-     try {
-      await deleteProduct(id);
+     const result = await deleteProduct(id);
+     if (result.success) {
       setProducts(products.filter(product => product.id !== id));
-      toast({ title: "Product Deleted", description: "The product has been successfully deleted.", variant: 'destructive' });
-    } catch (error) {
-       toast({ title: "Error", description: "Failed to delete product.", variant: 'destructive'});
+      toast({ title: "Product Deleted", description: result.message, variant: 'destructive' });
+    } else {
+       toast({ title: "Error", description: result.message, variant: 'destructive'});
     }
   };
 

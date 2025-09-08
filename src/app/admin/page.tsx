@@ -62,12 +62,12 @@ export default function AdminDashboardPage() {
   };
 
   const handleDelete = async (id: string) => {
-    try {
-      await deleteArticle(id);
+    const result = await deleteArticle(id);
+    if (result.success) {
       setArticles(articles.filter(article => article.id !== id));
-      toast({ title: "Article Deleted", description: "The article has been permanently deleted.", variant: 'destructive' });
-    } catch (error) {
-       toast({ title: "Error", description: "Failed to delete article.", variant: 'destructive'});
+      toast({ title: "Article Deleted", description: result.message, variant: 'destructive' });
+    } else {
+       toast({ title: "Error", description: result.message, variant: 'destructive'});
     }
   };
 
