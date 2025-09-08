@@ -36,7 +36,21 @@ export async function addProduct(product: Omit<Product, 'id' | 'createdAt'>) {
   const productsCollection = await getProductsCollection();
   if (!productsCollection) throw new Error("Database not available");
   const docRef = await productsCollection.add(newProduct);
-  return { ...newProduct, id: docRef.id };
+  
+  const docSnap = await docRef.get();
+  const data = docSnap.data();
+  if (!data) {
+      // This should ideally not happen if the add was successful
+      throw new Error("Failed to fetch the newly created product.");
+  }
+  
+  const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
+  
+  return { 
+      ...data,
+      id: docRef.id,
+      createdAt,
+  } as Product;
 }
 
 // READ (by collection ID)
