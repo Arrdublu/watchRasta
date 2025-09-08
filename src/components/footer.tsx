@@ -39,9 +39,6 @@ export function Footer() {
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/branding%2FHeader-icon.png?alt=media&token=ddfb823f-9d79-4f03-aed6-8f7ddfaecb80" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
             </Link>
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} watchRasta. All rights reserved.
-            </p>
           </div>
 
           <div className="md:justify-self-center">
@@ -88,6 +85,9 @@ export function Footer() {
                 </Link>
              </div>
           </div>
+        </div>
+        <div className="mt-12 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
+             <p>© {new Date().getFullYear()} watchRasta. All rights reserved.</p>
         </div>
       </div>
     </footer>
