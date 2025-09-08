@@ -59,8 +59,8 @@ export async function getCollectionByNumericId(numericId: number): Promise<Colle
   const data = docRef.data();
   const createdAt = data.createdAt?.toDate ? new Date(data.createdAt.toDate()).toISOString() : new Date().toISOString();
   return { 
-    ...data as Omit<Collection, 'id'>, 
+    ...data,
     id: docRef.id,
     createdAt,
-  };
+  } as Collection;
 }
