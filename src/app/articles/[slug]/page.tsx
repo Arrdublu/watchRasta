@@ -7,9 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArticleCard } from '@/components/article-card';
 import { CommentSection } from '@/components/comment-section';
 import { Clock, User } from 'lucide-react';
-import parse from 'html-react-parser';
 import { Embed } from '@/components/embed';
-import { Element } from 'html-react-parser';
 import { SocialShare } from '@/components/social-share';
 
 async function getArticleData(slug: string) {
@@ -35,14 +33,6 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   if (!article) {
     notFound();
   }
-  
-  const options = {
-    replace: (domNode: any) => {
-        if (domNode instanceof Element && domNode.name === 'iframe') {
-            return <Embed iframe={domNode.toString()} />;
-        }
-    },
-  };
 
   return (
     <>
@@ -82,9 +72,8 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         <div className="max-w-3xl mx-auto">
             <div 
             className="prose dark:prose-invert prose-lg max-w-none space-y-6 text-foreground/90 [&_p]:leading-relaxed [&_h2]:font-headline [&_h2]:text-3xl [&_h2]:mt-12 [&_h2]:mb-4 [&_a]:text-primary hover:[&_a]:underline"
-            >
-                {parse(article.content, options)}
-            </div>
+            dangerouslySetInnerHTML={{ __html: article.content.replace(/<iframe/g, '<div class="embed-container"><iframe').replace(/<\/iframe>/g, '</iframe></div>') }}
+            />
             <hr className="my-12" />
             <CommentSection articleId={article.id} articleSlug={article.slug} comments={comments} />
         </div>

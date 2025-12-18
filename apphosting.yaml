@@ -27,11 +27,11 @@ env:
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
     value: "AIzaSyBzB3twSVNttGgGQ9yhMQb0HPo5ywMMpI8"
   - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    value: "watchrasta.com"
+    value: "studio-5785177965-f69a8.firebaseapp.com"
   - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    value: "watchrasta"
+    value: "studio-5785177965-f69a8"
   - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    value: "watchrasta.com"
+    value: "studio-5785177965-f69a8.appspot.com"
   - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
     value: "839347362900"
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
