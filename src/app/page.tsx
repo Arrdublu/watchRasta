@@ -12,7 +12,7 @@ export default async function Home() {
 
   const getCategoryPath = (category: string) => {
     if (category === 'Brands') {
-      return '/behind-the-music';
+      return '/brands';
     }
     return `/${category.toLowerCase().replace(' & ', '-').replace(/\s+/g, '-')}`;
   };
