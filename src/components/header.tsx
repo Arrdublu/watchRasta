@@ -27,9 +27,6 @@ const allNavLinks = [
   { href: '/being', label: 'Being' },
   { href: '/brands', label: 'Brands' },
   { href: '/my-favorites', label: 'My Favorites' },
-  { href: '/style-guide', label: 'AI Analyzer' },
-  { href: '/hileaves', label: 'HiLeaves' },
-  { href: '/contact', label: 'Contact' },
   { href: '/admin', label: 'Admin' },
 ];
 
@@ -64,10 +61,11 @@ export function Header() {
   });
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-black/20 backdrop-blur-lg">
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/branding%2FHeader-icon.png?alt=media&token=ddfb823f-9d79-4f03-aed6-8f7ddfaecb80" alt="watchRasta logo" width={24} height={24} className="h-8 w-8" />
+          <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.appspot.com/o/images%2F3wR-logo.png?alt=media&token=8d272378-752e-40f4-8848-036125b29267" alt="watchRasta logo" width={24} height={24} className="h-8 w-8" />
+          <span className='font-headline'>watchRasta</span>
         </Link>
         <div className="flex flex-1 items-center justify-end">
           <nav className="hidden md:flex md:items-center md:space-x-6 text-sm font-medium">

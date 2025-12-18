@@ -1,22 +1,20 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 
 export function HeroBanner() {
   return (
-    <section className="relative h-[60vh] md:h-[80vh] w-full flex items-center justify-center text-center">
+    <section className="relative h-screen w-full flex items-center justify-center text-center">
       <Image
-        src="https://picsum.photos/1920/1080"
-        alt="watchRasta live on stage"
-        data-ai-hint="musician concert"
+        src="https://firebasestorage.googleapis.com/v0/b/watchrasta.appspot.com/o/images%2F3wR-hero-bg.png?alt=media&token=8b44c688-6927-446a-848f-31035a6e8b4e"
+        alt="watchRasta hero background"
         fill
         className="object-cover object-center brightness-50"
         priority
       />
       <div className="relative z-10 max-w-4xl mx-auto px-4 text-white">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold text-accent mb-4 leading-tight animate-fade-in-up">
-          Culture | Sound
+          Epic STORIES. Rooted STARS. A culture OF ENTERTAINMENT.
         </h1>
         <p className="text-lg md:text-xl text-accent/90 max-w-2xl mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
           Explore the music, stories, and latest updates from watchRasta.
@@ -24,7 +22,6 @@ export function HeroBanner() {
         <Link href="/news">
           <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
             Explore The Music
-            <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </Link>
       </div>

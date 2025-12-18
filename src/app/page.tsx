@@ -21,7 +21,7 @@ export default async function Home() {
     <div className="flex flex-col min-h-screen">
       <HeroBanner />
       
-      <section className="container py-16 md:py-24">
+      <section>
         <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-headline font-bold">
               Explore Our Stories

@@ -1,19 +1,20 @@
 
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Instagram, Youtube, Twitter, Music, Mail } from 'lucide-react';
+import { useAuth } from '@/contexts/auth-context';
 
-const legalLinks = [
-  { href: '/privacy-policy', label: 'Privacy Policy' },
-  { href: '/terms-of-service', label: 'Terms of Service' },
-  { href: '/cookie-policy', label: 'Cookie Policy' },
-  { href: '/modern-slavery-act', label: 'Modern Slavery Act' },
+const exploreLinks = [
+  { href: '/style-guide', label: 'Style Guide' },
+  { href: '/hileaves', label: 'HiLeaves' },
+  { href: '/contact', label: 'Contact' },
 ];
 
-const supportLinks = [
-  { href: '/faq', label: 'FAQ' },
-  { href: '/contact', label: 'Support' },
-  { href: '/career', label: 'Career' },
+const myAccountLinks = [
+    { href: '/my-collection', label: 'My Collection' },
+    { href: '/my-favorites', label: 'My Favorites' },
 ];
 
 const socialLinks = [
@@ -31,20 +32,22 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 )
 
 export function Footer() {
+  const { user } = useAuth();
   return (
-    <footer className="border-t border-border/40 bg-background">
+    <footer className="border-t border-border/40 bg-black/20 backdrop-blur-lg">
       <div className="container py-12">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-1 flex items-start flex-col">
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/branding%2FHeader-icon.png?alt=media&token=ddfb823f-9d79-4f03-aed6-8f7ddfaecb80" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
+              <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.appspot.com/o/images%2F3wR-logo.png?alt=media&token=8d272378-752e-40f4-8848-036125b29267" alt="watchRasta logo" width={24} height={24} className="h-6 w-6" />
+               <span className='font-headline'>watchRasta</span>
             </Link>
           </div>
 
           <div className="md:justify-self-center">
-            <h3 className="font-semibold mb-4 text-foreground">Legal</h3>
+            <h3 className="font-headline mb-4 text-primary">Explore</h3>
             <ul className="space-y-2">
-              {legalLinks.map((link) => (
+              {exploreLinks.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-muted-foreground hover:text-primary">
                     {link.label}
@@ -54,10 +57,10 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="md:justify-self-center">
-            <h3 className="font-semibold mb-4 text-foreground">Support</h3>
+         { user && (<div className="md:justify-self-center">
+            <h3 className="font-headline mb-4 text-primary">My Account</h3>
             <ul className="space-y-2">
-              {supportLinks.map((link) => (
+              {myAccountLinks.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-muted-foreground hover:text-primary">
                     {link.label}
@@ -65,10 +68,10 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </div>)}
           
           <div className="col-span-2 md:col-span-2 flex flex-col items-center md:items-end">
-             <h3 className="font-semibold mb-4 text-foreground">Follow Us [@watchRasta]</h3>
+             <h3 className="font-headline mb-4 text-primary">Follow Us</h3>
              <div className="flex gap-4">
                 {socialLinks.map((link) => (
                     <Link key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label={link.label}>
@@ -87,7 +90,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-             <p>© {new Date().getFullYear()} watchRasta. All rights reserved.</p>
+             <p>© {new Date().getFullYear()} Epic STORIES. Rooted STARS. A culture OF ENTERTAINMENT.</p>
         </div>
       </div>
     </footer>
