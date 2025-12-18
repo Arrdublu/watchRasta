@@ -10,9 +10,12 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 export default async function Home() {
   const articles = await getArticles({ limit: 6 });
 
-  // Exclude categories that might not be primary navigation items
-  const navCategories = articleCategories.filter(c => !['Album Reviews', 'Interviews', 'Tour Diaries', 'Gear'].includes(c));
-
+  const getCategoryPath = (category: string) => {
+    if (category === 'Brands') {
+      return '/behind-the-music';
+    }
+    return `/${category.toLowerCase().replace(' & ', '-').replace(/\s+/g, '-')}`;
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -28,7 +31,7 @@ export default async function Home() {
                 <div className="flex w-full space-x-4 p-4">
                     {articleCategories.map(category => (
                         <Button asChild variant="outline" key={category}>
-                            <Link href={`/${category.toLowerCase().replace(' & ', '-').replace(/\s+/g, '-')}`}>
+                            <Link href={getCategoryPath(category)}>
                                 {category}
                             </Link>
                         </Button>
