@@ -65,7 +65,6 @@ export function Header() {
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/watchRasta_2024_logo-10.png?alt=media&token=ff529403-c4ab-4828-81c4-a44f712ca138" alt="watchRasta logo" width={24} height={24} className="h-8 w-8" />
-          <span className='font-headline'>watchRasta</span>
         </Link>
         <div className="flex flex-1 items-center justify-end">
           <nav className="hidden md:flex md:items-center md:space-x-6 text-sm font-medium">
