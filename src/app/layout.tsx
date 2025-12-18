@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/contexts/auth-context';
 import { ThemeProvider } from '@/components/theme-provider';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://watchrasta.com'),
@@ -39,12 +39,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
+          <FirebaseClientProvider>
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
             <Toaster />
-          </AuthProvider>
+          </FirebaseClientProvider>
         </ThemeProvider>
       </body>
     </html>
