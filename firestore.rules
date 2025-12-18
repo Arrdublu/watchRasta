@@ -52,16 +52,9 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // COMMENTS
+    // COMMENTS (REMOVED) - All writes are disallowed.
     match /comments/{commentId} {
-      // Anyone can read comments
-      allow read: if true;
-      
-      // Authenticated users can create comments
-      allow create: if request.auth != null;
-      
-      // Comments cannot be updated or deleted by users
-      allow update, delete: if isAdmin();
+      allow read, write: if false;
     }
 
     match /{document=**} {

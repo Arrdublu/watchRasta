@@ -83,40 +83,23 @@ export function SocialShare({ title, className }: SocialShareProps) {
   };
 
   return (
-    <div className={cn(className)}>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Share2 className="h-4 w-4" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto">
-          <div className="space-y-4">
-            <p className="font-semibold text-center">Share this article</p>
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              {socialLinks.map((social) => (
-                <Button
-                  key={social.name}
-                  variant="outline"
-                  size="icon"
-                  asChild
-                >
-                  <a href={social.url} target="_blank" rel="noopener noreferrer" aria-label={`Share on ${social.name}`}>
-                    {social.icon}
-                  </a>
-                </Button>
-              ))}
-            </div>
-            <div className="flex space-x-2">
-                <Input value={url} readOnly className="h-9"/>
-                <Button variant="outline" size="icon" onClick={handleCopyLink} className="h-9 w-9 shrink-0">
-                    <LinkIcon className="h-4 w-4" />
-                    <span className="sr-only">Copy Link</span>
-                </Button>
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
+    <div className={cn("flex items-center gap-2", className)}>
+        {socialLinks.map((social) => (
+            <Button
+                key={social.name}
+                variant="outline"
+                size="icon"
+                asChild
+            >
+                <a href={social.url} target="_blank" rel="noopener noreferrer" aria-label={`Share on ${social.name}`}>
+                {social.icon}
+                </a>
+            </Button>
+        ))}
+        <Button variant="outline" size="icon" onClick={handleCopyLink} className="h-10 w-10 shrink-0">
+            <LinkIcon className="h-5 w-5" />
+            <span className="sr-only">Copy Link</span>
+        </Button>
     </div>
   );
 }

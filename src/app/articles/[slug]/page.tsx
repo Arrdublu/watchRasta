@@ -1,11 +1,9 @@
 
 import { getArticleBySlug, getArticles } from '@/lib/articles';
-import { getCommentsByArticleId } from '@/lib/comments';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { ArticleCard } from '@/components/article-card';
-import { CommentSection } from '@/components/comment-section';
 import { Clock, User } from 'lucide-react';
 import { Embed } from '@/components/embed';
 import { SocialShare } from '@/components/social-share';
@@ -13,18 +11,15 @@ import type { Metadata } from 'next';
 
 async function getArticleData(slug: string) {
     const article = await getArticleBySlug(slug);
-    if (!article) return { article: null, comments: [], relatedArticles: [] };
+    if (!article) return { article: null, relatedArticles: [] };
 
-    const [relatedArticles, comments] = await Promise.all([
-      getArticles({ category: article.category, limit: 4 }),
-      getCommentsByArticleId(article.id)
-    ]);
+    const relatedArticles = await getArticles({ category: article.category, limit: 4 });
     
     const filteredRelated = relatedArticles
         .filter(a => a.id !== article.id)
         .slice(0, 3);
     
-    return { article, relatedArticles: filteredRelated, comments };
+    return { article, relatedArticles: filteredRelated };
 }
 
 type Props = {
@@ -68,7 +63,7 @@ export async function generateMetadata(
 
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const { article, comments, relatedArticles } = await getArticleData(params.slug);
+  const { article, relatedArticles } = await getArticleData(params.slug);
 
   if (!article) {
     notFound();
@@ -94,7 +89,6 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                     {new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </time>
               </div>
-              <SocialShare title={article.title} />
           </div>
         </header>
 
@@ -115,7 +109,11 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             dangerouslySetInnerHTML={{ __html: article.content.replace(/<iframe/g, '<div class="embed-container"><iframe').replace(/<\/iframe>/g, '</iframe></div>') }}
             />
             <hr className="my-12" />
-            <CommentSection articleId={article.id} articleSlug={article.slug} comments={comments} />
+            <div className="my-12 text-center">
+                <h3 className="text-2xl font-bold font-headline mb-4">Join the Discussion</h3>
+                <p className="text-muted-foreground mb-6">Share this story and join the conversation on social media.</p>
+                <SocialShare title={article.title} className="justify-center" />
+            </div>
         </div>
       </article>
       
