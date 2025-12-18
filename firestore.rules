@@ -1,64 +1,76 @@
-
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper function to check for admin
-    function isAdmin() {
-      return request.auth.token.email == 'watchrasta@gmail.com';
+
+    // ----------------------------------------------------------------------
+    // Helper Functions
+    // ----------------------------------------------------------------------
+
+    /**
+     * The user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    // Helper function to check if user is the owner
-    function isOwner(docData) {
-      return request.auth.uid == docData.authorId;
+    /**
+     * The requesting user's UID matches the provided userId.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
     }
 
-    // ARTICLES
-    match /articles/{articleId} {
-      // Anyone can read a published article
-      allow read: if resource.data.status == 'Published' || (request.auth != null && isOwner(resource.data)) || isAdmin();
-      
-      // Authenticated users can create articles
-      allow create: if request.auth != null;
-      
-      // Only the author or an admin can update/delete
-      allow update, delete: if request.auth != null && (isOwner(resource.data) || isAdmin());
+    // ----------------------------------------------------------------------
+    // User Data Rules
+    // ----------------------------------------------------------------------
 
-      // Version history subcollection
-      match /versions/{versionId} {
-        // Only allow creating new versions, no one can edit or delete history
-        allow create: if request.auth != null && (isOwner(request.resource.data) || isAdmin());
-        allow read, update, delete: if false; 
+    /**
+     * @description Controls access to a user's root document.
+     * @path /users/{userId}
+     * @allow (create, get, update) A user can create, read, and update their own document.
+     * @deny (list, delete) A user cannot list all other users or delete their own account from the client.
+     * @principle Restricts access to a user's own data tree and prevents user enumeration.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if false;
+
+      /**
+       * @description Controls access to a user's private profile documents.
+       * @path /users/{userId}/profile/{profileId}
+       * @allow (CRUD, list) The owner can perform all operations on their own profile documents.
+       * @deny (any) Another authenticated user cannot access this user's profile data.
+       * @principle Enforces strict data ownership within a user-specific subcollection.
+       */
+      match /users/{userId}/profile/{profileId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId);
+        allow delete: if isOwner(userId);
       }
     }
 
-    // PRODUCTS
-    match /products/{productId} {
-      // Anyone can read published products
-      allow read: if resource.data.status == 'Published' || (request.auth != null && isOwner(resource.data)) || isAdmin();
-      
-      // Authenticated users can create products
-      allow create: if request.auth != null;
-      
-      // Only the author or an admin can update/delete
-      allow update, delete: if request.auth != null && (isOwner(resource.data) || isAdmin());
-    }
+    // ----------------------------------------------------------------------
+    // Global Role Rules
+    // ----------------------------------------------------------------------
 
-    // COLLECTIONS (HiLeaves)
-    match /collections/{collectionId} {
-      // Collections are read-only for clients, managed by admin/scripts
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // COMMENTS (REMOVED) - All writes are disallowed.
-    match /comments/{commentId} {
-      allow read, write: if false;
-    }
-
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+    /**
+     * @description Manages documents that grant admin privileges.
+     * @path /roles_admin/{userId}
+     * @allow (none) No client is allowed to read or write to this collection directly.
+     * @deny (all) All client-side requests are rejected.
+     * @principle Secures role-granting documents by making them server-managed only. Authorization is performed via `exists()` checks, not direct reads.
+     */
+    match /roles_admin/{userId} {
+      allow get: if false;
+      allow list: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
   }
 }

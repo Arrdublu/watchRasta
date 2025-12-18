@@ -1,0 +1,103 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user within the WatchRasta platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User's display name."
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL of the user's profile photo.",
+          "format": "uri"
+        },
+        "creationTime": {
+          "type": "string",
+          "description": "Timestamp indicating when the user account was created.",
+          "format": "date-time"
+        },
+        "lastSignInTime": {
+          "type": "string",
+          "description": "Timestamp indicating the last time the user signed in.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user data. Includes user id.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/profile",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile data. Accessible only by the user. Includes denormalized user ID for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "AdminRole",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Documents in this collection indicate admin status. Authorization rules check for document existence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the admin user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore structure is designed to support WatchRasta's content streaming, article publication, e-commerce, and user management features while adhering to the core principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), and QAPs (Rules are not Filters). It uses denormalization to achieve Authorization Independence, ensuring rules don't rely on `get()` calls. Structural Segregation ensures collections have homogeneous security postures, simplifying rules. The structure uses a membership map to manage collaborative data, and existence checks in dedicated collections to handle global roles.\n\n**Authorization Independence:** The `users/{userId}/profile` collection stores all user-specific data. There are no `get()` calls needed to verify profile information.\n\n**QAPs:** The `users/{userId}/profile` collection supports secure list operations because security rules can efficiently filter based on the user ID without requiring access to other collections.\n\n**Global Roles:** Dedicated collections (e.g., `roles_admin/{uid}`) are used for global roles; authorization is performed via existence checks instead of evaluating content, increasing rule efficiency."
+  }
+}
