@@ -33,7 +33,7 @@ export async function submitArticle(formData: FormData) {
         user = await adminAuth.getUser(decodedToken.uid);
     } catch (error) {
         console.error("Error verifying ID token:", error);
-        return { success: false, message: 'Invalid authentication token. Please log in again.' };
+        return { success: false, message: 'Your session has expired. Please log in again to continue.' };
     }
 
     if (!user) {
