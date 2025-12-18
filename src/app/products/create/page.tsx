@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -81,9 +80,7 @@ export default function CreateProductPage() {
     setIsSubmitting(true);
 
     try {
-        const idToken = await user.getIdToken();
         const formData = new FormData();
-        formData.append('idToken', idToken);
         formData.append('title', values.title);
         formData.append('collectionId', String(values.collectionId));
         formData.append('description', values.description);

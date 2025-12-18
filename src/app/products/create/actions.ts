@@ -4,9 +4,7 @@
 import { z } from 'zod';
 import { addProduct } from '@/lib/products';
 import { v4 as uuidv4 } from 'uuid';
-import { getAuth } from 'firebase-admin/auth';
-import { getDb, getStorage } from '@/lib/firebase-admin';
-import admin from 'firebase-admin';
+import { getDb, getStorage, getCurrentUser } from '@/lib/firebase-admin';
 
 const formSchema = z.object({
   title: z.string().min(5),
@@ -17,23 +15,15 @@ const formSchema = z.object({
 });
 
 export async function submitProduct(formData: FormData) {
-    const idToken = formData.get('idToken') as string;
-    if (!idToken) {
-        return { success: false, message: 'Authentication token not provided.' };
+    const user = await getCurrentUser();
+    if (!user) {
+        return { success: false, message: 'Your session has expired. Please log in again to continue.' };
     }
     
     const adminDb = await getDb();
     if (!adminDb) throw new Error("Database not available");
 
     try {
-        const adminAuth = getAuth(admin.apps[0]!);
-        const decodedToken = await adminAuth.verifyIdToken(idToken);
-        const user = await adminAuth.getUser(decodedToken.uid);
-        
-        if (!user) {
-            return { success: false, message: 'Authentication Error: User not found.' };
-        }
-
         const rawData = {
             title: formData.get('title'),
             collectionId: formData.get('collectionId'),

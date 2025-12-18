@@ -69,9 +69,7 @@ export default function CreateArticlePage() {
     setIsSubmitting(true);
     
     try {
-      const idToken = await user.getIdToken();
       const formData = new FormData();
-      formData.append('idToken', idToken);
       formData.append('title', values.title);
       formData.append('category', values.category);
       formData.append('excerpt', values.excerpt);
