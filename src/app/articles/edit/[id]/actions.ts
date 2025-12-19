@@ -7,8 +7,7 @@ import { z } from 'zod';
 import { getArticleById, updateArticle } from '@/lib/articles';
 import { articleCategories } from '@/lib/article-categories';
 import { v4 as uuidv4 } from 'uuid';
-import { getAuth } from 'firebase-admin/auth';
-import { getStorage, getCurrentUser, getDb } from '@/lib/firebase-admin';
+import { getAuth, getStorage, getCurrentUser, getDb } from '@/lib/firebase-admin';
 import admin from 'firebase-admin';
 
 const formSchema = z.object({
@@ -22,76 +21,69 @@ const formSchema = z.object({
 });
 
 export async function updateArticleAction(formData: FormData) {
-    const idToken = formData.get('idToken') as string;
-    if (!idToken) {
-        return { success: false, message: 'Authentication token not provided.' };
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return { success: false, message: 'Authentication Error: User not found.' };
+    }
+
+    const rawData = {
+        articleId: formData.get('articleId'),
+        title: formData.get('title'),
+        category: formData.get('category'),
+        excerpt: formData.get('excerpt'),
+        content: formData.get('content'),
+        image: formData.get('image') || undefined,
+        existingImageUrl: formData.get('existingImageUrl') || undefined,
+    };
+
+    const parsedData = formSchema.safeParse(rawData);
+
+    if (!parsedData.success) {
+        console.error(parsedData.error);
+        return { success: false, message: 'Invalid form data.' };
+    }
+
+    const { articleId, title, category, excerpt, content, image, existingImageUrl } = parsedData.data;
+
+    const articleToUpdate = await getArticleById(articleId);
+    if (!articleToUpdate || articleToUpdate.authorId !== user.uid) {
+        return { success: false, message: 'Unauthorized or article not found.' };
     }
 
     try {
-        const adminAuth = getAuth(admin.apps[0]!);
-        const decodedToken = await adminAuth.verifyIdToken(idToken);
-        const user = await adminAuth.getUser(decodedToken.uid);
+      const adminStorage = await getStorage();
+      const bucket = adminStorage.bucket();
+      const getPublicUrl = (fileName: string) => `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
 
-        if (!user) {
-            return { success: false, message: 'Authentication Error: User not found.' };
-        }
+      let finalImageUrl = existingImageUrl;
+      if (image) {
+          const imageFileName = `articles/${uuidv4()}-${image.name}`;
+          const imageFile = bucket.file(imageFileName);
+          const imageBuffer = Buffer.from(await image.arrayBuffer());
+          await imageFile.save(imageBuffer, { metadata: { contentType: image.type } });
+          finalImageUrl = getPublicUrl(imageFileName);
+      }
 
-        const rawData = {
-            articleId: formData.get('articleId'),
-            title: formData.get('title'),
-            category: formData.get('category'),
-            excerpt: formData.get('excerpt'),
-            content: formData.get('content'),
-            image: formData.get('image') || undefined,
-            existingImageUrl: formData.get('existingImageUrl') || undefined,
-        };
+      const contentFileName = `articles/${uuidv4()}.txt`;
+      const contentFile = bucket.file(contentFileName);
+      const contentBuffer = Buffer.from(content, 'utf8');
+      await contentFile.save(contentBuffer, { metadata: { contentType: 'text/plain' } });
+      const contentUrl = getPublicUrl(contentFileName);
+      
+      await updateArticle(articleId, {
+          title,
+          category,
+          excerpt,
+          content: contentUrl,
+          image: finalImageUrl || '',
+          opengraphImage: (finalImageUrl || '').replace('600/400', '1200/630'),
+          status: 'Pending Review',
+      });
 
-        const parsedData = formSchema.safeParse(rawData);
-
-        if (!parsedData.success) {
-            console.error(parsedData.error);
-            return { success: false, message: 'Invalid form data.' };
-        }
-
-        const { articleId, title, category, excerpt, content, image, existingImageUrl } = parsedData.data;
-
-        const articleToUpdate = await getArticleById(articleId);
-        if (!articleToUpdate || articleToUpdate.authorId !== user.uid) {
-            return { success: false, message: 'Unauthorized or article not found.' };
-        }
-
-        const adminStorage = await getStorage();
-        const bucket = adminStorage.bucket();
-        const getPublicUrl = (fileName: string) => `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
-
-        let finalImageUrl = existingImageUrl;
-        if (image) {
-            const imageFileName = `articles/${uuidv4()}-${image.name}`;
-            const imageFile = bucket.file(imageFileName);
-            const imageBuffer = Buffer.from(await image.arrayBuffer());
-            await imageFile.save(imageBuffer, { metadata: { contentType: image.type } });
-            finalImageUrl = getPublicUrl(imageFileName);
-        }
-
-        const contentFileName = `articles/${uuidv4()}.txt`;
-        const contentFile = bucket.file(contentFileName);
-        const contentBuffer = Buffer.from(content, 'utf8');
-        await contentFile.save(contentBuffer, { metadata: { contentType: 'text/plain' } });
-        const contentUrl = getPublicUrl(contentFileName);
-        
-        await updateArticle(articleId, {
-            title,
-            category,
-            excerpt,
-            content: contentUrl,
-            image: finalImageUrl || '',
-            opengraphImage: (finalImageUrl || '').replace('600/400', '1200/630'),
-            status: 'Pending Review',
-        });
-
-        revalidatePath(`/articles/edit/${articleId}`);
-        revalidatePath('/admin');
-        return { success: true, message: 'Article updated successfully!' };
+      revalidatePath(`/articles/edit/${articleId}`);
+      revalidatePath('/admin');
+      return { success: true, message: 'Article updated successfully!' };
 
     } catch (error) {
         console.error('Error updating article:', error);

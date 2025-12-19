@@ -1,7 +1,9 @@
+
 'use server';
 
 import { getDb, getStorage, getCurrentUser } from '@/lib/firebase-admin';
 import type { Product } from '@/lib/products';
+import admin from 'firebase-admin';
 
 /**
  * MOCK: In a real scenario, this would query a user's payment records.
@@ -47,7 +49,7 @@ export async function getPurchasedProducts(): Promise<Product[]> {
   const db = await getDb();
   const productsRef = db.collection('products');
   const productsQuery = await productsRef.where(
-    require('firebase-admin').firestore.FieldPath.documentId(),
+    admin.firestore.FieldPath.documentId(),
     'in',
     productIds
   ).get();
