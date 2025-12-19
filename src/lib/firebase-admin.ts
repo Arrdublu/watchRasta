@@ -24,17 +24,20 @@ function initializeFirebaseAdmin() {
 
 export async function getCurrentUser(): Promise<DecodedIdToken | null> {
   initializeFirebaseAdmin();
-  const session = (await cookies()).get('session')?.value || '';
+  const sessionCookie = (await cookies()).get('session')?.value || '';
 
-  if (!session) {
+  if (!sessionCookie) {
     return null;
   }
 
   try {
-    const decodedClaims = await admin.auth().verifySessionCookie(session, true);
+    // Set checkRevoked to true, which will check if the session cookie is revoked.
+    // This is a security measure to ensure that compromised sessions can be invalidated.
+    const decodedClaims = await admin.auth().verifySessionCookie(sessionCookie, true);
     return decodedClaims;
   } catch (error) {
-    console.error('Error verifying session cookie:', error);
+    // Session cookie is invalid, expired, or revoked.
+    // This is an expected error in many cases, so we don't need to log it as a server error.
     return null;
   }
 }
