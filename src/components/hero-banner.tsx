@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ export function HeroBanner() {
   return (
     <section className="relative h-screen w-full flex items-center justify-center text-center">
       <Image
-        src="https://firebasestorage.googleapis.com/v0/b/watchrasta.appspot.com/o/images%2F3wR-hero-bg.png?alt=media&token=8b44c688-6927-446a-848f-31035a6e8b4e"
+        src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/gallery%2Fjuly_13_2025%2FDSC01412.jpg?alt=media&token=46a84051-ae4a-4f73-abcd-505b3021c490"
         alt="watchRasta hero background"
         fill
         className="object-cover object-center brightness-50"
