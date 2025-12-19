@@ -6,7 +6,7 @@ export default function PrivacyPolicyPage() {
           <h1 className="text-4xl font-headline font-bold mb-8">Privacy Policy</h1>
           <div className="space-y-6 text-muted-foreground">
             <p><strong>Last Updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong></p>
-            <p>Welcome to watchRasta ("we," "us," or "our"). We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website. Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site.</p>
+            <p>Welcome to watchRasta ("we," "us," or "our"). watchRasta is owned and operated by Arrdublu Limited. We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website. Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site.</p>
             
             <h2 className="text-2xl font-headline font-bold pt-4">Information We Collect</h2>
             <p>We may collect information about you in a variety of ways. The information we may collect on the Site includes:</p>
@@ -32,6 +32,7 @@ export default function PrivacyPolicyPage() {
             <ul>
                 <li><strong>By Law or to Protect Rights:</strong> If we believe the release of information about you is necessary to respond to legal process, to investigate or remedy potential violations of our policies, or to protect the rights, property, and safety of others, we may share your information as permitted or required by any applicable law, rule, or regulation.</li>
                 <li><strong>Third-Party Service Providers:</strong> We may share your information with third parties that perform services for us or on our behalf, including payment processing, data analysis, email delivery, hosting services, customer service, and marketing assistance.</li>
+                <li><strong>Business Transfers:</strong> We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.</li>
             </ul>
             
             <h2 className="text-2xl font-headline font-bold pt-4">Cookies and Tracking Technologies</h2>
@@ -48,7 +49,7 @@ export default function PrivacyPolicyPage() {
 
             <h2 className="text-2xl font-headline font-bold pt-4">Contact Us</h2>
             <p>If you have questions or comments about this Privacy Policy, please contact us at:</p>
-            <p>hi@watchrasta.com</p>
+            <p>Arrdublu Limited<br />hi@watchrasta.com</p>
           </div>
         </div>
       </div>
