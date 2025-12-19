@@ -73,7 +73,7 @@ service cloud.firestore {
       allow delete: if false;
     }
     match /customers/{uid}/{document=**} {
-        allow read: if request.auth.uid == uid;
+        allow read, list: if request.auth.uid == uid;
     }
   }
 }
