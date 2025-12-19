@@ -12,13 +12,14 @@ export function HileavesCard({ collection }: HileavesCardProps) {
   return (
     <Link href={collection.href} className="block group break-inside-avoid overflow-hidden">
       <Card className="border-none shadow-none bg-transparent rounded-lg">
-        <div className="relative w-full overflow-hidden rounded-lg aspect-[4/5]">
+        <div className="relative w-full overflow-hidden rounded-lg">
           <Image
               src={collection.imageUrl}
               alt={collection.title}
               data-ai-hint={collection.dataAiHint}
-              fill
-              className="w-full h-full object-cover transition-transform duration-500"
+              width={400}
+              height={500}
+              className="w-full h-auto object-cover transition-transform duration-500"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
           <div className="absolute bottom-0 left-0 p-6">

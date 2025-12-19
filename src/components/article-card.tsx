@@ -34,20 +34,22 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
   };
 
   return (
-    <div className={cn("group relative overflow-hidden rounded-lg", className)}>
-      <Link href={`/articles/${article.slug}`}>
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-        <Image
-          src={article.image}
-          alt={article.title}
-          data-ai-hint={article.dataAiHint}
-          width={600}
-          height={400}
-          className="w-full h-full object-cover transition-transform duration-500 ease-in-out"
-        />
-        <div className="absolute bottom-0 left-0 right-0 z-20 p-6 text-white">
-          <Badge variant="default" className="mb-2 bg-primary/80 text-primary-foreground border-primary/50 backdrop-blur-sm">{article.category}</Badge>
-          <h3 className="font-headline text-2xl font-bold leading-tight text-accent drop-shadow-md relative inline-block">
+    <div className={cn("group relative overflow-hidden rounded-lg flex flex-col", className)}>
+      <Link href={`/articles/${article.slug}`} className="flex flex-col flex-grow">
+        <div className="relative">
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+          <Image
+            src={article.image}
+            alt={article.title}
+            data-ai-hint={article.dataAiHint}
+            width={600}
+            height={400}
+            className="w-full h-auto object-cover transition-transform duration-500 ease-in-out"
+          />
+        </div>
+        <div className="p-6 text-white flex-grow flex flex-col" style={{backgroundColor: '#050505'}}>
+           <Badge variant="default" className="mb-2 bg-primary/80 text-primary-foreground border-primary/50 backdrop-blur-sm self-start">{article.category}</Badge>
+          <h3 className="font-headline text-2xl font-bold leading-tight relative inline-block">
             {article.title}
             <span className="absolute bottom-0 left-0 h-0.5 bg-primary w-0 group-hover:w-full transition-all duration-300"></span>
           </h3>
