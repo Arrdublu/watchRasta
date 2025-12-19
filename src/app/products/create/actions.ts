@@ -4,7 +4,7 @@
 import { z } from 'zod';
 import { addProduct } from '@/lib/products';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb, getStorage, getCurrentUser } from '@/lib/firebase-admin';
+import { getDb, getStorage, getAuth } from '@/lib/firebase-admin';
 
 const formSchema = z.object({
   title: z.string().min(5),
@@ -15,8 +15,18 @@ const formSchema = z.object({
 });
 
 export async function submitProduct(formData: FormData) {
-    const user = await getCurrentUser();
-    if (!user) {
+    const idToken = formData.get('idToken') as string;
+    if (!idToken) {
+        return { success: false, message: 'Authentication token not provided.' };
+    }
+
+    let user;
+    try {
+        const adminAuth = await getAuth();
+        const decodedToken = await adminAuth.verifyIdToken(idToken);
+        user = decodedToken;
+    } catch (error) {
+        console.error('Error verifying ID token:', error);
         return { success: false, message: 'Your session has expired. Please log in again to continue.' };
     }
     

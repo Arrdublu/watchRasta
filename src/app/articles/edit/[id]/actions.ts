@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { getArticleById, updateArticle } from '@/lib/articles';
 import { articleCategories } from '@/lib/article-categories';
 import { v4 as uuidv4 } from 'uuid';
-import { getAuth, getStorage, getCurrentUser, getDb } from '@/lib/firebase-admin';
+import { getAuth, getStorage } from '@/lib/firebase-admin';
 import admin from 'firebase-admin';
 
 const formSchema = z.object({
@@ -21,10 +21,19 @@ const formSchema = z.object({
 });
 
 export async function updateArticleAction(formData: FormData) {
-    const user = await getCurrentUser();
+    const idToken = formData.get('idToken') as string;
+    if (!idToken) {
+        return { success: false, message: 'Authentication token not provided.' };
+    }
 
-    if (!user) {
-        return { success: false, message: 'Authentication Error: User not found.' };
+    let user;
+    try {
+        const adminAuth = await getAuth();
+        const decodedToken = await adminAuth.verifyIdToken(idToken);
+        user = decodedToken;
+    } catch (error) {
+        console.error('Error verifying ID token:', error);
+        return { success: false, message: 'Authentication Error: User not found or session expired.' };
     }
 
     const rawData = {
@@ -57,7 +66,7 @@ export async function updateArticleAction(formData: FormData) {
       const getPublicUrl = (fileName: string) => `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
 
       let finalImageUrl = existingImageUrl;
-      if (image) {
+      if (image && image.size > 0) {
           const imageFileName = `articles/${uuidv4()}-${image.name}`;
           const imageFile = bucket.file(imageFileName);
           const imageBuffer = Buffer.from(await image.arrayBuffer());
@@ -77,32 +86,17 @@ export async function updateArticleAction(formData: FormData) {
           excerpt,
           content: contentUrl,
           image: finalImageUrl || '',
-          opengraphImage: (finalImageUrl || '').replace('600/400', '1200/630'),
+          opengraphImage: (finalImageUrl || '').replace(/w=\d+&h=\d+/, 'w=1200&h=630'),
           status: 'Pending Review',
       });
 
       revalidatePath(`/articles/edit/${articleId}`);
       revalidatePath('/admin');
+      revalidatePath('/my-submissions');
       return { success: true, message: 'Article updated successfully!' };
 
     } catch (error) {
         console.error('Error updating article:', error);
         return { success: false, message: (error as Error).message || 'Failed to update article.' };
     }
-}
-
-export async function deleteArticle(id: string) {
-  const user = await getCurrentUser();
-  if (!user || !user.customClaims?.admin) {
-    return { success: false, message: 'Unauthorized' };
-  }
-
-  try {
-    const db = await getDb();
-    await db.collection('articles').doc(id).delete();
-    revalidatePath('/admin');
-    return { success: true, message: 'Article deleted successfully' };
-  } catch (error) {
-    return { success: false, message: 'Failed to delete article' };
-  }
 }

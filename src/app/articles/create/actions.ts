@@ -5,7 +5,8 @@ import { z } from 'zod';
 import { addArticle } from '@/lib/articles';
 import { articleCategories } from '@/lib/article-categories';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb, getStorage, getCurrentUser } from '@/lib/firebase-admin';
+import { getDb, getStorage, getAuth } from '@/lib/firebase-admin';
+import admin from 'firebase-admin';
 
 const formSchema = z.object({
   title: z.string().min(5, { message: 'Title must be at least 5 characters.' }),
@@ -16,11 +17,21 @@ const formSchema = z.object({
 });
 
 export async function submitArticle(formData: FormData) {
-    const user = await getCurrentUser();
+    const idToken = formData.get('idToken') as string;
+    if (!idToken) {
+        return { success: false, message: 'Authentication token not provided.' };
+    }
 
-    if (!user) {
+    let user;
+    try {
+        const adminAuth = await getAuth();
+        const decodedToken = await adminAuth.verifyIdToken(idToken);
+        user = decodedToken;
+    } catch (error) {
+        console.error('Error verifying ID token:', error);
         return { success: false, message: 'Your session has expired. Please log in again to continue.' };
     }
+
 
     const adminDb = await getDb();
     if (!adminDb) throw new Error("Database not available");

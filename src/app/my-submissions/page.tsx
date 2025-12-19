@@ -7,7 +7,7 @@ import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { getArticles, deleteArticle, type Article } from '@/lib/articles';
 import { getProductsByAuthorId, type Product } from '@/lib/products';
-import { deleteProduct } from '@/app/admin/products/actions';
+import { deleteProduct as deleteProductAction } from '@/app/admin/products/actions';
 import { getCollections, type Collection } from '@/lib/collections';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -94,6 +94,8 @@ export default function MySubmissionsPage() {
   };
 
   const handleDeleteArticle = async (id: string) => {
+    if (!user) return;
+    const idToken = await user.getIdToken();
     const result = await deleteArticle(id);
     if (result.success) {
         setMyArticles(myArticles.filter(a => a.id !== id));
@@ -104,7 +106,9 @@ export default function MySubmissionsPage() {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    const result = await deleteProduct(id);
+    if (!user) return;
+    const idToken = await user.getIdToken();
+    const result = await deleteProductAction(id, idToken);
     if (result.success) {
         setMyProducts(myProducts.filter(p => p.id !== id));
         toast({ title: "Product Deleted", description: result.message, variant: 'destructive' });

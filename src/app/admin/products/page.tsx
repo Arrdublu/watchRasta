@@ -59,8 +59,10 @@ export default function AdminProductsPage() {
 
 
   const handleStatusChange = async (id: string, status: Product['status']) => {
+    if (!user) return;
     try {
-      await updateProductStatus(id, status);
+      const idToken = await user.getIdToken();
+      await updateProductStatus(id, status, idToken);
       setProducts(products.map(product => 
         product.id === id ? { ...product, status } : product
       ));
@@ -71,12 +73,18 @@ export default function AdminProductsPage() {
   };
 
   const handleDelete = async (id: string) => {
-     const result = await deleteProduct(id);
-     if (result.success) {
-      setProducts(products.filter(product => product.id !== id));
-      toast({ title: "Product Deleted", description: result.message, variant: 'destructive' });
-    } else {
-       toast({ title: "Error", description: result.message, variant: 'destructive'});
+    if (!user) return;
+    try {
+        const idToken = await user.getIdToken();
+        const result = await deleteProduct(id, idToken);
+        if (result.success) {
+            setProducts(products.filter(product => product.id !== id));
+            toast({ title: "Product Deleted", description: result.message, variant: 'destructive' });
+        } else {
+            toast({ title: "Error", description: result.message, variant: 'destructive'});
+        }
+    } catch (error) {
+        toast({ title: "Error", description: "An unexpected error occurred while deleting.", variant: 'destructive'});
     }
   };
 
@@ -163,10 +171,10 @@ export default function AdminProductsPage() {
                     {product.status === 'Pending Review' ? (
                         <div className="flex gap-2">
                            <Button variant="outline" size="sm" onClick={() => handleStatusChange(product.id, 'Published')}>
-                               <Check className="h-4 w-4 mr-1" /> Approve
+                               <Check className="mr-2 h-4 w-4" /> Approve
                            </Button>
                            <Button variant="secondary" size="sm" onClick={() => handleStatusChange(product.id, 'Rejected')}>
-                               <X className="h-4 w-4 mr-1" /> Reject
+                               <X className="mr-2 h-4 w-4" /> Reject
                            </Button>
                            <Button variant="ghost" size="icon" asChild>
                                <Link href={`/products/${product.id}`} target="_blank"><Eye className="h-4 w-4" /></Link>
