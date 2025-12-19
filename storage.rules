@@ -7,11 +7,22 @@ service firebase.storage {
       allow read;
     }
 
-    // User-submitted content for articles and products
-    // Allow authenticated users to create, read, and update.
-    match /{path}/{allPaths=**} {
+    // Articles
+    match /articles/{allPaths=**} {
       allow read;
       allow create, update: if request.auth != null;
+    }
+
+    // Products
+    match /products/{allPaths=**} {
+      allow read;
+      allow create, update: if request.auth != null;
+    }
+
+    // User-specific files
+    match /users/{userId}/{allPaths=**} {
+      allow read: if request.auth.uid == userId;
+      allow write: if request.auth.uid == userId;
     }
 
     // Protected media for purchased digital goods
