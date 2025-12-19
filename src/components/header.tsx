@@ -100,7 +100,7 @@ export function Header() {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
-                            <Link href="/my-library"><Library className="mr-2 h-4 w-4" />My Library</Link>
+                            <Link href="/my-collection"><Library className="mr-2 h-4 w-4" />My Collection</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link href="/profile">Profile</Link>
@@ -162,7 +162,7 @@ export function Header() {
                <div className="border-t mt-4 pt-4">
                  {user ? (
                     <>
-                        <Link href="/my-library" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>My Library</Link>
+                        <Link href="/my-collection" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>My Collection</Link>
                         <Link href="/profile" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>Profile</Link>
                         <Link href="/my-submissions" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>My Submissions</Link>
                         <Link href="/articles/create" className="flex w-full items-center rounded-md p-2 text-base font-medium hover:underline" onClick={() => setIsOpen(false)}>Create Article</Link>
