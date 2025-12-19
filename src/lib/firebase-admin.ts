@@ -1,7 +1,7 @@
 
 import admin from 'firebase-admin';
 import { cookies } from 'next/headers';
-import { DecodedIdToken } from 'firebase-admin/auth';
+import { type DecodedIdToken } from 'firebase-admin/auth';
 
 export function initializeFirebaseAdmin() {
     if (admin.apps.length > 0) {
