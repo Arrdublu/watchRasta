@@ -18,6 +18,13 @@ const myAccountLinks = [
     { href: '/my-favorites', label: 'My Favorites' },
 ];
 
+const legalLinks = [
+    { href: '/privacy-policy', label: 'Privacy Policy' },
+    { href: '/terms-of-service', label: 'Terms of Service' },
+    { href: '/cookie-policy', label: 'Cookie Policy' },
+    { href: '/modern-slavery-act', label: 'Modern Slavery Act' },
+];
+
 const socialLinks = [
     { href: 'mailto:hi@watchrasta.com', icon: Mail, label: 'Email' },
     { href: 'https://www.instagram.com/watchrasta/', icon: Instagram, label: 'Instagram' },
@@ -48,6 +55,19 @@ export function Footer() {
             <h3 className="font-headline mb-4 text-primary">Explore</h3>
             <ul className="space-y-2">
               {exploreLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-primary">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+           <div className="md:justify-self-center">
+            <h3 className="font-headline mb-4 text-primary">Legal</h3>
+            <ul className="space-y-2">
+              {legalLinks.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-muted-foreground hover:text-primary">
                     {link.label}
