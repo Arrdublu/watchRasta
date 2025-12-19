@@ -4,9 +4,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     remotePatterns: [
       {
@@ -43,16 +40,7 @@ const nextConfig = {
       },
     ]
   },
-  webpack: (config: any) => {
-    config.ignoreWarnings = [
-      ...(config.ignoreWarnings || []),
-      {
-        module: /handlebars\/lib\/index\.js$/,
-        message: /require\.extensions is not supported by webpack/,
-      },
-    ];
-    return config;
-  },
+  turbopack: {},
 };
 
 export default nextConfig;

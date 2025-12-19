@@ -9,12 +9,19 @@
 - Curated Collections: Allow users to curate and save their favorite watch articles and collections for future access and inspiration.
 - Contact Form: Simple form to allow users to send an email. No database backend required.
 
-## Style Guidelines:
+## Style Guidelines (Modern Heritage):
 
-- Primary color: Polished gold (#BFA15D), representing luxury and sophistication.
-- Background color: Deep charcoal (#222222), providing a sophisticated backdrop.
-- Accent color: Off-white (#F5F5DC), used sparingly for highlights and text to ensure readability and elegance.
-- Headline font: 'Playfair', serif, for headlines and titles to create a high-end feel. Body font: 'PT Sans', sans-serif, for readability in longer articles.
-- Use minimalist, line-based icons in polished gold to maintain a clean and luxurious aesthetic.
-- Implement a clean, grid-based layout inspired by ruul.io/blog, ensuring content is well-organized and visually appealing.
-- Incorporate subtle animations and transitions to enhance user engagement and provide a dynamic experience, inspired by nike.com/stories.
+### Color Palette:
+- **Base (Dark Mode):** Premium black (`#050505`).
+- **Accent - Gold:** Metallic Brass (`#D4AF37`) for primary CTAs and active states.
+- **Accent - Green:** Deep Emerald (`#004225`) for success states and gradients.
+- **Accent - Red:** Deep Crimson (`#990000`) for alerts and live badges.
+
+### Typography:
+- **Headings:** Bold Display Serif (e.g., 'Playfair Display' or 'Fraunces') to evoke heritage.
+- **Body/UI:** Clean Geometric Sans (e.g., 'Inter' or 'Space Grotesk') for modern readability.
+
+### Layout:
+- **Homepage:** A Bento Grid layout mixing video previews, featured articles, and product drops.
+- **Visuals:** Use large, full-width "Big Screen" imagery with parallax effects.
+- **UI Elements:** Use Glassmorphism (blur/translucency) for navigation and cards.
