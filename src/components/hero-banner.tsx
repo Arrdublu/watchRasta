@@ -12,11 +12,11 @@ export function HeroBanner() {
         className="object-cover object-center brightness-50"
         priority
       />
-      <div className="relative z-10 max-w-4xl mx-auto px-4 text-white">
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold text-accent mb-4 leading-tight animate-fade-in-up">
+      <div className="relative z-10 max-w-4xl mx-auto px-4">
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold text-white mb-4 leading-tight animate-fade-in-up">
           Epic STORIES. Rooted STARS. A culture OF ENTERTAINMENT.
         </h1>
-        <p className="text-lg md:text-xl text-accent/90 max-w-2xl mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+        <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
           Explore the music, stories, and latest updates from watchRasta.
         </p>
         <Link href="/news">
