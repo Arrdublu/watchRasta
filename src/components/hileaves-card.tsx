@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Collection } from '@/lib/collections';
@@ -17,7 +18,7 @@ export function HileavesCard({ collection }: HileavesCardProps) {
               alt={collection.title}
               data-ai-hint={collection.dataAiHint}
               fill
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-500"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
           <div className="absolute bottom-0 left-0 p-6">

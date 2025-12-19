@@ -43,7 +43,7 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
           data-ai-hint={article.dataAiHint}
           width={600}
           height={400}
-          className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-500 ease-in-out"
         />
         <div className="absolute bottom-0 left-0 right-0 z-20 p-6 text-white">
           <Badge variant="default" className="mb-2 bg-primary/80 text-primary-foreground border-primary/50 backdrop-blur-sm">{article.category}</Badge>
