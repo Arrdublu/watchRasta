@@ -11,6 +11,8 @@ const exploreLinks = [
   { href: '/style-guide', label: 'Style Guide' },
   { href: '/hileaves', label: 'HiLeaves' },
   { href: '/contact', label: 'Contact' },
+  { href: '/faq', label: 'FAQ' },
+  { href: '/career', label: 'Career' },
 ];
 
 const myAccountLinks = [
@@ -47,7 +49,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           <div className="col-span-2 md:col-span-1 flex items-start flex-col">
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/branding%2FHeader-icon.png?alt=media&token=ddfb823f-9d79-4f03-aed6-8f7ddfaecb80" alt="watchRasta icon" width={63} height={63} className="h-[63px] w-auto" />
+              <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/branding%2FHeader-icon.png?alt=media&token=ddfb823f-9d79-4f03-aed6-8f7ddfaecb80" alt="watchRasta icon" width={64} height={64} />
             </Link>
           </div>
 
@@ -114,7 +116,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-             <p>TM &amp; © {new Date().getFullYear()} watchRasta. All rights reserved.</p>
+             <p>TM & © {new Date().getFullYear()} watchRasta. All rights reserved.</p>
         </div>
       </div>
     </footer>
