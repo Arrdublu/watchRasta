@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Instagram, Youtube, Twitter, Music, Mail } from 'lucide-react';
-import { useAuth } from '@/contexts/auth-context';
+import { useUser } from '@/firebase';
 import { JoinTheMovement } from './JoinTheMovement';
 
 const exploreLinks = [
@@ -33,7 +33,7 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 )
 
 export function Footer() {
-  const { user } = useAuth();
+  const { user } = useUser();
   return (
     <footer className="border-t border-border/40 bg-black/20 backdrop-blur-lg">
       <div className="container py-12">
