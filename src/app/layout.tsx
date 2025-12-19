@@ -7,8 +7,8 @@ import { Footer } from '@/components/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
-import { AudioProvider } from '@/contexts/AudioContext';
 import MiniPlayer from '@/components/MiniPlayer';
+import { AudioProvider } from '@/contexts/AudioContext';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://watchrasta.com'),
