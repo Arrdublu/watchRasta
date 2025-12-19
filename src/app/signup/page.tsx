@@ -11,11 +11,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus } from 'lucide-react';
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { useAuth } from '@/firebase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { sendNewUserEmail } from './actions';
+import { initiateEmailSignUp } from '@/firebase';
+
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -41,6 +43,7 @@ export default function SignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const router = useRouter();
+  const auth = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,14 +57,12 @@ export default function SignupPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      
-      console.log(`New user signed up: ${values.email}`);
+      initiateEmailSignUp(auth, values.email, values.password);
       await sendNewUserEmail({ email: values.email });
       
       toast({
-        title: 'Account Created!',
-        description: "You've been successfully signed up.",
+        title: 'Account Creation Initiated!',
+        description: "Please wait while we set up your account.",
       });
       router.push('/profile');
     } catch (error) {
@@ -79,10 +80,10 @@ export default function SignupPage() {
     setIsGoogleSubmitting(true);
     try {
         const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
+        signInWithPopup(auth, provider); // Non-blocking
         toast({
-            title: 'Account Created!',
-            description: "You've been successfully signed up with Google.",
+            title: 'Account Creation Initiated!',
+            description: "Please wait while we set up your account with Google.",
         });
         router.push('/profile');
     } catch (error) {

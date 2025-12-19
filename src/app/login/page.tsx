@@ -11,10 +11,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { LogIn } from 'lucide-react';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { useAuth } from '@/firebase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { initiateEmailSignIn } from '@/firebase';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -37,6 +38,7 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const router = useRouter();
+  const auth = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,10 +51,10 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+      initiateEmailSignIn(auth, values.email, values.password);
       toast({
-        title: 'Login Successful!',
-        description: "You've been successfully logged in.",
+        title: 'Login Initiated',
+        description: 'Please wait while we log you in.',
       });
       router.push('/profile');
     } catch (error) {
@@ -70,10 +72,10 @@ export default function LoginPage() {
     setIsGoogleSubmitting(true);
     try {
         const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
+        signInWithPopup(auth, provider); // Non-blocking
         toast({
-            title: 'Login Successful!',
-            description: "You've been successfully logged in with Google.",
+            title: 'Login Initiated',
+            description: 'Please wait while we log you in with Google.',
         });
         router.push('/profile');
     } catch (error) {
