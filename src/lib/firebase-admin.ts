@@ -1,10 +1,9 @@
 
-'use server';
 import admin from 'firebase-admin';
 import { cookies } from 'next/headers';
 import { DecodedIdToken } from 'firebase-admin/auth';
 
-function initializeFirebaseAdmin() {
+export function initializeFirebaseAdmin() {
     if (admin.apps.length > 0) {
         return;
     }
