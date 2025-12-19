@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/auth-context';
+import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { getArticles, deleteArticle, type Article } from '@/lib/articles';
 import { getProductsByAuthorId, type Product } from '@/lib/products';
@@ -25,7 +25,7 @@ import Link from 'next/link';
 import { DeleteConfirmationDialog } from '@/components/delete-confirmation-dialog';
 
 export default function MySubmissionsPage() {
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -35,7 +35,7 @@ export default function MySubmissionsPage() {
   const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isUserLoading && !user) {
       router.push('/login');
       return;
     }
@@ -64,7 +64,7 @@ export default function MySubmissionsPage() {
       }
       fetchSubmissions();
     }
-  }, [user, loading, router, toast]);
+  }, [user, isUserLoading, router, toast]);
   
   const getStatusVariant = (status: Article['status'] | Product['status']) => {
     switch (status) {
@@ -114,7 +114,7 @@ export default function MySubmissionsPage() {
   };
 
 
-  if (loading || !user) {
+  if (isUserLoading || !user) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Loading...</div>;
   }
   

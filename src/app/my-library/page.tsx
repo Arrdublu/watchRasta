@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/auth-context';
+import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 
 export default function MyLibraryPage() {
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -22,7 +22,7 @@ export default function MyLibraryPage() {
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isUserLoading && !user) {
       router.push('/login');
       return;
     }
@@ -44,7 +44,7 @@ export default function MyLibraryPage() {
       };
       fetchPurchases();
     }
-  }, [user, loading, router, toast]);
+  }, [user, isUserLoading, router, toast]);
 
   const handleDownload = async (productId: string) => {
     if (!user) return;
@@ -72,7 +72,7 @@ export default function MyLibraryPage() {
     }
   };
 
-  if (loading || !user) {
+  if (isUserLoading || !user) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Loading...</div>;
   }
 

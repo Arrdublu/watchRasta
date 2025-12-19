@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/auth-context';
+import { useUser } from '@/firebase';
 import { articleCategories } from '@/lib/article-categories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { submitArticle } from './actions';
@@ -28,15 +28,15 @@ export default function CreateArticlePage() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isUserLoading && !user) {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, isUserLoading, router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -104,7 +104,7 @@ export default function CreateArticlePage() {
     }
   }
 
-  if (loading || !user) {
+  if (isUserLoading || !user) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Loading...</div>;
   }
 

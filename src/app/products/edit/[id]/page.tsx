@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Edit, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/auth-context';
+import { useUser } from '@/firebase';
 import { getProductById, type Product } from '@/lib/products';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getCollections, type Collection } from '@/lib/collections';
@@ -34,7 +34,7 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
@@ -154,7 +154,7 @@ export default function EditProductPage({ params }: { params: { id: string }}) {
     }
   }
 
-  if (authLoading || isFetching || !user) {
+  if (isUserLoading || isFetching || !user) {
     return (
         <div className="container py-16 md:py-24">
             <div className="max-w-3xl mx-auto">

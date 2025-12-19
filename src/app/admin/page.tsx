@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/auth-context';
+import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { ADMIN_EMAIL } from '@/lib/config';
 import { DeleteConfirmationDialog } from '@/components/delete-confirmation-dialog';
@@ -27,11 +27,11 @@ export default function AdminDashboardPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isFetching, setIsFetching] = useState(true);
   const { toast } = useToast();
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user?.email !== ADMIN_EMAIL) {
+    if (!isUserLoading && user?.email !== ADMIN_EMAIL) {
       router.push('/');
     } else if (user?.email === ADMIN_EMAIL) {
       const fetchArticles = async () => {
@@ -47,7 +47,7 @@ export default function AdminDashboardPage() {
       }
       fetchArticles();
     }
-  }, [user, loading, router, toast]);
+  }, [user, isUserLoading, router, toast]);
 
 
   const handleStatusChange = async (id: string, status: Article['status']) => {
@@ -92,7 +92,7 @@ export default function AdminDashboardPage() {
     }
   };
   
-  if (loading || user?.email !== ADMIN_EMAIL) {
+  if (isUserLoading || user?.email !== ADMIN_EMAIL) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Checking authorization...</div>;
   }
   

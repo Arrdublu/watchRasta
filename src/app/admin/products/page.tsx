@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/auth-context';
+import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { updateProductStatus, deleteProduct } from './actions';
 import { ADMIN_EMAIL } from '@/lib/config';
@@ -31,11 +31,11 @@ export default function AdminProductsPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [isFetching, setIsFetching] = useState(true);
   const { toast } = useToast();
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user?.email !== ADMIN_EMAIL) {
+    if (!isUserLoading && user?.email !== ADMIN_EMAIL) {
       router.push('/');
     } else if (user?.email === ADMIN_EMAIL) {
       const fetchAllData = async () => {
@@ -55,7 +55,7 @@ export default function AdminProductsPage() {
       };
       fetchAllData();
     }
-  }, [user, loading, router, toast]);
+  }, [user, isUserLoading, router, toast]);
 
 
   const handleStatusChange = async (id: string, status: Product['status']) => {
@@ -103,7 +103,7 @@ export default function AdminProductsPage() {
     return collections.find(c => c.numericId === collectionId)?.title || 'Unknown';
   }
 
-  if (loading || user?.email !== ADMIN_EMAIL) {
+  if (isUserLoading || user?.email !== ADMIN_EMAIL) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Checking authorization...</div>;
   }
   

@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/auth-context';
+import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { updateCollectionStatus, deleteCollection } from './actions';
 import { ADMIN_EMAIL } from '@/lib/config';
@@ -29,11 +29,11 @@ export default function AdminHileavesPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [isFetching, setIsFetching] = useState(true);
   const { toast } = useToast();
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user?.email !== ADMIN_EMAIL) {
+    if (!isUserLoading && user?.email !== ADMIN_EMAIL) {
       router.push('/');
     } else if (user?.email === ADMIN_EMAIL) {
         const fetchCollections = async () => {
@@ -49,7 +49,7 @@ export default function AdminHileavesPage() {
         }
         fetchCollections();
     }
-  }, [user, loading, router, toast]);
+  }, [user, isUserLoading, router, toast]);
 
 
   const handleStatusChange = async (id: string, status: Collection['status']) => {
@@ -91,7 +91,7 @@ export default function AdminHileavesPage() {
     }
   }
 
-  if (loading || user?.email !== ADMIN_EMAIL) {
+  if (isUserLoading || user?.email !== ADMIN_EMAIL) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Checking authorization...</div>;
   }
   

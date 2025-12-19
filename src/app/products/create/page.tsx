@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/auth-context';
+import { useUser } from '@/firebase';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getCollections, type Collection } from '@/lib/collections';
 import { submitProduct } from './actions';
@@ -28,13 +28,13 @@ export default function CreateProductPage() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [collections, setCollections] = useState<Collection[]>([]);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isUserLoading && !user) {
       router.push('/login');
     }
     
@@ -43,7 +43,7 @@ export default function CreateProductPage() {
         setCollections(publishedCollections);
     }
     fetchCollections();
-  }, [user, loading, router]);
+  }, [user, isUserLoading, router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -109,7 +109,7 @@ export default function CreateProductPage() {
     }
   }
 
-  if (loading || !user) {
+  if (isUserLoading || !user) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Loading...</div>;
   }
 
