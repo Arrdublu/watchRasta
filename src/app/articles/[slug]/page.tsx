@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArticleCard } from '@/components/article-card';
 import { Clock, User } from 'lucide-react';
 import { Embed } from '@/components/embed';
-import { SocialShare } from '@/components/social-share';
+import { JoinTheDiscussion } from '@/components/JoinTheDiscussion';
 import type { Metadata } from 'next';
 
 async function getArticleData(slug: string) {
@@ -109,10 +109,8 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             dangerouslySetInnerHTML={{ __html: article.content.replace(/<iframe/g, '<div class="embed-container"><iframe').replace(/<\/iframe>/g, '</iframe></div>') }}
             />
             <hr className="my-12" />
-            <div className="my-12 text-center">
-                <h3 className="text-2xl font-bold font-headline mb-4">Join the Discussion</h3>
-                <p className="text-muted-foreground mb-6">Share this story and join the conversation on social media.</p>
-                <SocialShare title={article.title} className="justify-center" />
+            <div className="my-12">
+                <JoinTheDiscussion />
             </div>
         </div>
       </article>

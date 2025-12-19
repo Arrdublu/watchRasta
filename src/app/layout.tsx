@@ -7,6 +7,8 @@ import { Footer } from '@/components/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { AudioProvider } from '@/contexts/AudioContext';
+import MiniPlayer from '@/components/MiniPlayer';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://watchrasta.com'),
@@ -40,10 +42,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <FirebaseClientProvider>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <Toaster />
+            <AudioProvider>
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <Toaster />
+              <MiniPlayer />
+            </AudioProvider>
           </FirebaseClientProvider>
         </ThemeProvider>
       </body>

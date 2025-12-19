@@ -72,5 +72,8 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if false;
     }
+    match /customers/{uid}/{document=**} {
+        allow read: if request.auth.uid == uid;
+    }
   }
 }

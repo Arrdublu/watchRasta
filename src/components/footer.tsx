@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Instagram, Youtube, Twitter, Music, Mail } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
+import { JoinTheMovement } from './JoinTheMovement';
 
 const exploreLinks = [
   { href: '/style-guide', label: 'Style Guide' },
@@ -36,7 +37,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border/40 bg-black/20 backdrop-blur-lg">
       <div className="container py-12">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           <div className="col-span-2 md:col-span-1 flex items-start flex-col">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Image src="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/watchRasta_2024_logo-10.png?alt=media&token=ff529403-c4ab-4828-81c4-a44f712ca138" alt="watchRasta logo" width={24} height={24} className="h-6 w-auto" />
@@ -69,6 +70,10 @@ export function Footer() {
             </ul>
           </div>)}
           
+          <div className="col-span-2 md:col-span-2">
+            <JoinTheMovement />
+          </div>
+
           <div className="col-span-2 md:col-span-2 flex flex-col items-center md:items-end">
              <h3 className="font-headline mb-4 text-primary">Follow Us</h3>
              <div className="flex gap-4">

@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import algoliasearch from "algoliasearch";
+import axios from "axios";
+const algoliasearch = require("algoliasearch");
 
 admin.initializeApp();
 
@@ -54,3 +55,39 @@ export const onProductDeleted = functions.firestore
       );
     }
   });
+
+export const fetchSocialFeeds = functions.pubsub.schedule("every 30 minutes").onRun(async (context) => {
+  const twitterUrl = `https://api.twitter.com/2/tweets/search/recent?query=from:watchrasta`;
+  const instagramUrl = `https://graph.instagram.com/me/media?fields=id,caption,media_url,timestamp,permalink`;
+
+  const twitterOptions = {
+    headers: {
+      "Authorization": `Bearer ${functions.config().twitter.bearer_token}`
+    }
+  };
+
+  const instagramOptions = {
+    params: {
+      "access_token": functions.config().instagram.access_token
+    }
+  }
+
+  try {
+    const [twitterResponse, instagramResponse] = await Promise.all([
+      axios.get(twitterUrl, twitterOptions),
+      axios.get(instagramUrl, instagramOptions)
+    ]);
+
+    const socialFeed = {
+      twitter: twitterResponse.data.data,
+      instagram: instagramResponse.data.data,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    };
+
+    await admin.firestore().collection("social_feed").doc("latest").set(socialFeed);
+    functions.logger.log("Successfully fetched and stored social feeds.");
+
+  } catch (error) {
+    functions.logger.error("Error fetching social feeds:", error);
+  }
+});
