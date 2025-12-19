@@ -36,15 +36,14 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
   return (
     <div className={cn("group relative overflow-hidden rounded-lg flex flex-col", className)}>
       <Link href={`/articles/${article.slug}`} className="flex flex-col flex-grow">
-        <div className="relative">
+        <div className="relative aspect-video">
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
           <Image
             src={article.image}
             alt={article.title}
             data-ai-hint={article.dataAiHint}
-            width={600}
-            height={400}
-            className="w-full h-auto object-cover transition-transform duration-500 ease-in-out"
+            fill
+            className="object-cover transition-transform duration-500 ease-in-out"
           />
         </div>
         <div className="p-6 text-white flex-grow flex flex-col" style={{backgroundColor: '#050505'}}>

@@ -31,14 +31,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
     <Card className="overflow-hidden flex flex-col group">
         <Link href={`/products/${product.id}`} className="flex flex-col flex-grow">
             <CardHeader className="p-0">
-                <div className="relative w-full overflow-hidden">
+                <div className="relative w-full overflow-hidden aspect-square">
                     <Image
                         src={product.imageUrl}
                         alt={product.title}
                         data-ai-hint={product.dataAiHint}
-                        width={400}
-                        height={400}
-                        className="object-cover w-full h-auto transition-transform duration-300 ease-in-out"
+                        fill
+                        className="object-cover transition-transform duration-300 ease-in-out"
                     />
                 </div>
           </CardHeader>
