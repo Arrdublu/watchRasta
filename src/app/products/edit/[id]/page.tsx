@@ -1,6 +1,7 @@
 
 'use client';
 
+import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -28,7 +29,7 @@ const formSchema = z.object({
 });
 
 export default function EditProductPage({ params }: { params: { id: string }}) {
-  const { id } = params;
+  const { id } = React.use(params);
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
