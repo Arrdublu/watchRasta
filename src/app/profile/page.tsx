@@ -1,26 +1,27 @@
 
 'use client';
 
-import { useAuth } from '@/contexts/auth-context';
+import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { signOut }from 'firebase/auth';
+import { useAuth } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 
 export default function ProfilePage() {
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isUserLoading && !user) {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, isUserLoading, router]);
 
   const handleSignOut = async () => {
     try {
@@ -32,7 +33,7 @@ export default function ProfilePage() {
     }
   }
 
-  if (loading || !user) {
+  if (isUserLoading || !user) {
     return <div className="container flex items-center justify-center min-h-[60vh]">Loading profile...</div>;
   }
 
