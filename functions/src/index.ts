@@ -1,3 +1,4 @@
+
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import axios from "axios";
@@ -91,3 +92,4 @@ export const fetchSocialFeeds = functions.pubsub.schedule("every 30 minutes").on
     functions.logger.error("Error fetching social feeds:", error);
   }
 });
+export * from "./links";
