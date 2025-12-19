@@ -27,7 +27,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet" />
-        <link rel="icon" href="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/watchRasta_2024_logo-10.png?alt=media&token=ff529403-c4ab-4828-81c4-a44f712ca138" sizes="any" />
+        <link rel="icon" href="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/fav%20icon%2Ffavicon-32x32.png?alt=media&token=828baf9a-cead-4064-bb38-f31b55a029a7" sizes="any" />
         <link rel="apple-touch-icon" href="https://firebasestorage.googleapis.com/v0/b/watchrasta.firebasestorage.app/o/branding%2Fapple-touch-icon.png?alt=media&token=c66e806e-c06e-4aaa-be19-6df162b79d64" />
       </head>
       <body
