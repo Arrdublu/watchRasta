@@ -94,7 +94,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-             <p>© {new Date().getFullYear()} Epic STORIES. Rooted STARS. A culture OF ENTERTAINMENT.</p>
+             <p>TM &amp; © {new Date().getFullYear()} watchRasta. All rights reserved.</p>
         </div>
       </div>
     </footer>
