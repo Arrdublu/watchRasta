@@ -6,6 +6,7 @@ import { articleCategories } from '@/lib/article-categories';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Card } from '@/components/ui/card';
 
 export default async function Home() {
   const articles = await getArticles({ limit: 6 });
@@ -21,7 +22,7 @@ export default async function Home() {
     <div className="flex flex-col min-h-screen">
       <HeroBanner />
       
-      <section>
+      <section className="container py-16 md:py-24">
         <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-headline font-bold">
               Explore Our Stories
@@ -47,12 +48,16 @@ export default async function Home() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
             {articles.slice(0,3).map((article) => (
-                <ArticleCard key={article.id} article={article} />
+                <Card key={article.id}>
+                    <ArticleCard article={article} />
+                </Card>
             ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
              {articles.slice(3,5).map((article) => (
-                <ArticleCard key={article.id} article={article} />
+                <Card key={article.id}>
+                    <ArticleCard article={article} />
+                </Card>
             ))}
         </div>
 

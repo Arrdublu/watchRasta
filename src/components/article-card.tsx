@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -33,7 +34,7 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
   };
 
   return (
-    <div className={cn("group relative overflow-hidden rounded-lg shadow-lg", className)}>
+    <div className={cn("group relative overflow-hidden rounded-lg", className)}>
       <Link href={`/articles/${article.slug}`}>
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
         <Image
@@ -46,7 +47,10 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
         />
         <div className="absolute bottom-0 left-0 right-0 z-20 p-6 text-white">
           <Badge variant="default" className="mb-2 bg-primary/80 text-primary-foreground border-primary/50 backdrop-blur-sm">{article.category}</Badge>
-          <h3 className="font-headline text-2xl font-bold leading-tight text-accent drop-shadow-md">{article.title}</h3>
+          <h3 className="font-headline text-2xl font-bold leading-tight text-accent drop-shadow-md relative inline-block">
+            {article.title}
+            <span className="absolute bottom-0 left-0 h-0.5 bg-primary w-0 group-hover:w-full transition-all duration-300"></span>
+          </h3>
         </div>
       </Link>
       {isLoaded && (
